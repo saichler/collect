@@ -2,7 +2,7 @@ package snmp
 
 import (
 	"github.com/gosnmp/gosnmp"
-	"github.com/saichler/collect/go/collection/poll"
+	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/collection/protocols"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
@@ -60,10 +60,10 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 			return
 		}
 	}
-	pollCenter := poll.Poll(this.resources)
-	pll := pollCenter.PollByUuid(job.PollUuid)
+	pollCenter := polling.Polling(this.resources)
+	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
-		this.resources.Logger().Error("cannot find poll for uuid ", job.PollUuid)
+		this.resources.Logger().Error("cannot find poll for name ", job.PollName)
 		return
 	}
 	if pll.Operation == types.Operation__Map {
@@ -87,7 +87,7 @@ func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool)
 	m := &types.Map{}
 	m.Data = make(map[string][]byte)
 	for _, pdu := range pdus {
-		enc := object.New([]byte{}, 0, "SnmpPDU", this.resources.Registry())
+		enc := object.NewEncode([]byte{}, 0)
 		err := enc.Add(pdu.Value)
 		if err != nil {
 			this.resources.Logger().Error("Object Value Error: ", err.Error())
@@ -95,7 +95,7 @@ func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool)
 		m.Data[pdu.Name] = enc.Data()
 	}
 	if encodeMap {
-		enc := object.New([]byte{}, 0, "Map", this.resources.Registry())
+		enc := object.NewEncode([]byte{}, 0)
 		err := enc.Add(m)
 		if err != nil {
 			this.resources.Logger().Error("Object Table Error: ", err)
@@ -121,7 +121,7 @@ func (this *SNMPCollector) table(job *types.Job, pll *types.Poll) {
 		protocols.SetValue(rowIndex, colIndex, m.Data[key], tbl)
 	}
 
-	enc := object.New([]byte{}, 0, "Table", this.resources.Registry())
+	enc := object.NewEncode([]byte{}, 0)
 	err := enc.Add(tbl)
 	if err != nil {
 		this.resources.Logger().Error("Object Table Error: ", err)

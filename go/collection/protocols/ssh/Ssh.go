@@ -2,7 +2,7 @@ package ssh
 
 import (
 	"bytes"
-	poll2 "github.com/saichler/collect/go/collection/poll"
+	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/shared/go/share/interfaces"
@@ -234,10 +234,10 @@ func (sshc *SshCollector) exec(cmd string, timeout int64) (string, error) {
 }
 
 func (sshc *SshCollector) Exec(job *types.Job) {
-	pollCenter := poll2.Poll(sshc.resources)
-	poll := pollCenter.PollByUuid(job.PollUuid)
+	pollCenter := polling.Polling(sshc.resources)
+	poll := pollCenter.PollByName(job.PollName)
 	if poll == nil {
-		sshc.resources.Logger().Error("cannot find poll for uuid ", job.PollUuid)
+		sshc.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
 		return
 	}
 	result, e := sshc.exec(poll.What, job.Timeout)
@@ -260,7 +260,7 @@ func (sshc *SshCollector) Exec(job *types.Job) {
 			break
 		}
 	}
-	enc := object.New([]byte{}, 0, "", sshc.resources.Registry())
+	enc := object.NewEncode([]byte{}, 0)
 	enc.Add(result)
 	job.Result = enc.Data()
 }

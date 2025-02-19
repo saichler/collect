@@ -1,8 +1,8 @@
-package poll
+package polling
 
 import (
 	"errors"
-	"github.com/google/uuid"
+	boot2 "github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/shared/go/share/interfaces"
@@ -11,8 +11,8 @@ import (
 )
 
 type PollCenter struct {
-	uuid2Poll *cache.Cache
-	key2uuid  map[string]string
+	name2Poll *cache.Cache
+	key2Name  map[string]string
 	groups    map[string]map[string]string
 	log       interfaces.ILogger
 	mtx       *sync.RWMutex
@@ -20,19 +20,25 @@ type PollCenter struct {
 
 func newPollCenter(resources interfaces.IResources, listener cache.ICacheListener) *PollCenter {
 	pc := &PollCenter{}
-	pc.uuid2Poll = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
-	pc.key2uuid = make(map[string]string)
+	pc.name2Poll = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
+	pc.key2Name = make(map[string]string)
 	pc.groups = make(map[string]map[string]string)
 	pc.log = resources.Logger()
 	pc.mtx = &sync.RWMutex{}
+
+	boot := boot2.CreateBootPolls()
+	for _, p := range boot {
+		pc.Add(p)
+	}
+
 	return pc
 }
 
-func (this *PollCenter) getPollUuid(key string) (string, bool) {
+func (this *PollCenter) getPollName(key string) (string, bool) {
 	this.mtx.RLock()
 	defer this.mtx.RUnlock()
-	pollUuid, ok := this.key2uuid[key]
-	return pollUuid, ok
+	pollName, ok := this.key2Name[key]
+	return pollName, ok
 }
 
 func (this *PollCenter) getGroup(name string) map[string]string {
@@ -47,18 +53,14 @@ func (this *PollCenter) deleteFromGroup(gEntry map[string]string, key string) {
 	delete(gEntry, key)
 }
 
-func (this *PollCenter) deleteFromKey2Uuid(key string) {
+func (this *PollCenter) deleteFromKey2Name(key string) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
-	delete(this.key2uuid, key)
+	delete(this.key2Name, key)
 }
 
-func (this *PollCenter) deleteExisting(poll *types.Poll, pollUuid, key string) {
-	if poll.Uuid != "" && poll.Uuid != pollUuid {
-		this.log.Error("provided poll uuid is different than the uuid by key for existing poll, ignoring it")
-		poll.Uuid = ""
-	}
-	existPoll := this.uuid2Poll.Get(pollUuid).(*types.Poll)
+func (this *PollCenter) deleteExisting(poll *types.Poll, key string) {
+	existPoll := this.name2Poll.Get(poll.Name).(*types.Poll)
 	if existPoll.Groups != nil {
 		for _, gName := range existPoll.Groups {
 			gEntry := this.getGroup(gName)
@@ -67,8 +69,8 @@ func (this *PollCenter) deleteExisting(poll *types.Poll, pollUuid, key string) {
 			}
 		}
 	}
-	this.deleteFromKey2Uuid(key)
-	this.uuid2Poll.Delete(pollUuid)
+	this.deleteFromKey2Name(key)
+	this.name2Poll.Delete(poll.Name)
 }
 
 func (this *PollCenter) Add(poll *types.Poll) error {
@@ -80,24 +82,18 @@ func (this *PollCenter) Add(poll *types.Poll) error {
 	}
 
 	key := this.PollKey(poll)
-	pollUuid, ok := this.getPollUuid(key)
+	_, ok := this.getPollName(key)
 
 	if ok {
-		this.deleteExisting(poll, pollUuid, key)
-	} else {
-		pollUuid = poll.Uuid
+		this.deleteExisting(poll, key)
 	}
 
-	if pollUuid == "" {
-		pollUuid = uuid.New().String()
-	}
-	poll.Uuid = pollUuid
-	this.uuid2Poll.Put(pollUuid, poll)
+	this.name2Poll.Put(poll.Name, poll)
 
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
 
-	this.key2uuid[key] = pollUuid
+	this.key2Name[key] = poll.Name
 	if poll.Groups != nil {
 		for _, gName := range poll.Groups {
 			gEntry, ok := this.groups[gName]
@@ -115,8 +111,8 @@ func (this *PollCenter) PollKey(poll *types.Poll) string {
 	return pollKey(poll.Name, poll.Vendor, poll.Series, poll.Family, poll.Software, poll.Hardware, poll.Version)
 }
 
-func (this *PollCenter) PollByUuid(uuid string) *types.Poll {
-	poll, _ := this.uuid2Poll.Get(uuid).(*types.Poll)
+func (this *PollCenter) PollByName(name string) *types.Poll {
+	poll, _ := this.name2Poll.Get(name).(*types.Poll)
 	return poll
 }
 
@@ -125,8 +121,8 @@ func (this *PollCenter) PollByKey(args ...string) *types.Poll {
 		return nil
 	}
 	if len(args) == 1 {
-		pollUuid := this.key2uuid[args[0]]
-		poll, _ := this.uuid2Poll.Get(pollUuid).(*types.Poll)
+		pollName := this.key2Name[args[0]]
+		poll, _ := this.name2Poll.Get(pollName).(*types.Poll)
 		return poll
 	}
 	buff := strings.New()
@@ -134,9 +130,9 @@ func (this *PollCenter) PollByKey(args ...string) *types.Poll {
 	for i := 1; i < len(args); i++ {
 		addToKey(args[i], buff)
 	}
-	p, ok := this.getPollUuid(buff.String())
+	p, ok := this.getPollName(buff.String())
 	if ok {
-		poll, _ := this.uuid2Poll.Get(p).(*types.Poll)
+		poll, _ := this.name2Poll.Get(p).(*types.Poll)
 		return poll
 	}
 	return this.PollByKey(args[0 : len(args)-1]...)
@@ -168,7 +164,7 @@ func (this *PollCenter) PollsByGroup(groupName, vendor, series, family, software
 	return result
 }
 
-func Poll(resource interfaces.IResources) *PollCenter {
+func Polling(resource interfaces.IResources) *PollCenter {
 	sp, ok := resource.ServicePoints().ServicePointHandler(TOPIC)
 	if !ok {
 		return nil

@@ -1,4 +1,4 @@
-package poll
+package polling
 
 import "github.com/saichler/shared/go/share/strings"
 
