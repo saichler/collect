@@ -30,6 +30,7 @@ func createVendor() *types.Attribute {
 	attr.InstancePath = "networkbox.info.vendor"
 	attr.Rules = make([]*types.Rule, 0)
 	attr.Rules = append(attr.Rules, createContainsRule("cisco", ".1.3.6.1.2.1.1.1.0", "Cisco"))
+	attr.Rules = append(attr.Rules, createContainsRule("ubuntu", ".1.3.6.1.2.1.1.1.0", "Ubuntu Linux"))
 	return attr
 }
 

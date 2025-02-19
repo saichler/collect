@@ -47,8 +47,14 @@ func TestParsingAndInventory(t *testing.T) {
 		log.Fail(t, "Expected box info to be non-nil")
 		return
 	}
+
 	if box.Info.SysName == "" {
 		log.Fail(t, "Expected box info sysname to not be blank")
+		return
+	}
+
+	if box.Info.Vendor == "" {
+		log.Fail(t, "Expected box vendor to not be blank")
 		return
 	}
 }

@@ -8,6 +8,7 @@ import (
 )
 
 func jobComplete(job *types.Job, resources interfaces.IResources) {
+	//fmt.Println(string(job.Result))
 	pc := polling.Polling(resources)
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
