@@ -39,10 +39,9 @@ func (this *InventoryCenter) setTopic(any interface{}, resources interfaces.IRes
 	ENDPOINT = strings.ToLower(TOPIC)
 }
 
-func (this *InventoryCenter) AddEmpty(key string) interface{} {
+func (this *InventoryCenter) AddEmpty(key string) {
 	elem := reflect.New(this.elemType)
 	field := elem.Elem().FieldByName(this.primaryKeyAttribute)
 	field.Set(reflect.ValueOf(key))
 	this.Add(elem.Interface())
-	return elem.Interface()
 }

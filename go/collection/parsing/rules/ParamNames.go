@@ -8,4 +8,5 @@ const (
 	PropertyId = "propertyid"
 	Start      = "start"
 	Columns    = "columns"
+	KeyColumn  = "key_column"
 )

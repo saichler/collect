@@ -9,7 +9,6 @@ import (
 )
 
 func JobComplete(job *types.Job, resources interfaces.IResources) {
-	fmt.Println(string(job.Result))
 	pc := polling.Polling(resources)
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
@@ -20,9 +19,11 @@ func JobComplete(job *types.Job, resources interfaces.IResources) {
 		inv := inventory.Inventory(resources)
 		elem := inv.ElementByKey(job.DeviceId)
 		if elem == nil {
-			elem = inv.AddEmpty(job.DeviceId)
+			inv.AddEmpty(job.DeviceId)
+			elem = inv.ElementByKey(job.DeviceId)
 		}
 		Parser.Parse(job, elem, resources)
+		fmt.Println(elem)
 		inv.Update(elem)
 	}
 }

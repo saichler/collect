@@ -72,11 +72,12 @@ func createContainsRule(what, from, output string) *types.Rule {
 	return rule
 }
 
-func createToTable(columns int) *types.Rule {
+func createToTable(columns, keycolumn int) *types.Rule {
 	rule := &types.Rule{}
 	rule.Name = "ToTable"
 	rule.Params = make(map[string]*types.Parameter)
 	rule.Params[rules.Columns] = &types.Parameter{Name: rules.Columns, Value: strconv.Itoa(columns)}
+	rule.Params[rules.KeyColumn] = &types.Parameter{Name: rules.KeyColumn, Value: strconv.Itoa(keycolumn)}
 	return rule
 }
 

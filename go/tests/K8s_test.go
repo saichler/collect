@@ -54,6 +54,9 @@ func TestParsingForK8s(t *testing.T) {
 	cli := createClient()
 	sleep()
 
+	par.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
+	par.Resources().Registry().RegisterEnums(types3.PodStatus_value)
+
 	defer func() {
 		cli.Shutdown()
 		par.Shutdown()
@@ -78,6 +81,7 @@ func TestParsingForK8s(t *testing.T) {
 		log.Fail(t, "Expected K8s Cluster to be non-nil")
 		return
 	}
+
 	if k8sCluster.Nodes == nil {
 		log.Fail(t, "Expected K8s Cluster nodes to be non-nil")
 		return
@@ -85,5 +89,25 @@ func TestParsingForK8s(t *testing.T) {
 	if len(k8sCluster.Nodes) != 6 {
 		log.Fail(t, "Expected K8s Cluster nodes to be 6")
 		return
+	}
+
+	if k8sCluster.Pods == nil {
+		log.Fail(t, "Expected K8s Cluster pods to be non-nil")
+		return
+	}
+
+	if len(k8sCluster.Pods) != 17 {
+		log.Fail(t, "Expected K8s Cluster pods to be 17")
+		return
+	}
+	for _, pod := range k8sCluster.Pods {
+		if pod.Status != types3.PodStatus_Running {
+			log.Fail(t, "Expected K8s Pod to be Running ", pod.Status.String())
+			return
+		}
+		if pod.Ready == nil || pod.Ready.Count == 0 {
+			log.Fail(t, "Expected K8s Pod state to be Ready ", pod.Ready.Count, "/", pod.Ready.Outof)
+			return
+		}
 	}
 }

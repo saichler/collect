@@ -17,7 +17,7 @@ func TestCollectionController(t *testing.T) {
 	polling.RegisterPollCenter(resourcs, nil)
 	pc := polling.Polling(resourcs)
 	pc.AddAll(boot.CreateSNMPBootPolls())
-	
+
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = resourcs

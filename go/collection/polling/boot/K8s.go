@@ -5,6 +5,7 @@ import "github.com/saichler/collect/go/types"
 func CreateK8sBootPolls() []*types.Poll {
 	result := make([]*types.Poll, 0)
 	result = append(result, createNodesPoll())
+	result = append(result, createPodsPoll())
 	return result
 }
 
@@ -17,11 +18,29 @@ func createNodesPoll() *types.Poll {
 	return poll
 }
 
+func createPodsPoll() *types.Poll {
+	poll := createBaseK8sPoll("pods", BOOT_GROUP)
+	poll.What = "get pods -A -o wide"
+	poll.Operation = types.Operation__Table
+	poll.Attributes = make([]*types.Attribute, 0)
+	poll.Attributes = append(poll.Attributes, createPodsTable())
+	return poll
+}
+
 func createNodesTable() *types.Attribute {
 	attr := &types.Attribute{}
 	attr.PropertyId = "cluster.nodes"
 	attr.Rules = make([]*types.Rule, 0)
-	attr.Rules = append(attr.Rules, createToTable(10))
+	attr.Rules = append(attr.Rules, createToTable(10, 0))
+	attr.Rules = append(attr.Rules, createTableToMap())
+	return attr
+}
+
+func createPodsTable() *types.Attribute {
+	attr := &types.Attribute{}
+	attr.PropertyId = "cluster.pods"
+	attr.Rules = make([]*types.Rule, 0)
+	attr.Rules = append(attr.Rules, createToTable(10, 6))
 	attr.Rules = append(attr.Rules, createTableToMap())
 	return attr
 }
