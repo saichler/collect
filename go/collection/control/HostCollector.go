@@ -109,7 +109,7 @@ func (this *HostCollector) collect() {
 			}
 			MarkStart(job)
 			this.mtx.Lock()
-			col, ok := this.collectors[int32(poll.Operation)]
+			col, ok := this.collectors[int32(poll.Protocol)]
 			this.mtx.Unlock()
 			if !ok {
 				MarkEnded(job)

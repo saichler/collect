@@ -20,6 +20,8 @@ enum Protocol {
   SNMPV2 = 2;
   RESTCONF = 3;
   NETCONF = 4;
+  GRPC = 5;
+  K8s = 6;
 }
 
 message Poll {
@@ -40,7 +42,7 @@ message Poll {
 }
 
 message Attribute {
-  string instance_path = 1;
+  string property_id = 1;
   repeated Rule rules = 2;
 }
 
@@ -78,6 +80,8 @@ message Config {
   string terminal = 9;
   repeated string terminal_commands = 10;
   int64 timeout = 11;
+  string KubeConfig = 12;
+  string KukeContext = 13;
 }
 
 message Job {
@@ -97,10 +101,10 @@ message Map {
 }
 
 message Table {
-  map<string, string> columns = 1;
-  map<uint32, Row> rows = 2;
+  map<int32, string> columns = 1;
+  map<int32, Row> rows = 2;
 }
 
 message Row {
-  map<string, bytes> data = 1;
+  map<int32, bytes> data = 1;
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/polling/boot"
 	"sync"
 	"testing"
 )
@@ -14,7 +15,9 @@ func TestCollectionController(t *testing.T) {
 
 	config.RegisterConfigCenter(resourcs, nil, nil)
 	polling.RegisterPollCenter(resourcs, nil)
-
+	pc := polling.Polling(resourcs)
+	pc.AddAll(boot.CreateSNMPBootPolls())
+	
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = resourcs

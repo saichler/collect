@@ -5,6 +5,7 @@ import (
 	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/parsing"
 	"github.com/saichler/collect/go/collection/polling"
+	types2 "github.com/saichler/collect/go/types"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	vnic2 "github.com/saichler/layer8/go/overlay/vnic"
 	"github.com/saichler/reflect/go/reflect/inspect"
@@ -14,6 +15,7 @@ import (
 	"github.com/saichler/shared/go/share/resources"
 	"github.com/saichler/shared/go/share/shallow_security"
 	"github.com/saichler/shared/go/types"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -38,7 +40,7 @@ func createSwitch() *vnet.VNet {
 	return sw
 }
 
-func createCollectionService() interfaces.IVirtualNetworkInterface {
+func createCollectionService(polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
@@ -59,13 +61,15 @@ func createCollectionService() interfaces.IVirtualNetworkInterface {
 
 	config.RegisterConfigCenter(resourcs, nil, controller)
 	polling.RegisterPollCenter(resourcs, nil)
+	pc := polling.Polling(resourcs)
+	pc.AddAll(polls)
 
 	vnic.Start()
 
 	return vnic
 }
 
-func createParsingService() interfaces.IVirtualNetworkInterface {
+func createParsingService(pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
@@ -80,7 +84,9 @@ func createParsingService() interfaces.IVirtualNetworkInterface {
 	resourcs.Config().SwitchPort = PORT
 
 	polling.RegisterPollCenter(resourcs, nil)
-	parsing.RegisterParsingServicePoint(resourcs)
+	pc := polling.Polling(resourcs)
+	pc.AddAll(polls)
+	parsing.RegisterParsingServicePoint(pb, key, resourcs)
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

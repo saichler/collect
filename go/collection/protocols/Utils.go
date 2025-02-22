@@ -2,22 +2,22 @@ package protocols
 
 import "github.com/saichler/collect/go/types"
 
-func SetValue(row int, col string, value []byte, tbl *types.Table) {
+func SetValue(row, col int32, colName string, value []byte, tbl *types.Table) {
 	if tbl == nil {
 		return
 	}
 	if tbl.Rows == nil {
-		tbl.Rows = make(map[uint32]*types.Row)
+		tbl.Rows = make(map[int32]*types.Row)
 	}
-	rowData, ok := tbl.Rows[uint32(row)]
+	rowData, ok := tbl.Rows[row]
 	if !ok {
 		rowData = &types.Row{}
-		rowData.Data = make(map[string][]byte)
-		tbl.Rows[uint32(row)] = rowData
+		rowData.Data = make(map[int32][]byte)
+		tbl.Rows[row] = rowData
 	}
 	rowData.Data[col] = value
 	if value != nil && tbl.Columns[col] == "" {
-		tbl.Columns[col] = col
+		tbl.Columns[col] = colName
 	}
 }
 

@@ -111,14 +111,15 @@ func (this *SNMPCollector) table(job *types.Job, pll *types.Poll) {
 		return
 	}
 	tbl := &types.Table{}
-	lastRowIndex := -1
+	var lastRowIndex int32 = -1
 	keys := protocols.Keys(m)
+	var col int32 = 0
 	for _, key := range keys {
-		rowIndex, colIndex := getRowAndCol(key)
+		rowIndex, colIndex := getRowAndColName(key)
 		if rowIndex > lastRowIndex {
 			lastRowIndex = rowIndex
 		}
-		protocols.SetValue(rowIndex, colIndex, m.Data[key], tbl)
+		protocols.SetValue(rowIndex, col, colIndex, m.Data[key], tbl)
 	}
 
 	enc := object.NewEncode([]byte{}, 0)

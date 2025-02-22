@@ -3,6 +3,8 @@ package tests
 import (
 	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/inventory"
+	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/types"
 	types2 "github.com/saichler/shared/go/types"
 	"testing"
 	"time"
@@ -12,9 +14,9 @@ func TestParsingAndInventory(t *testing.T) {
 
 	sw := createSwitch()
 	sleep()
-	col := createCollectionService()
+	col := createCollectionService(boot.CreateSNMPBootPolls())
 	sleep()
-	par := createParsingService()
+	par := createParsingService(&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
 	sleep()
 	cli := createClient()
 	sleep()
@@ -37,7 +39,7 @@ func TestParsingAndInventory(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	ic := inventory.Inventory(par.Resources())
-	box := ic.BoxById(ip)
+	box := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {
 		log.Fail(t, "Expected box to be non-nil")
 		return

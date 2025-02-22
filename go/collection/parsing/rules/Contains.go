@@ -18,10 +18,10 @@ func (this *Contains) ParamNames() []string {
 }
 
 func (this *Contains) Parse(resources interfaces.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
-	input := workSpace["input"]
-	what := params["what"]
-	output := params["output"]
-	path := workSpace["InstancePath"]
+	input := workSpace[Input]
+	what := params[What]
+	output := params[Output]
+	path := workSpace[PropertyId]
 
 	if input == nil {
 		return resources.Logger().Error("nil input for job")
@@ -47,7 +47,7 @@ func (this *Contains) Parse(resources interfaces.IResources, workSpace map[strin
 				}
 			}
 		}
-		workSpace["output"] = output.Value
+		workSpace[Output] = output.Value
 	}
 	return nil
 }

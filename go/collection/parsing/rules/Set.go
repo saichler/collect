@@ -17,8 +17,8 @@ func (this *Set) ParamNames() []string {
 }
 
 func (this *Set) Parse(resources interfaces.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
-	input := workSpace["input"]
-	path := workSpace["InstancePath"]
+	input := workSpace[Input]
+	path := workSpace[PropertyId]
 
 	if input == nil {
 		return resources.Logger().Error("nil input for job")
@@ -38,6 +38,6 @@ func (this *Set) Parse(resources interfaces.IResources, workSpace map[string]int
 			instance.Set(any, str)
 		}
 	}
-	workSpace["output"] = str
+	workSpace[Output] = str
 	return nil
 }

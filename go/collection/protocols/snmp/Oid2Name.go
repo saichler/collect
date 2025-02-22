@@ -37,19 +37,19 @@ func (otn *OidToName) Get(oid string) (string, bool) {
 	return name, true
 }
 
-func getRowAndCol(oid string) (int, string) {
+func getRowAndColName(oid string) (int32, string) {
 	index := strings.LastIndex(oid, ".")
 	if index != -1 {
 		row, _ := strconv.Atoi(oid[index+1:])
 		suboid := oid[0:index]
-		index := strings.LastIndex(suboid, ".")
+		index = strings.LastIndex(suboid, ".")
 		if index != -1 {
 			col := suboid[index+1:]
 			name, ok := Oid2Name.Get(suboid)
 			if ok {
 				col = name
 			}
-			return row, col
+			return int32(row), col
 		}
 	}
 	return -1, ""

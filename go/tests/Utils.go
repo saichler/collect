@@ -2,11 +2,11 @@ package tests
 
 import (
 	"fmt"
+	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/reflect/go/reflect/inspect"
-	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/service_points"
 	"github.com/saichler/shared/go/share/interfaces"
 	"github.com/saichler/shared/go/share/logger"
@@ -33,6 +33,7 @@ type CollectorListener struct {
 	expected  int
 	received  int
 	cond      *sync.Cond
+	ph        *control.DirectParsingHandler
 }
 
 func createResources(alias string) interfaces.IResources {
@@ -51,6 +52,9 @@ func createResources(alias string) interfaces.IResources {
 }
 
 func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
+	if l.ph != nil {
+		l.ph.HandleCollectNotification(job)
+	}
 	pc := polling.Polling(l.resources)
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
@@ -61,33 +65,34 @@ func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
 	defer l.cond.L.Unlock()
 	l.received++
 	var result interface{}
-	if poll.Name == "version" ||
-		poll.Name == "clock" ||
-		poll.Name == "timezone" ||
-		poll.Name == "te-tunnel-id" {
-		result = string(job.Result)
-	} else {
-		enc := object.NewDecode(job.Result, 0, "", l.resources.Registry())
-		val, _ := enc.Get()
-		result = val
-		m := val.(*types.Map)
-		for key, value := range m.Data {
-			enc = object.NewDecode(value, 0, "", l.resources.Registry())
-			v, _ := enc.Get()
-			str, ok := v.(string)
-			if !ok {
-				byts, ok := v.([]byte)
-				if ok {
-					str = string(byts)
+	/*
+		if poll.Name == "version" ||
+			poll.Name == "clock" ||
+			poll.Name == "timezone" ||
+			poll.Name == "te-tunnel-id" {
+			result = string(job.Result)
+		} else {
+			enc := object.NewDecode(job.Result, 0, "", l.resources.Registry())
+			val, _ := enc.Get()
+			result = val
+			m := val.(*types.Map)
+			for key, value := range m.Data {
+				enc = object.NewDecode(value, 0, "", l.resources.Registry())
+				v, _ := enc.Get()
+				str, ok := v.(string)
+				if !ok {
+					byts, ok := v.([]byte)
+					if ok {
+						str = string(byts)
+					}
+				}
+				if str != "" {
+					fmt.Println("key:", key, " value:", str)
+				} else {
+					fmt.Println("key:", key, " value:", v)
 				}
 			}
-			if str != "" {
-				fmt.Println("key:", key, " value:", str)
-			} else {
-				fmt.Println("key:", key, " value:", v)
-			}
-		}
-	}
+		}*/
 	fmt.Println(poll.Name, ":", result)
 	if l.received >= l.expected {
 		l.cond.Broadcast()
@@ -174,6 +179,26 @@ func CreateDevice(ip string) *types.Device {
 	snmpConfig.ReadCommunity = "public"
 
 	host.Configs[int32(snmpConfig.Protocol)] = snmpConfig
+
+	return device
+}
+
+func CreateCluster(kubeconfig, context string) *types.Device {
+	device := &types.Device{}
+	device.Id = context
+	device.Hosts = make(map[string]*types.Host)
+	host := &types.Host{}
+	host.Id = device.Id
+
+	host.Configs = make(map[int32]*types.Config)
+	device.Hosts[device.Id] = host
+
+	k8sConfig := &types.Config{}
+	k8sConfig.KubeConfig = kubeconfig
+	k8sConfig.KukeContext = context
+	k8sConfig.Protocol = types.Protocol_K8s
+
+	host.Configs[int32(k8sConfig.Protocol)] = k8sConfig
 
 	return device
 }

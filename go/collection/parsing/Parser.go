@@ -21,6 +21,10 @@ func newParser() *_Parser {
 	p.rules[con.Name()] = con
 	set := &rules.Set{}
 	p.rules[set.Name()] = set
+	totable := &rules.ToTable{}
+	p.rules[totable.Name()] = totable
+	tableToMap := &rules.TableToMap{}
+	p.rules[tableToMap.Name()] = tableToMap
 	return p
 }
 
@@ -36,10 +40,15 @@ func (this *_Parser) Parse(job *types.Job, any interface{}, resources interfaces
 	if poll == nil {
 		return resources.Logger().Error("cannot find poll for name ", job.PollName)
 	}
-	workSpace["input"] = data
+	workSpace[rules.Input] = data
 	for _, attr := range poll.Attributes {
-		workSpace["InstancePath"] = attr.InstancePath
+		workSpace[rules.PropertyId] = attr.PropertyId
 		for _, rData := range attr.Rules {
+			if rData.Params != nil {
+				for p, v := range rData.Params {
+					workSpace[p] = v.Value
+				}
+			}
 			ruleImpl, ok := this.rules[rData.Name]
 			if !ok {
 				return resources.Logger().Error("Cannot find parsing rule ", rData.Name)

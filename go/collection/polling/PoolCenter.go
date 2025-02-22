@@ -2,7 +2,6 @@ package polling
 
 import (
 	"errors"
-	boot2 "github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/shared/go/share/interfaces"
@@ -25,12 +24,6 @@ func newPollCenter(resources interfaces.IResources, listener cache.ICacheListene
 	pc.groups = make(map[string]map[string]string)
 	pc.log = resources.Logger()
 	pc.mtx = &sync.RWMutex{}
-
-	boot := boot2.CreateBootPolls()
-	for _, p := range boot {
-		pc.Add(p)
-	}
-
 	return pc
 }
 
@@ -71,6 +64,12 @@ func (this *PollCenter) deleteExisting(poll *types.Poll, key string) {
 	}
 	this.deleteFromKey2Name(key)
 	this.name2Poll.Delete(poll.Name)
+}
+
+func (this *PollCenter) AddAll(polls []*types.Poll) {
+	for _, poll := range polls {
+		this.Add(poll)
+	}
 }
 
 func (this *PollCenter) Add(poll *types.Poll) error {

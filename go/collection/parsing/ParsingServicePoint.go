@@ -17,10 +17,10 @@ type ParsingServicePoint struct {
 	resources interfaces.IResources
 }
 
-func RegisterParsingServicePoint(resources interfaces.IResources) {
+func RegisterParsingServicePoint(elem proto.Message, primaryKeyAttr string, resources interfaces.IResources) {
 	this := &ParsingServicePoint{}
 	this.resources = resources
-	inventory.RegisterInventoryCenter(resources, nil)
+	inventory.RegisterInventoryCenter(elem, primaryKeyAttr, resources, nil)
 	err := resources.ServicePoints().RegisterServicePoint(&types.Job{}, this)
 	resources.Registry().Register(&types.Map{})
 	resources.Registry().Register(&types.Table{})
@@ -32,7 +32,7 @@ func RegisterParsingServicePoint(resources interfaces.IResources) {
 func (this *ParsingServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
 	job := pb.(*types.Job)
 	vnic.Resources().Logger().Debug("Job ", job.PollName, " completed!")
-	jobComplete(job, this.resources)
+	JobComplete(job, this.resources)
 	return nil, nil
 }
 func (this *ParsingServicePoint) Put(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {

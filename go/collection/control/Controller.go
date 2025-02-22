@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/collection/common"
 	"github.com/saichler/collect/go/collection/config"
+	"github.com/saichler/collect/go/collection/protocols/k8s"
 	"github.com/saichler/collect/go/collection/protocols/snmp"
 	"github.com/saichler/collect/go/collection/protocols/ssh"
 	"github.com/saichler/collect/go/types"
@@ -36,6 +37,8 @@ func newProtocolCollector(config *types.Config, resource interfaces.IResources) 
 		protocolCollector = &ssh.SshCollector{}
 	} else if config.Protocol == types.Protocol_SNMPV2 {
 		protocolCollector = &snmp.SNMPCollector{}
+	} else if config.Protocol == types.Protocol_K8s {
+		protocolCollector = &k8s.Kubernetes{}
 	} else {
 		return nil, errors.New("Unknown Protocol " + config.Protocol.String())
 	}

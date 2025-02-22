@@ -1,35 +1,45 @@
 package inventory
 
 import (
-	"github.com/saichler/collect/go/types"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/shared/go/share/interfaces"
 	types2 "github.com/saichler/shared/go/types"
+	"reflect"
 )
 
 type InventoryCenter struct {
-	boxes *cache.Cache
+	elements            *cache.Cache
+	elemType            reflect.Type
+	primaryKeyAttribute string
+	resources           interfaces.IResources
 }
 
-func newInventoryCenter(resources interfaces.IResources, listener cache.ICacheListener) *InventoryCenter {
+func newInventoryCenter(primaryKeyAttribute string, element interface{}, resources interfaces.IResources, listener cache.ICacheListener) *InventoryCenter {
 	this := &InventoryCenter{}
-	this.boxes = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
-	node, _ := resources.Introspector().Inspect(&types.NetworkBox{})
-	resources.Introspector().AddDecorator(types2.DecoratorType_Primary, []string{"Id"}, node)
+	this.resources = resources
+	this.primaryKeyAttribute = primaryKeyAttribute
+	this.elements = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
+	node, _ := resources.Introspector().Inspect(element)
+	resources.Introspector().AddDecorator(types2.DecoratorType_Primary, []string{primaryKeyAttribute}, node)
 	return this
 }
 
-func (this *InventoryCenter) Add(box *types.NetworkBox) {
-	this.boxes.Put(box.Id, box)
+func (this *InventoryCenter) Add(elem interface{}) {
+	key := primaryKeyValue(this.primaryKeyAttribute, elem, this.resources)
+	if key != "" {
+		this.elements.Put(key, elem)
+	}
 }
 
-func (this *InventoryCenter) Update(box *types.NetworkBox) {
-	this.boxes.Update(box.Id, box)
+func (this *InventoryCenter) Update(elem interface{}) {
+	key := primaryKeyValue(this.primaryKeyAttribute, elem, this.resources)
+	if key != "" {
+		this.elements.Update(key, elem)
+	}
 }
 
-func (this *InventoryCenter) BoxById(id string) *types.NetworkBox {
-	box, _ := this.boxes.Get(id).(*types.NetworkBox)
-	return box
+func (this *InventoryCenter) ElementByKey(key string) interface{} {
+	return this.elements.Get(key)
 }
 
 func Inventory(resource interfaces.IResources) *InventoryCenter {
