@@ -7,6 +7,7 @@ import (
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/k8s_observer/go/serializers"
 	types3 "github.com/saichler/k8s_observer/go/types"
 	types2 "github.com/saichler/shared/go/types"
 	"sync"
@@ -56,7 +57,12 @@ func TestParsingForK8s(t *testing.T) {
 
 	par.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
 	par.Resources().Registry().RegisterEnums(types3.PodStatus_value)
-
+	info, err := par.Resources().Registry().Info("ReadyState")
+	if err != nil {
+		log.Fail(t, "Error getting registry info")
+		return
+	}
+	info.AddSerializer(&serializers.Ready{})
 	defer func() {
 		cli.Shutdown()
 		par.Shutdown()
