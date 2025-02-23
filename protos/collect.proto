@@ -58,7 +58,8 @@ message Parameter {
 
 message Device {
   string id = 1;
-  map<string, Host> hosts = 2;
+  int32 area = 2;
+  map<string, Host> hosts = 3;
 }
 
 message Host {

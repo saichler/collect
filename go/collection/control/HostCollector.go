@@ -13,13 +13,14 @@ type HostCollector struct {
 	controller *Controller
 	deviceId   string
 	hostId     string
+	area       int32
 	collectors map[int32]common.ProtocolCollector
 	jobsQueue  *JobsQueue
 	mtx        *sync.Mutex
 	running    bool
 }
 
-func newHostCollector(deviceId, hoistId string, controller *Controller) *HostCollector {
+func newHostCollector(deviceId, hoistId string, area int32, controller *Controller) *HostCollector {
 	hc := &HostCollector{}
 	hc.deviceId = deviceId
 	hc.hostId = hoistId
@@ -28,6 +29,7 @@ func newHostCollector(deviceId, hoistId string, controller *Controller) *HostCol
 	hc.jobsQueue = NewJobsQueue(deviceId, hoistId, controller.resources)
 	hc.mtx = &sync.Mutex{}
 	hc.running = true
+	hc.area = area
 	return hc
 }
 
@@ -117,7 +119,7 @@ func (this *HostCollector) collect() {
 			}
 			col.Exec(job)
 			MarkEnded(job)
-			this.controller.jobComplete(job)
+			this.controller.jobComplete(job, this.area)
 		} else {
 			time.Sleep(time.Second * time.Duration(waitTime))
 		}

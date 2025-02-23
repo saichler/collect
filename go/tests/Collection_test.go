@@ -32,7 +32,7 @@ func TestCollectionController(t *testing.T) {
 	cc := config.Configs(resourcs)
 
 	cc.Add(device)
-	cont.StartPolling(device.Id)
+	cont.StartPolling(device.Id, 0)
 	l.cond.L.Lock()
 	defer l.cond.L.Unlock()
 	l.cond.Wait()

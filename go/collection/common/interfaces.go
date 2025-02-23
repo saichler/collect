@@ -6,7 +6,7 @@ import (
 )
 
 type CollectNotificationHandler interface {
-	HandleCollectNotification(job *types.Job)
+	HandleCollectNotification(*types.Job, int32)
 }
 
 type ProtocolCollector interface {
@@ -18,5 +18,5 @@ type ProtocolCollector interface {
 }
 
 type IController interface {
-	StartPolling(deviceId string) error
+	StartPolling(string, int32) error
 }

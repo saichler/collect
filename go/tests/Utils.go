@@ -34,6 +34,7 @@ type CollectorListener struct {
 	received  int
 	cond      *sync.Cond
 	ph        *control.DirectParsingHandler
+	area      int32
 }
 
 func createResources(alias string) interfaces.IResources {
@@ -50,7 +51,7 @@ func createResources(alias string) interfaces.IResources {
 	return ress
 }
 
-func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
+func (l *CollectorListener) HandleCollectNotification(job *types.Job, area int32) {
 	if l.ph != nil {
 		l.ph.HandleCollectNotification(job)
 	}

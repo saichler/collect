@@ -16,6 +16,6 @@ func NewParsingCenterNotifier(nic interfaces.IVirtualNetworkInterface) *ParsingC
 	return jn
 }
 
-func (this *ParsingCenterNotifier) HandleCollectNotification(job *types.Job) {
-	this.nic.Multicast(types2.Action_POST, this.nic.Resources().Config().Area, "Job", job)
+func (this *ParsingCenterNotifier) HandleCollectNotification(job *types.Job, area int32) {
+	this.nic.Multicast(types2.Action_POST, area, "Job", job)
 }

@@ -34,7 +34,7 @@ func (this *ConfigServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualN
 	device := pb.(*types.Device)
 	this.configCenter.Add(device)
 	if this.controller != nil {
-		this.controller.StartPolling(device.Id)
+		this.controller.StartPolling(device.Id, device.Area)
 	}
 	return nil, nil
 }

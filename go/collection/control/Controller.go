@@ -46,14 +46,14 @@ func newProtocolCollector(config *types.Config, resource interfaces.IResources) 
 	return protocolCollector, err
 }
 
-func (this *Controller) StartPolling(deviceId string) error {
+func (this *Controller) StartPolling(deviceId string, area int32) error {
 	cc := config.Configs(this.resources)
 	device := cc.DeviceById(deviceId)
 	if device == nil {
 		return errors.New("device with id " + deviceId + " does not exist")
 	}
 	for _, host := range device.Hosts {
-		hostCol, _ := this.hostCollector(deviceId, host.Id)
+		hostCol, _ := this.hostCollector(deviceId, host.Id, area)
 		hostCol.start()
 	}
 	return nil
@@ -63,7 +63,7 @@ func hcKey(deviceId, hostId string) string {
 	return strings.New(deviceId, hostId).String()
 }
 
-func (this *Controller) hostCollector(deviceId, hostId string) (*HostCollector, bool) {
+func (this *Controller) hostCollector(deviceId, hostId string, area int32) (*HostCollector, bool) {
 	key := hcKey(deviceId, hostId)
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
@@ -71,31 +71,13 @@ func (this *Controller) hostCollector(deviceId, hostId string) (*HostCollector, 
 	if ok {
 		return hc, ok
 	}
-	hc = newHostCollector(deviceId, hostId, this)
+	hc = newHostCollector(deviceId, hostId, area, this)
 	this.hcollectors[key] = hc
 	return hc, ok
 }
 
-func (this *Controller) jobComplete(job *types.Job) {
-	/*
-		pc := polling.Polling(this.resources)
-		poll := pc.PollByUuid(job.PollUuid)
-		if poll == nil {
-			this.resources.Logger().Error("cannot find poll for uuid ", job.PollUuid)
-			return
-		}
-		if job.Error == "" && poll.Attributes != nil {
-			inv := inventory.Inventory(this.resources)
-			box := inv.BoxById(job.DeviceId)
-			if box == nil {
-				box = &types.NetworkBox{}
-				box.Id = job.DeviceId
-				inv.Add(box)
-			}
-			parsing.Parser.Parse(job, box, this.resources)
-			inv.Update(box)
-		}*/
+func (this *Controller) jobComplete(job *types.Job, area int32) {
 	if this.notificationHandler != nil {
-		this.notificationHandler.HandleCollectNotification(job)
+		this.notificationHandler.HandleCollectNotification(job, area)
 	}
 }

@@ -23,7 +23,7 @@ func TestK8sCollector(t *testing.T) {
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = resourcs
-	l.ph = control.NewDirectParsingHandler(nil, resourcs)
+	//l.ph = control.NewDirectParsingHandler(nil, resourcs)
 	cont := control.NewController(l, resourcs)
 
 	config.RegisterConfigCenter(0, resourcs, nil, cont)
@@ -36,7 +36,7 @@ func TestK8sCollector(t *testing.T) {
 	pp.AddAll(boot.CreateK8sBootPolls())
 
 	cc.Add(cluster)
-	cont.StartPolling(cluster.Id)
+	cont.StartPolling(cluster.Id, 0)
 
 	l.cond.L.Lock()
 	defer l.cond.L.Unlock()
