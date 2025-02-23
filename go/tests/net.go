@@ -28,13 +28,12 @@ func createSwitch() *vnet.VNet {
 	config := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "vnet",
-		Topics:      map[string]bool{}}
+		LocalAlias:  "vnet"}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, config)
 
 	res := resources.NewResources(reg, security, sps, log, nil, nil, config, ins)
-	res.Config().SwitchPort = PORT
+	res.Config().VnetPort = PORT
 	sw := vnet.NewVNet(res)
 	sw.Start()
 	return sw
@@ -46,21 +45,20 @@ func createCollectionService(polls []*types2.Poll) interfaces.IVirtualNetworkInt
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "collector",
-		Topics:      map[string]bool{}}
+		LocalAlias:  "collector"}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
-	resourcs.Config().SwitchPort = PORT
+	resourcs.Config().VnetPort = PORT
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 
 	l := control.NewParsingCenterNotifier(vnic)
 	controller := control.NewController(l, resourcs)
 
-	config.RegisterConfigCenter(resourcs, nil, controller)
-	polling.RegisterPollCenter(resourcs, nil)
+	config.RegisterConfigCenter(cfg.Area, resourcs, nil, controller)
+	polling.RegisterPollCenter(cfg.Area, resourcs, nil)
 	pc := polling.Polling(resourcs)
 	pc.AddAll(polls)
 
@@ -75,18 +73,17 @@ func createParsingService(pb proto.Message, key string, polls []*types2.Poll) in
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "parsing",
-		Topics:      map[string]bool{}}
+		LocalAlias:  "parsing"}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
-	resourcs.Config().SwitchPort = PORT
+	resourcs.Config().VnetPort = PORT
 
-	polling.RegisterPollCenter(resourcs, nil)
+	polling.RegisterPollCenter(cfg.Area, resourcs, nil)
 	pc := polling.Polling(resourcs)
 	pc.AddAll(polls)
-	parsing.RegisterParsingServicePoint(pb, key, resourcs)
+	parsing.RegisterParsingServicePoint(cfg.Area, pb, key, resourcs)
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()
@@ -100,13 +97,12 @@ func createClient() interfaces.IVirtualNetworkInterface {
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "parsing",
-		Topics:      map[string]bool{}}
+		LocalAlias:  "parsing"}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
-	resourcs.Config().SwitchPort = PORT
+	resourcs.Config().VnetPort = PORT
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

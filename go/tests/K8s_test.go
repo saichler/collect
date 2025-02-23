@@ -26,8 +26,8 @@ func TestK8sCollector(t *testing.T) {
 	l.ph = control.NewDirectParsingHandler(nil, resourcs)
 	cont := control.NewController(l, resourcs)
 
-	config.RegisterConfigCenter(resourcs, nil, cont)
-	polling.RegisterPollCenter(resourcs, nil)
+	config.RegisterConfigCenter(0, resourcs, nil, cont)
+	polling.RegisterPollCenter(0, resourcs, nil)
 
 	l.expected = 1
 	cc := config.Configs(resourcs)
@@ -77,7 +77,7 @@ func TestParsingForK8s(t *testing.T) {
 
 	cluster := CreateCluster(admin, context)
 
-	cli.Do(types2.Action_POST, config.TOPIC, cluster)
+	cli.Multicast(types2.Action_POST, 0, config.TOPIC, cluster)
 
 	time.Sleep(2 * time.Second)
 

@@ -17,11 +17,11 @@ type ParsingServicePoint struct {
 	resources interfaces.IResources
 }
 
-func RegisterParsingServicePoint(elem proto.Message, primaryKeyAttr string, resources interfaces.IResources) {
+func RegisterParsingServicePoint(area int32, elem proto.Message, primaryKeyAttr string, resources interfaces.IResources) {
 	this := &ParsingServicePoint{}
 	this.resources = resources
-	inventory.RegisterInventoryCenter(elem, primaryKeyAttr, resources, nil)
-	err := resources.ServicePoints().RegisterServicePoint(&types.Job{}, this)
+	inventory.RegisterInventoryCenter(area, elem, primaryKeyAttr, resources, nil)
+	err := resources.ServicePoints().RegisterServicePoint(area, &types.Job{}, this)
 	resources.Registry().Register(&types.Map{})
 	resources.Registry().Register(&types.Table{})
 	if err != nil {

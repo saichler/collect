@@ -14,10 +14,10 @@ type InventoryServicePoint struct {
 	inventoryCenter *InventoryCenter
 }
 
-func RegisterInventoryCenter(elem proto.Message, primaryKey string, resources interfaces.IResources, listener cache.ICacheListener) {
+func RegisterInventoryCenter(area int32, elem proto.Message, primaryKey string, resources interfaces.IResources, listener cache.ICacheListener) {
 	this := &InventoryServicePoint{}
 	this.inventoryCenter = newInventoryCenter(primaryKey, elem, resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(elem, this)
+	err := resources.ServicePoints().RegisterServicePoint(area, elem, this)
 	if err != nil {
 		panic(err)
 	}

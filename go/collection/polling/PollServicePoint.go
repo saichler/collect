@@ -17,10 +17,10 @@ type PollServicePoint struct {
 	pollCenter *PollCenter
 }
 
-func RegisterPollCenter(resources interfaces.IResources, listener cache.ICacheListener) {
+func RegisterPollCenter(area int32, resources interfaces.IResources, listener cache.ICacheListener) {
 	psp := &PollServicePoint{}
 	psp.pollCenter = newPollCenter(resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(&types.Poll{}, psp)
+	err := resources.ServicePoints().RegisterServicePoint(area, &types.Poll{}, psp)
 	if err != nil {
 		panic(err)
 	}

@@ -19,12 +19,12 @@ type ConfigServicePoint struct {
 	controller   common.IController
 }
 
-func RegisterConfigCenter(resources interfaces.IResources, listener cache.ICacheListener,
+func RegisterConfigCenter(area int32, resources interfaces.IResources, listener cache.ICacheListener,
 	controller common.IController) {
 	this := &ConfigServicePoint{}
 	this.controller = controller
 	this.configCenter = newConfigCenter(resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(&types.Device{}, this)
+	err := resources.ServicePoints().RegisterServicePoint(area, &types.Device{}, this)
 	if err != nil {
 		panic(err)
 	}

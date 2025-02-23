@@ -13,8 +13,8 @@ import (
 func TestCollectionController(t *testing.T) {
 	resourcs := createResources("collect")
 
-	config.RegisterConfigCenter(resourcs, nil, nil)
-	polling.RegisterPollCenter(resourcs, nil)
+	config.RegisterConfigCenter(0, resourcs, nil, nil)
+	polling.RegisterPollCenter(0, resourcs, nil)
 	pc := polling.Polling(resourcs)
 	pc.AddAll(boot.CreateSNMPBootPolls())
 

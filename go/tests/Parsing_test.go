@@ -34,7 +34,7 @@ func TestParsingAndInventory(t *testing.T) {
 
 	device := CreateDevice(ip)
 
-	cli.Do(types2.Action_POST, config.TOPIC, device)
+	cli.Multicast(types2.Action_POST, 0, config.TOPIC, device)
 
 	time.Sleep(2 * time.Second)
 

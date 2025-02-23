@@ -42,8 +42,7 @@ func createResources(alias string) interfaces.IResources {
 	cfg := &types2.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  alias,
-		Topics:      map[string]bool{}}
+		LocalAlias:  alias}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
