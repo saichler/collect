@@ -18,7 +18,7 @@ import (
 func TestK8sCollector(t *testing.T) {
 	resourcs := createResources("k8s")
 
-	cluster := CreateCluster("/Users/orlyaicler/admin.conf", "kubernetes-admin@kubernetes")
+	cluster := CreateCluster("/Users/orlyaicler/admin.conf", "kubernetes-admin@kubernetes", 0)
 
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
@@ -46,11 +46,11 @@ func TestK8sCollector(t *testing.T) {
 
 func TestParsingForK8s(t *testing.T) {
 
-	sw := createSwitch()
+	sw := createVNet()
 	sleep()
 	col := createCollectionService(boot.CreateK8sBootPolls())
 	sleep()
-	par := createParsingService(&types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
+	par := createParsingService(0, &types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
 	sleep()
 	cli := createClient()
 	sleep()
@@ -75,7 +75,7 @@ func TestParsingForK8s(t *testing.T) {
 	admin := "/Users/orlyaicler/admin.conf"
 	context := "kubernetes-admin@kubernetes"
 
-	cluster := CreateCluster(admin, context)
+	cluster := CreateCluster(admin, context, 0)
 
 	cli.Multicast(types2.Action_POST, 0, config.TOPIC, cluster)
 

@@ -12,11 +12,11 @@ import (
 
 func TestParsingAndInventory(t *testing.T) {
 
-	sw := createSwitch()
+	sw := createVNet()
 	sleep()
 	col := createCollectionService(boot.CreateSNMPBootPolls())
 	sleep()
-	par := createParsingService(&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
+	par := createParsingService(0, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
 	sleep()
 	cli := createClient()
 	sleep()
@@ -32,7 +32,7 @@ func TestParsingAndInventory(t *testing.T) {
 
 	ip := "192.168.86.179"
 
-	device := CreateDevice(ip)
+	device := CreateDevice(ip, 0)
 
 	cli.Multicast(types2.Action_POST, 0, config.TOPIC, device)
 

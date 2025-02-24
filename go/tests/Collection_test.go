@@ -27,7 +27,7 @@ func TestCollectionController(t *testing.T) {
 		for _, cmd := range cmds {
 			cont.AddUpdateCommand(cmd)
 		}*/
-	device := CreateDevice("192.168.86.179")
+	device := CreateDevice("192.168.86.179", 0)
 	l.expected = 1
 	cc := config.Configs(resourcs)
 

@@ -22,7 +22,7 @@ const (
 	PORT = 30000
 )
 
-func createSwitch() *vnet.VNet {
+func createVNet() *vnet.VNet {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	config := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
@@ -67,13 +67,14 @@ func createCollectionService(polls []*types2.Poll) interfaces.IVirtualNetworkInt
 	return vnic
 }
 
-func createParsingService(pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
+func createParsingService(area int32, pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "parsing"}
+		LocalAlias:  "parsing",
+		Area:        area}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
