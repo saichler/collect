@@ -13,14 +13,14 @@ import (
 
 func TestOneCollectorTwoParsers(t *testing.T) {
 
-	sw := createVNet()
+	sw := createVNet(vNetPort1)
 	sleep()
-	col := createCollectionService(boot.CreateSNMPBootPolls())
+	col := createCollectionService(0, vNetPort1, boot.CreateSNMPBootPolls())
 	sleep()
-	par1 := createParsingService(0, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
-	par2 := createParsingService(1, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
+	par1 := createParsingService(0, vNetPort1, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
+	par2 := createParsingService(1, vNetPort1, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
 	sleep()
-	cli := createClient()
+	cli := createClient(vNetPort1)
 	sleep()
 
 	defer func() {

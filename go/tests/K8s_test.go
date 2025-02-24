@@ -46,13 +46,13 @@ func TestK8sCollector(t *testing.T) {
 
 func TestParsingForK8s(t *testing.T) {
 
-	sw := createVNet()
+	sw := createVNet(vNetPort1)
 	sleep()
-	col := createCollectionService(boot.CreateK8sBootPolls())
+	col := createCollectionService(0, vNetPort1, boot.CreateK8sBootPolls())
 	sleep()
-	par := createParsingService(0, &types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
+	par := createParsingService(0, vNetPort1, &types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
 	sleep()
-	cli := createClient()
+	cli := createClient(vNetPort1)
 	sleep()
 
 	par.Resources().Registry().RegisterEnums(types3.NodeStatus_value)

@@ -18,11 +18,10 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-const (
-	PORT = 30000
-)
+var vNetPort1 uint32 = 30000
+var vNetPort2 uint32 = 40000
 
-func createVNet() *vnet.VNet {
+func createVNet(port uint32) *vnet.VNet {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	config := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
@@ -33,24 +32,26 @@ func createVNet() *vnet.VNet {
 	sps := service_points.NewServicePoints(ins, config)
 
 	res := resources.NewResources(reg, security, sps, log, nil, nil, config, ins)
-	res.Config().VnetPort = PORT
+	res.Config().VnetPort = port
 	sw := vnet.NewVNet(res)
 	sw.Start()
 	return sw
 }
 
-func createCollectionService(polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
+func createCollectionService(area int32, port uint32, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "collector"}
+		LocalAlias:  "collector",
+		Area:        area,
+	}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
-	resourcs.Config().VnetPort = PORT
+	resourcs.Config().VnetPort = port
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 
@@ -67,7 +68,7 @@ func createCollectionService(polls []*types2.Poll) interfaces.IVirtualNetworkInt
 	return vnic
 }
 
-func createParsingService(area int32, pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
+func createParsingService(area int32, port uint32, pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
@@ -79,7 +80,7 @@ func createParsingService(area int32, pb proto.Message, key string, polls []*typ
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
-	resourcs.Config().VnetPort = PORT
+	resourcs.Config().VnetPort = port
 
 	polling.RegisterPollCenter(cfg.Area, resourcs, nil)
 	pc := polling.Polling(resourcs)
@@ -92,7 +93,7 @@ func createParsingService(area int32, pb proto.Message, key string, polls []*typ
 	return vnic
 }
 
-func createClient() interfaces.IVirtualNetworkInterface {
+func createClient(port uint32) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
@@ -103,7 +104,7 @@ func createClient() interfaces.IVirtualNetworkInterface {
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
-	resourcs.Config().VnetPort = PORT
+	resourcs.Config().VnetPort = port
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

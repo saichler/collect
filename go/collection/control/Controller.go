@@ -21,6 +21,7 @@ type Controller struct {
 }
 
 func NewController(handler common.CollectNotificationHandler, resources interfaces.IResources) *Controller {
+	resources.Logger().Debug("*** Creating new controller for vnet ", resources.Config().VnetPort)
 	controller := &Controller{}
 	controller.resources = resources
 	controller.hcollectors = make(map[string]*HostCollector)
