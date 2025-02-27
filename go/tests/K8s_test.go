@@ -77,7 +77,7 @@ func TestParsingForK8s(t *testing.T) {
 
 	cluster := CreateCluster(admin, context, 0)
 
-	cli.Multicast(types2.Action_POST, 0, config.TOPIC, cluster)
+	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, cluster)
 
 	time.Sleep(2 * time.Second)
 

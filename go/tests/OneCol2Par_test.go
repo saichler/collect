@@ -41,8 +41,8 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	//assign device 2 to parser in area 1
 	device2 := CreateDevice(ip2, 1)
 
-	cli.Multicast(types2.Action_POST, 0, config.TOPIC, device1)
-	cli.Multicast(types2.Action_POST, 0, config.TOPIC, device2)
+	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, device1)
+	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, device2)
 
 	time.Sleep(2 * time.Second)
 

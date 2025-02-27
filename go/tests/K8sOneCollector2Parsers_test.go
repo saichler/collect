@@ -61,8 +61,8 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
-	cli.Multicast(types2.Action_POST, 0, config.TOPIC, cluster1)
-	cli.Multicast(types2.Action_POST, 0, config.TOPIC, cluster2)
+	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, cluster1)
+	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, cluster2)
 
 	time.Sleep(2 * time.Second)
 
