@@ -17,5 +17,5 @@ func NewParsingCenterNotifier(nic interfaces.IVirtualNetworkInterface) *ParsingC
 }
 
 func (this *ParsingCenterNotifier) HandleCollectNotification(job *types.Job, area int32) {
-	this.nic.Multicast(types2.Action_POST, area, "Job", job)
+	this.nic.Multicast(types2.CastMode_All, types2.Action_POST, area, "Job", job)
 }
