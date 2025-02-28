@@ -26,24 +26,24 @@ func RegisterPollCenter(area int32, resources interfaces.IResources, listener ca
 	}
 }
 
-func (this *PollServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *PollServicePoint) Post(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	hp := pb.(*types.Poll)
 	this.pollCenter.Add(hp)
 	return nil, nil
 }
-func (this *PollServicePoint) Put(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *PollServicePoint) Put(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *PollServicePoint) Patch(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *PollServicePoint) Patch(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *PollServicePoint) Delete(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *PollServicePoint) Delete(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *PollServicePoint) Get(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *PollServicePoint) Get(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *PollServicePoint) Failed(pb proto.Message, vnic interfaces.IVirtualNetworkInterface, msg *types2.Message) (proto.Message, error) {
+func (this *PollServicePoint) Failed(pb proto.Message, resourcs interfaces.IResources, msg *types2.Message) (proto.Message, error) {
 	return nil, nil
 }
 func (this *PollServicePoint) EndPoint() string {

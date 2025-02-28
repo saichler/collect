@@ -30,7 +30,7 @@ func RegisterConfigCenter(area int32, resources interfaces.IResources, listener 
 	}
 }
 
-func (this *ConfigServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ConfigServicePoint) Post(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	device := pb.(*types.Device)
 	this.configCenter.Add(device)
 	if this.controller != nil {
@@ -38,19 +38,19 @@ func (this *ConfigServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualN
 	}
 	return nil, nil
 }
-func (this *ConfigServicePoint) Put(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ConfigServicePoint) Put(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ConfigServicePoint) Patch(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ConfigServicePoint) Patch(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ConfigServicePoint) Delete(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ConfigServicePoint) Delete(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ConfigServicePoint) Get(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ConfigServicePoint) Get(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ConfigServicePoint) Failed(pb proto.Message, vnic interfaces.IVirtualNetworkInterface, msg *types2.Message) (proto.Message, error) {
+func (this *ConfigServicePoint) Failed(pb proto.Message, resourcs interfaces.IResources, msg *types2.Message) (proto.Message, error) {
 	return nil, nil
 }
 func (this *ConfigServicePoint) EndPoint() string {

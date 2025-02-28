@@ -24,23 +24,23 @@ func RegisterInventoryCenter(area int32, elem proto.Message, primaryKey string, 
 	this.inventoryCenter.setTopic(elem, resources)
 }
 
-func (this *InventoryServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *InventoryServicePoint) Post(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	this.inventoryCenter.Add(pb)
 	return nil, nil
 }
-func (this *InventoryServicePoint) Put(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *InventoryServicePoint) Put(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *InventoryServicePoint) Patch(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *InventoryServicePoint) Patch(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *InventoryServicePoint) Delete(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *InventoryServicePoint) Delete(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *InventoryServicePoint) Get(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *InventoryServicePoint) Get(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *InventoryServicePoint) Failed(pb proto.Message, vnic interfaces.IVirtualNetworkInterface, msg *types.Message) (proto.Message, error) {
+func (this *InventoryServicePoint) Failed(pb proto.Message, resourcs interfaces.IResources, msg *types.Message) (proto.Message, error) {
 	return nil, nil
 }
 func (this *InventoryServicePoint) EndPoint() string {

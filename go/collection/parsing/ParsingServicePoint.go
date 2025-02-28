@@ -29,25 +29,25 @@ func RegisterParsingServicePoint(area int32, elem proto.Message, primaryKeyAttr 
 	}
 }
 
-func (this *ParsingServicePoint) Post(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ParsingServicePoint) Post(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	job := pb.(*types.Job)
-	vnic.Resources().Logger().Debug("Job ", job.PollName, " completed!")
+	resourcs.Logger().Debug("Job ", job.PollName, " completed!")
 	JobComplete(job, this.resources)
 	return nil, nil
 }
-func (this *ParsingServicePoint) Put(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ParsingServicePoint) Put(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ParsingServicePoint) Patch(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ParsingServicePoint) Patch(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ParsingServicePoint) Delete(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ParsingServicePoint) Delete(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ParsingServicePoint) Get(pb proto.Message, vnic interfaces.IVirtualNetworkInterface) (proto.Message, error) {
+func (this *ParsingServicePoint) Get(pb proto.Message, resourcs interfaces.IResources) (proto.Message, error) {
 	return nil, nil
 }
-func (this *ParsingServicePoint) Failed(pb proto.Message, vnic interfaces.IVirtualNetworkInterface, msg *types2.Message) (proto.Message, error) {
+func (this *ParsingServicePoint) Failed(pb proto.Message, resourcs interfaces.IResources, msg *types2.Message) (proto.Message, error) {
 	return nil, nil
 }
 func (this *ParsingServicePoint) EndPoint() string {
