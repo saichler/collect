@@ -56,9 +56,9 @@ func TestK8s2Collector2Parsers2Vnet(t *testing.T) {
 
 	sleep()
 
-	admin1 := "/Users/orlyaicler/admin.conf"
+	admin1 := home + "/admin.conf"
 	context1 := "kubernetes-admin@kubernetes"
-	admin2 := "/Users/orlyaicler/lab.conf"
+	admin2 := home + "/lab.conf"
 	context2 := "lab"
 
 	cluster1 := CreateCluster(admin1, context1, 0)

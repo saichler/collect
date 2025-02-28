@@ -72,7 +72,7 @@ func TestParsingForK8s(t *testing.T) {
 
 	sleep()
 
-	admin := "/Users/orlyaicler/admin.conf"
+	admin := home + "/admin.conf"
 	context := "kubernetes-admin@kubernetes"
 
 	cluster := CreateCluster(admin, context, 0)

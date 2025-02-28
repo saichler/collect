@@ -14,11 +14,13 @@ import (
 	"github.com/saichler/shared/go/share/resources"
 	"github.com/saichler/shared/go/share/shallow_security"
 	types2 "github.com/saichler/shared/go/types"
+	"os"
 	"sync"
 	"time"
 )
 
 var log = logger.NewLoggerDirectImpl(&logger.FmtLogMethod{})
+var home, _ = os.LookupEnv("HOME")
 
 func init() {
 	protocol.UsingContainers = false
