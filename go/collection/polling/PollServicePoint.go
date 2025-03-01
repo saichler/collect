@@ -52,3 +52,4 @@ func (this *PollServicePoint) EndPoint() string {
 func (this *PollServicePoint) Topic() string {
 	return TOPIC
 }
+func (this *PollServicePoint) Transactional() bool { return false }

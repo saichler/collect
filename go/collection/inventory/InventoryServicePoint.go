@@ -49,3 +49,4 @@ func (this *InventoryServicePoint) EndPoint() string {
 func (this *InventoryServicePoint) Topic() string {
 	return TOPIC
 }
+func (this *InventoryServicePoint) Transactional() bool { return false }

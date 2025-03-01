@@ -56,3 +56,4 @@ func (this *ParsingServicePoint) EndPoint() string {
 func (this *ParsingServicePoint) Topic() string {
 	return TOPIC
 }
+func (this *ParsingServicePoint) Transactional() bool { return false }

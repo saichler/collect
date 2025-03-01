@@ -38,15 +38,13 @@ func createVNet(port uint32) *vnet.VNet {
 	return sw
 }
 
-func createCollectionService(area int32, port uint32, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
+func createCollectionService(vlanId int32, port uint32, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "collector",
-		Area:        area,
-	}
+		LocalAlias:  "collector"}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
@@ -58,8 +56,8 @@ func createCollectionService(area int32, port uint32, polls []*types2.Poll) inte
 	l := control.NewParsingCenterNotifier(vnic)
 	controller := control.NewController(l, resourcs)
 
-	config.RegisterConfigCenter(cfg.Area, resourcs, nil, controller)
-	polling.RegisterPollCenter(cfg.Area, resourcs, nil)
+	config.RegisterConfigCenter(vlanId, resourcs, nil, controller)
+	polling.RegisterPollCenter(vlanId, resourcs, nil)
 	pc := polling.Polling(resourcs)
 	pc.AddAll(polls)
 
@@ -68,24 +66,23 @@ func createCollectionService(area int32, port uint32, polls []*types2.Poll) inte
 	return vnic
 }
 
-func createParsingService(area int32, port uint32, pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
+func createParsingService(vlanId int32, port uint32, pb proto.Message, key string, polls []*types2.Poll) interfaces.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	security := shallow_security.CreateShallowSecurityProvider()
 	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  "parsing",
-		Area:        area}
+		LocalAlias:  "parsing"}
 	ins := inspect.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
 	resourcs.Config().VnetPort = port
 
-	polling.RegisterPollCenter(cfg.Area, resourcs, nil)
+	polling.RegisterPollCenter(vlanId, resourcs, nil)
 	pc := polling.Polling(resourcs)
 	pc.AddAll(polls)
-	parsing.RegisterParsingServicePoint(cfg.Area, pb, key, resourcs)
+	parsing.RegisterParsingServicePoint(vlanId, pb, key, resourcs)
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

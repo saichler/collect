@@ -59,3 +59,4 @@ func (this *ConfigServicePoint) EndPoint() string {
 func (this *ConfigServicePoint) Topic() string {
 	return TOPIC
 }
+func (this *ConfigServicePoint) Transactional() bool { return false }

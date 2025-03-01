@@ -13,7 +13,7 @@ GOPROXY=direct go mod tidy
 go mod vendor
 
 # Run unit tests with coverage
-#go test -tags=unit -v -coverpkg=./collection/... -coverprofile=cover.html ./... --failfast
+go test -tags=unit -v -coverpkg=./collection/... -coverprofile=cover.html ./... --failfast
 
 # Open the coverage report in a browser
-#go tool cover -html=cover.html
+go tool cover -html=cover.html
