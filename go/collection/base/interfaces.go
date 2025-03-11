@@ -1,8 +1,8 @@
-package common
+package base
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 )
 
 type CollectNotificationHandler interface {
@@ -10,7 +10,7 @@ type CollectNotificationHandler interface {
 }
 
 type ProtocolCollector interface {
-	Init(*types.Config, interfaces.IResources) error
+	Init(*types.Config, common.IResources) error
 	Protocol() types.Protocol
 	Exec(*types.Job)
 	Connect() error

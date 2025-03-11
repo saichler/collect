@@ -4,17 +4,17 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"strconv"
 )
 
 type ParsingRule interface {
 	Name() string
 	ParamNames() []string
-	Parse(interfaces.IResources, map[string]interface{}, map[string]*types.Parameter, interface{}) error
+	Parse(common.IResources, map[string]interface{}, map[string]*types.Parameter, interface{}) error
 }
 
-func getStringInput(resources interfaces.IResources, input interface{}, params map[string]*types.Parameter) (string, error) {
+func getStringInput(resources common.IResources, input interface{}, params map[string]*types.Parameter) (string, error) {
 	m, ok := input.(*types.Map)
 	if ok {
 		from := params[From]

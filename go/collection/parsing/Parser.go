@@ -5,7 +5,7 @@ import (
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 )
 
 type _Parser struct {
@@ -28,7 +28,7 @@ func newParser() *_Parser {
 	return p
 }
 
-func (this *_Parser) Parse(job *types.Job, any interface{}, resources interfaces.IResources) error {
+func (this *_Parser) Parse(job *types.Job, any interface{}, resources common.IResources) error {
 	workSpace := make(map[string]interface{})
 	enc := object.NewDecode(job.Result, 0, "", resources.Registry())
 	data, err := enc.Get()

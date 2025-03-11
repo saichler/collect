@@ -5,9 +5,9 @@ import (
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/interfaces"
 	"github.com/saichler/shared/go/share/queues"
 	strings2 "github.com/saichler/shared/go/share/strings"
+	"github.com/saichler/types/go/common"
 	ssh2 "golang.org/x/crypto/ssh"
 	"io"
 	"strconv"
@@ -19,7 +19,7 @@ import (
 var CR = []byte("\n")
 
 type SshCollector struct {
-	resources interfaces.IResources
+	resources common.IResources
 	config    *types.Config
 	client    *ssh2.Client
 	session   *ssh2.Session
@@ -35,7 +35,7 @@ func (sshc *SshCollector) Protocol() types.Protocol {
 	return types.Protocol_SSH
 }
 
-func (sshc *SshCollector) Init(conf *types.Config, resources interfaces.IResources) error {
+func (sshc *SshCollector) Init(conf *types.Config, resources common.IResources) error {
 	sshc.config = conf
 	sshc.resources = resources
 	sshc.queue = queues.NewQueue("SSh Collector", 1024)

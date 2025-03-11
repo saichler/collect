@@ -5,8 +5,9 @@ import (
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
-	types2 "github.com/saichler/shared/go/types"
+	. "github.com/saichler/shared/go/tests/infra"
+	"github.com/saichler/types/go/common"
+	types2 "github.com/saichler/types/go/types"
 	"testing"
 	"time"
 )
@@ -54,26 +55,26 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	}
 }
 
-func checkInventory(ip string, resours interfaces.IResources, t *testing.T) bool {
+func checkInventory(ip string, resours common.IResources, t *testing.T) bool {
 	ic := inventory.Inventory(resours)
 	box := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {
-		log.Fail(t, ip, " Expected box to be non-nil")
+		Log.Fail(t, ip, " Expected box to be non-nil")
 		return false
 	}
 
 	if box.Info == nil {
-		log.Fail(t, ip, " Expected box info to be non-nil")
+		Log.Fail(t, ip, " Expected box info to be non-nil")
 		return false
 	}
 
 	if box.Info.SysName == "" {
-		log.Fail(t, ip, " Expected box info sysname to not be blank")
+		Log.Fail(t, ip, " Expected box info sysname to not be blank")
 		return false
 	}
 
 	if box.Info.Vendor == "" {
-		log.Fail(t, ip, " Expected box vendor to not be blank")
+		Log.Fail(t, ip, " Expected box vendor to not be blank")
 		return false
 	}
 	return true

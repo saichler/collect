@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"sync"
 	"time"
 )
@@ -15,10 +15,10 @@ type JobsQueue struct {
 	jobs      []*types.Job
 	jobsMap   map[string]*types.Job
 	mtx       *sync.Mutex
-	resources interfaces.IResources
+	resources common.IResources
 }
 
-func NewJobsQueue(deviceId, hostId string, resources interfaces.IResources) *JobsQueue {
+func NewJobsQueue(deviceId, hostId string, resources common.IResources) *JobsQueue {
 	jq := &JobsQueue{}
 	jq.resources = resources
 	jq.mtx = &sync.Mutex{}

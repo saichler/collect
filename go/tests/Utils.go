@@ -6,20 +6,18 @@ import (
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/layer8/go/overlay/protocol"
-	"github.com/saichler/reflect/go/reflect/inspect"
+	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/servicepoints/go/points/service_points"
-	"github.com/saichler/shared/go/share/interfaces"
-	"github.com/saichler/shared/go/share/logger"
 	"github.com/saichler/shared/go/share/registry"
 	"github.com/saichler/shared/go/share/resources"
-	"github.com/saichler/shared/go/share/shallow_security"
-	types2 "github.com/saichler/shared/go/types"
+	. "github.com/saichler/shared/go/tests/infra"
+	"github.com/saichler/types/go/common"
+	types2 "github.com/saichler/types/go/types"
 	"os"
 	"sync"
 	"time"
 )
 
-var log = logger.NewLoggerDirectImpl(&logger.FmtLogMethod{})
 var home, _ = os.LookupEnv("HOME")
 
 func init() {
@@ -31,7 +29,7 @@ func sleep() {
 }
 
 type CollectorListener struct {
-	resources interfaces.IResources
+	resources common.IResources
 	expected  int
 	received  int
 	cond      *sync.Cond
@@ -39,17 +37,20 @@ type CollectorListener struct {
 	area      int32
 }
 
-func createResources(alias string) interfaces.IResources {
+func createResources(alias string) common.IResources {
 	reg := registry.NewRegistry()
-	security := shallow_security.CreateShallowSecurityProvider()
+	secure, err := common.LoadSecurityProvider("security.so")
+	if err != nil {
+		panic("Failed to load security provider")
+	}
 	cfg := &types2.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:  alias}
-	ins := inspect.NewIntrospect(reg)
+	ins := introspecting.NewIntrospect(reg)
 	sps := service_points.NewServicePoints(ins, cfg)
 
-	ress := resources.NewResources(reg, security, sps, log, nil, nil, cfg, ins)
+	ress := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
 	return ress
 }
 

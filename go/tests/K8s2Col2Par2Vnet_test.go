@@ -5,7 +5,8 @@ import (
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/k8s_observer/go/serializers"
 	types3 "github.com/saichler/k8s_observer/go/types"
-	types2 "github.com/saichler/shared/go/types"
+	. "github.com/saichler/shared/go/tests/infra"
+	types2 "github.com/saichler/types/go/types"
 	"testing"
 	"time"
 )
@@ -32,14 +33,14 @@ func TestK8s2Collector2Parsers2Vnet(t *testing.T) {
 
 	info, err := par1.Resources().Registry().Info("ReadyState")
 	if err != nil {
-		log.Fail(t, "Error getting registry info")
+		Log.Fail(t, "Error getting registry info")
 		return
 	}
 	info.AddSerializer(&serializers.Ready{})
 
 	info, err = par2.Resources().Registry().Info("ReadyState")
 	if err != nil {
-		log.Fail(t, "Error getting registry info")
+		Log.Fail(t, "Error getting registry info")
 		return
 	}
 	info.AddSerializer(&serializers.Ready{})

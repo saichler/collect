@@ -1,7 +1,7 @@
 package control
 
 import (
-	"github.com/saichler/collect/go/collection/common"
+	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/collection/polling/boot"
@@ -14,7 +14,7 @@ type HostCollector struct {
 	deviceId   string
 	hostId     string
 	area       int32
-	collectors map[int32]common.ProtocolCollector
+	collectors map[int32]base.ProtocolCollector
 	jobsQueue  *JobsQueue
 	mtx        *sync.Mutex
 	running    bool
@@ -24,7 +24,7 @@ func newHostCollector(deviceId, hoistId string, area int32, controller *Controll
 	hc := &HostCollector{}
 	hc.deviceId = deviceId
 	hc.hostId = hoistId
-	hc.collectors = make(map[int32]common.ProtocolCollector)
+	hc.collectors = make(map[int32]base.ProtocolCollector)
 	hc.controller = controller
 	hc.jobsQueue = NewJobsQueue(deviceId, hoistId, controller.resources)
 	hc.mtx = &sync.Mutex{}

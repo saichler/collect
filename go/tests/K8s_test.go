@@ -9,7 +9,8 @@ import (
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/k8s_observer/go/serializers"
 	types3 "github.com/saichler/k8s_observer/go/types"
-	types2 "github.com/saichler/shared/go/types"
+	. "github.com/saichler/shared/go/tests/infra"
+	types2 "github.com/saichler/types/go/types"
 	"sync"
 	"testing"
 	"time"
@@ -59,7 +60,7 @@ func TestParsingForK8s(t *testing.T) {
 	par.Resources().Registry().RegisterEnums(types3.PodStatus_value)
 	info, err := par.Resources().Registry().Info("ReadyState")
 	if err != nil {
-		log.Fail(t, "Error getting registry info")
+		Log.Fail(t, "Error getting registry info")
 		return
 	}
 	info.AddSerializer(&serializers.Ready{})
@@ -84,35 +85,35 @@ func TestParsingForK8s(t *testing.T) {
 	ic := inventory.Inventory(par.Resources())
 	k8sCluster := ic.ElementByKey(context).(*types3.Cluster)
 	if k8sCluster == nil {
-		log.Fail(t, "Expected K8s Cluster to be non-nil")
+		Log.Fail(t, "Expected K8s Cluster to be non-nil")
 		return
 	}
 
 	if k8sCluster.Nodes == nil {
-		log.Fail(t, "Expected K8s Cluster nodes to be non-nil")
+		Log.Fail(t, "Expected K8s Cluster nodes to be non-nil")
 		return
 	}
 	if len(k8sCluster.Nodes) != 6 {
-		log.Fail(t, "Expected K8s Cluster nodes to be 6")
+		Log.Fail(t, "Expected K8s Cluster nodes to be 6")
 		return
 	}
 
 	if k8sCluster.Pods == nil {
-		log.Fail(t, "Expected K8s Cluster pods to be non-nil")
+		Log.Fail(t, "Expected K8s Cluster pods to be non-nil")
 		return
 	}
 
 	if len(k8sCluster.Pods) != 17 {
-		log.Fail(t, "Expected K8s Cluster pods to be 17")
+		Log.Fail(t, "Expected K8s Cluster pods to be 17")
 		return
 	}
 	for _, pod := range k8sCluster.Pods {
 		if pod.Status != types3.PodStatus_Running {
-			log.Fail(t, "Expected K8s Pod to be Running ", pod.Status.String())
+			Log.Fail(t, "Expected K8s Pod to be Running ", pod.Status.String())
 			return
 		}
 		if pod.Ready == nil || pod.Ready.Count == 0 {
-			log.Fail(t, "Expected K8s Pod state to be Ready ", pod.Ready.Count, "/", pod.Ready.Outof)
+			Log.Fail(t, "Expected K8s Pod state to be Ready ", pod.Ready.Count, "/", pod.Ready.Outof)
 			return
 		}
 	}

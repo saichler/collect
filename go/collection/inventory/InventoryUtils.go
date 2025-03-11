@@ -1,12 +1,12 @@
 package inventory
 
 import (
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 	"reflect"
 	"strings"
 )
 
-func primaryKeyValue(attr string, any interface{}, resources interfaces.IResources) string {
+func primaryKeyValue(attr string, any interface{}, resources common.IResources) string {
 	if any == nil {
 		resources.Logger().Error("element is nil")
 		return ""
@@ -24,7 +24,7 @@ func primaryKeyValue(attr string, any interface{}, resources interfaces.IResourc
 	return field.String()
 }
 
-func (this *InventoryCenter) setTopic(any interface{}, resources interfaces.IResources) {
+func (this *InventoryCenter) setTopic(any interface{}, resources common.IResources) {
 	if any == nil {
 		resources.Logger().Error("element is nil")
 		return

@@ -3,15 +3,15 @@ package control
 import (
 	"github.com/saichler/collect/go/collection/parsing"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/types/go/common"
 )
 
 type DirectParsingHandler struct {
-	resources interfaces.IResources
+	resources common.IResources
 	any       interface{}
 }
 
-func NewDirectParsingHandler(any interface{}, resources interfaces.IResources) *DirectParsingHandler {
+func NewDirectParsingHandler(any interface{}, resources common.IResources) *DirectParsingHandler {
 	handler := &DirectParsingHandler{}
 	handler.resources = resources
 	handler.any = any

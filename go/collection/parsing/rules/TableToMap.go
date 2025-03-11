@@ -3,10 +3,10 @@ package rules
 import (
 	"errors"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/reflect/go/reflect/property"
+	"github.com/saichler/reflect/go/reflect/properties"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/interfaces"
 	strings2 "github.com/saichler/shared/go/share/strings"
+	"github.com/saichler/types/go/common"
 	"reflect"
 	"strings"
 )
@@ -21,7 +21,7 @@ func (this *TableToMap) ParamNames() []string {
 	return []string{""}
 }
 
-func (this *TableToMap) Parse(resources interfaces.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
+func (this *TableToMap) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
 	table, ok := workSpace[Output].(*types.Table)
 	if !ok {
 		return errors.New("Workspace had an invalid output object")
@@ -53,7 +53,7 @@ func (this *TableToMap) Parse(resources interfaces.IResources, workSpace map[str
 			attrName := getAttributeNameFromColumn(table.Columns[int32(i)])
 			key.Add(attrName)
 
-			prop, err := property.PropertyOf(key.String(), resources.Introspector())
+			prop, err := properties.PropertyOf(key.String(), resources.Introspector())
 			if err != nil {
 				resources.Logger().Error(err.Error())
 				continue
@@ -86,7 +86,7 @@ func removeChar(colName, c string) string {
 	return strings2.New(colName[0:index], colName[index+1:]).String()
 }
 
-func getValue(data []byte, resources interfaces.IResources) interface{} {
+func getValue(data []byte, resources common.IResources) interface{} {
 	if len(data) == 0 {
 		return nil
 	}

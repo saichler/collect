@@ -6,14 +6,14 @@ import (
 	"github.com/saichler/collect/go/collection/protocols"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/interfaces"
 	strings2 "github.com/saichler/shared/go/share/strings"
+	"github.com/saichler/types/go/common"
 	"strconv"
 	"time"
 )
 
 type SNMPCollector struct {
-	resources interfaces.IResources
+	resources common.IResources
 	config    *types.Config
 	agent     *gosnmp.GoSNMP
 	connected bool
@@ -23,7 +23,7 @@ func (this *SNMPCollector) Protocol() types.Protocol {
 	return types.Protocol_SNMPV2
 }
 
-func (this *SNMPCollector) Init(conf *types.Config, resources interfaces.IResources) error {
+func (this *SNMPCollector) Init(conf *types.Config, resources common.IResources) error {
 	this.config = conf
 	this.resources = resources
 	this.agent = &gosnmp.GoSNMP{}

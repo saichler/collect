@@ -6,8 +6,9 @@ import (
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/k8s_observer/go/serializers"
 	types3 "github.com/saichler/k8s_observer/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
-	types2 "github.com/saichler/shared/go/types"
+	. "github.com/saichler/shared/go/tests/infra"
+	"github.com/saichler/types/go/common"
+	types2 "github.com/saichler/types/go/types"
 	"testing"
 	"time"
 )
@@ -31,14 +32,14 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 
 	info, err := par1.Resources().Registry().Info("ReadyState")
 	if err != nil {
-		log.Fail(t, "Error getting registry info")
+		Log.Fail(t, "Error getting registry info")
 		return
 	}
 	info.AddSerializer(&serializers.Ready{})
 
 	info, err = par2.Resources().Registry().Info("ReadyState")
 	if err != nil {
-		log.Fail(t, "Error getting registry info")
+		Log.Fail(t, "Error getting registry info")
 		return
 	}
 	info.AddSerializer(&serializers.Ready{})
@@ -75,39 +76,39 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	}
 }
 
-func checkCluster(resourcs interfaces.IResources, context string, t *testing.T) bool {
+func checkCluster(resourcs common.IResources, context string, t *testing.T) bool {
 	ic := inventory.Inventory(resourcs)
 	k8sCluster := ic.ElementByKey(context).(*types3.Cluster)
 	if k8sCluster == nil {
-		log.Fail(t, context, " Expected K8s Cluster to be non-nil")
+		Log.Fail(t, context, " Expected K8s Cluster to be non-nil")
 		return false
 	}
 
 	if k8sCluster.Nodes == nil {
-		log.Fail(t, context, " Expected K8s Cluster nodes to be non-nil")
+		Log.Fail(t, context, " Expected K8s Cluster nodes to be non-nil")
 		return false
 	}
 	if len(k8sCluster.Nodes) != 6 {
-		log.Fail(t, context, " Expected K8s Cluster nodes to be 6")
+		Log.Fail(t, context, " Expected K8s Cluster nodes to be 6")
 		return false
 	}
 
 	if k8sCluster.Pods == nil {
-		log.Fail(t, context, " Expected K8s Cluster pods to be non-nil")
+		Log.Fail(t, context, " Expected K8s Cluster pods to be non-nil")
 		return false
 	}
 
 	if len(k8sCluster.Pods) != 17 {
-		log.Fail(t, context, " Expected K8s Cluster pods to be 17")
+		Log.Fail(t, context, " Expected K8s Cluster pods to be 17")
 		return false
 	}
 	for _, pod := range k8sCluster.Pods {
 		if pod.Status != types3.PodStatus_Running {
-			log.Fail(t, context, " Expected K8s Pod to be Running ", pod.Status.String())
+			Log.Fail(t, context, " Expected K8s Pod to be Running ", pod.Status.String())
 			return false
 		}
 		if pod.Ready == nil || pod.Ready.Count == 0 {
-			log.Fail(t, context, " Expected K8s Pod state to be Ready ", pod.Ready.Count, "/", pod.Ready.Outof)
+			Log.Fail(t, context, " Expected K8s Pod state to be Ready ", pod.Ready.Count, "/", pod.Ready.Outof)
 			return false
 		}
 	}

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/servicepoints/go/points/cache"
-	"github.com/saichler/shared/go/share/interfaces"
 	"github.com/saichler/shared/go/share/strings"
+	"github.com/saichler/types/go/common"
 	"sync"
 )
 
@@ -13,11 +13,11 @@ type PollCenter struct {
 	name2Poll *cache.Cache
 	key2Name  map[string]string
 	groups    map[string]map[string]string
-	log       interfaces.ILogger
+	log       common.ILogger
 	mtx       *sync.RWMutex
 }
 
-func newPollCenter(resources interfaces.IResources, listener cache.ICacheListener) *PollCenter {
+func newPollCenter(resources common.IResources, listener cache.ICacheListener) *PollCenter {
 	pc := &PollCenter{}
 	pc.name2Poll = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
 	pc.key2Name = make(map[string]string)
@@ -163,7 +163,7 @@ func (this *PollCenter) PollsByGroup(groupName, vendor, series, family, software
 	return result
 }
 
-func Polling(resource interfaces.IResources) *PollCenter {
+func Polling(resource common.IResources) *PollCenter {
 	sp, ok := resource.ServicePoints().ServicePointHandler(TOPIC)
 	if !ok {
 		return nil

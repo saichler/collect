@@ -2,25 +2,25 @@ package control
 
 import (
 	"errors"
-	"github.com/saichler/collect/go/collection/common"
+	common2 "github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/protocols/k8s"
 	"github.com/saichler/collect/go/collection/protocols/snmp"
 	"github.com/saichler/collect/go/collection/protocols/ssh"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/interfaces"
 	"github.com/saichler/shared/go/share/strings"
+	"github.com/saichler/types/go/common"
 	"sync"
 )
 
 type Controller struct {
 	hcollectors         map[string]*HostCollector
 	mtx                 *sync.Mutex
-	notificationHandler common.CollectNotificationHandler
-	resources           interfaces.IResources
+	notificationHandler common2.CollectNotificationHandler
+	resources           common.IResources
 }
 
-func NewController(handler common.CollectNotificationHandler, resources interfaces.IResources) *Controller {
+func NewController(handler common2.CollectNotificationHandler, resources common.IResources) *Controller {
 	resources.Logger().Debug("*** Creating new controller for vnet ", resources.Config().VnetPort)
 	controller := &Controller{}
 	controller.resources = resources
@@ -32,8 +32,8 @@ func NewController(handler common.CollectNotificationHandler, resources interfac
 	return controller
 }
 
-func newProtocolCollector(config *types.Config, resource interfaces.IResources) (common.ProtocolCollector, error) {
-	var protocolCollector common.ProtocolCollector
+func newProtocolCollector(config *types.Config, resource common.IResources) (common2.ProtocolCollector, error) {
+	var protocolCollector common2.ProtocolCollector
 	if config.Protocol == types.Protocol_SSH {
 		protocolCollector = &ssh.SshCollector{}
 	} else if config.Protocol == types.Protocol_SNMPV2 {

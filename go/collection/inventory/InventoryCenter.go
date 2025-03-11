@@ -2,8 +2,8 @@ package inventory
 
 import (
 	"github.com/saichler/servicepoints/go/points/cache"
-	"github.com/saichler/shared/go/share/interfaces"
-	types2 "github.com/saichler/shared/go/types"
+	"github.com/saichler/types/go/common"
+	types2 "github.com/saichler/types/go/types"
 	"reflect"
 )
 
@@ -11,10 +11,10 @@ type InventoryCenter struct {
 	elements            *cache.Cache
 	elemType            reflect.Type
 	primaryKeyAttribute string
-	resources           interfaces.IResources
+	resources           common.IResources
 }
 
-func newInventoryCenter(primaryKeyAttribute string, element interface{}, resources interfaces.IResources, listener cache.ICacheListener) *InventoryCenter {
+func newInventoryCenter(primaryKeyAttribute string, element interface{}, resources common.IResources, listener cache.ICacheListener) *InventoryCenter {
 	this := &InventoryCenter{}
 	this.resources = resources
 	this.primaryKeyAttribute = primaryKeyAttribute
@@ -42,7 +42,7 @@ func (this *InventoryCenter) ElementByKey(key string) interface{} {
 	return this.elements.Get(key)
 }
 
-func Inventory(resource interfaces.IResources) *InventoryCenter {
+func Inventory(resource common.IResources) *InventoryCenter {
 	sp, ok := resource.ServicePoints().ServicePointHandler(TOPIC)
 	if !ok {
 		return nil

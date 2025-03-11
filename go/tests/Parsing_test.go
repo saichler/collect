@@ -5,7 +5,8 @@ import (
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/collect/go/types"
-	types2 "github.com/saichler/shared/go/types"
+	. "github.com/saichler/shared/go/tests/infra"
+	types2 "github.com/saichler/types/go/types"
 	"testing"
 	"time"
 )
@@ -41,22 +42,22 @@ func TestParsingAndInventory(t *testing.T) {
 	ic := inventory.Inventory(par.Resources())
 	box := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {
-		log.Fail(t, "Expected box to be non-nil")
+		Log.Fail(t, "Expected box to be non-nil")
 		return
 	}
 
 	if box.Info == nil {
-		log.Fail(t, "Expected box info to be non-nil")
+		Log.Fail(t, "Expected box info to be non-nil")
 		return
 	}
 
 	if box.Info.SysName == "" {
-		log.Fail(t, "Expected box info sysname to not be blank")
+		Log.Fail(t, "Expected box info sysname to not be blank")
 		return
 	}
 
 	if box.Info.Vendor == "" {
-		log.Fail(t, "Expected box vendor to not be blank")
+		Log.Fail(t, "Expected box vendor to not be blank")
 		return
 	}
 }

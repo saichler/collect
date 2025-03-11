@@ -5,18 +5,18 @@ import (
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/interfaces"
 	"github.com/saichler/shared/go/share/strings"
+	"github.com/saichler/types/go/common"
 	"os"
 	"os/exec"
 )
 
 type Kubernetes struct {
-	resources interfaces.IResources
+	resources common.IResources
 	config    *types.Config
 }
 
-func (this *Kubernetes) Init(config *types.Config, resources interfaces.IResources) error {
+func (this *Kubernetes) Init(config *types.Config, resources common.IResources) error {
 	this.resources = resources
 	this.config = config
 	return nil

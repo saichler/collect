@@ -2,8 +2,8 @@ package rules
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/reflect/go/reflect/property"
-	"github.com/saichler/shared/go/share/interfaces"
+	"github.com/saichler/reflect/go/reflect/properties"
+	"github.com/saichler/types/go/common"
 )
 
 type Set struct{}
@@ -16,7 +16,7 @@ func (this *Set) ParamNames() []string {
 	return []string{}
 }
 
-func (this *Set) Parse(resources interfaces.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
+func (this *Set) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
 	input := workSpace[Input]
 	path := workSpace[PropertyId]
 
@@ -30,7 +30,7 @@ func (this *Set) Parse(resources interfaces.IResources, workSpace map[string]int
 	}
 
 	if path != nil {
-		instance, err := property.PropertyOf(path.(string), resources.Introspector())
+		instance, err := properties.PropertyOf(path.(string), resources.Introspector())
 		if err != nil {
 			return resources.Logger().Error("error parsing instance path", err.Error())
 		}
