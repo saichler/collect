@@ -9,18 +9,18 @@ import (
 )
 
 const (
-	TOPIC    = "Poll"
-	ENDPOINT = "poll"
+	ServiceName = "Poll"
+	ENDPOINT    = "poll"
 )
 
 type PollServicePoint struct {
 	pollCenter *PollCenter
 }
 
-func RegisterPollCenter(area int32, resources common.IResources, listener cache.ICacheListener) {
+func RegisterPollCenter(serviceArea int32, resources common.IResources, listener cache.ICacheListener) {
 	psp := &PollServicePoint{}
-	psp.pollCenter = newPollCenter(resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(area, &types.Poll{}, psp)
+	psp.pollCenter = newPollCenter(serviceArea, resources, listener)
+	err := resources.ServicePoints().RegisterServicePoint(psp, serviceArea)
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +52,16 @@ func (this *PollServicePoint) Failed(pb proto.Message, resourcs common.IResource
 func (this *PollServicePoint) EndPoint() string {
 	return ENDPOINT
 }
-func (this *PollServicePoint) Topic() string {
-	return TOPIC
+func (this *PollServicePoint) ServiceName() string {
+	return ServiceName
 }
 func (this *PollServicePoint) Transactional() bool { return false }
+func (this *PollServicePoint) ServiceModel() proto.Message {
+	return &types.Poll{}
+}
+func (this *PollServicePoint) ReplicationCount() int {
+	return 0
+}
+func (this *PollServicePoint) ReplicationScore() int {
+	return 0
+}

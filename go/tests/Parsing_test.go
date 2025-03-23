@@ -12,7 +12,6 @@ import (
 )
 
 func TestParsingAndInventory(t *testing.T) {
-
 	sw := createVNet(vNetPort1)
 	sleep()
 	col := createCollectionService(0, vNetPort1, boot.CreateSNMPBootPolls())
@@ -35,11 +34,11 @@ func TestParsingAndInventory(t *testing.T) {
 
 	device := CreateDevice(ip, 0)
 
-	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, device)
+	cli.Multicast(config.ServiceName, 0, types2.Action_POST, device)
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 
-	ic := inventory.Inventory(par.Resources())
+	ic := inventory.Inventory(par.Resources(), InvServiceName, 0)
 	box := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {
 		Log.Fail(t, "Expected box to be non-nil")

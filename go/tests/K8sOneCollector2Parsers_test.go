@@ -54,30 +54,25 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 
 	sleep()
 
-	admin1 := home + "/admin.conf"
-	context1 := "kubernetes-admin@kubernetes"
-	admin2 := home + "/lab.conf"
-	context2 := "lab"
-
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
-	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, cluster1)
-	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, cluster2)
+	cli.Multicast(config.ServiceName, 0, types2.Action_POST, cluster1)
+	cli.Multicast(config.ServiceName, 0, types2.Action_POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 
-	if !checkCluster(par1.Resources(), context1, t) {
+	if !checkCluster(par1.Resources(), context1, t, 0) {
 		return
 	}
 
-	if !checkCluster(par2.Resources(), context2, t) {
+	if !checkCluster(par2.Resources(), context2, t, 1) {
 		return
 	}
 }
 
-func checkCluster(resourcs common.IResources, context string, t *testing.T) bool {
-	ic := inventory.Inventory(resourcs)
+func checkCluster(resourcs common.IResources, context string, t *testing.T, serviceArea int32) bool {
+	ic := inventory.Inventory(resourcs, "Cluster", serviceArea)
 	k8sCluster := ic.ElementByKey(context).(*types3.Cluster)
 	if k8sCluster == nil {
 		Log.Fail(t, context, " Expected K8s Cluster to be non-nil")

@@ -16,6 +16,7 @@ import (
 	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/types"
 	"google.golang.org/protobuf/proto"
+	"reflect"
 )
 
 var vNetPort1 uint32 = 30000
@@ -41,7 +42,7 @@ func createVNet(port uint32) *vnet.VNet {
 	return sw
 }
 
-func createCollectionService(vlanId int32, port uint32, polls []*types2.Poll) common.IVirtualNetworkInterface {
+func createCollectionService(serviceArea int32, port uint32, polls []*types2.Poll) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so")
 	if err != nil {
@@ -60,11 +61,11 @@ func createCollectionService(vlanId int32, port uint32, polls []*types2.Poll) co
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 
 	l := control.NewParsingCenterNotifier(vnic)
-	controller := control.NewController(l, resourcs)
+	controller := control.NewController(l, resourcs, serviceArea)
 
-	config.RegisterConfigCenter(vlanId, resourcs, nil, controller)
-	polling.RegisterPollCenter(vlanId, resourcs, nil)
-	pc := polling.Polling(resourcs)
+	config.RegisterConfigCenter(serviceArea, resourcs, nil, controller)
+	polling.RegisterPollCenter(serviceArea, resourcs, nil)
+	pc := polling.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
 
 	vnic.Start()
@@ -72,7 +73,7 @@ func createCollectionService(vlanId int32, port uint32, polls []*types2.Poll) co
 	return vnic
 }
 
-func createParsingService(vlanId int32, port uint32, pb proto.Message, key string, polls []*types2.Poll) common.IVirtualNetworkInterface {
+func createParsingService(serviceArea int32, port uint32, pb proto.Message, key string, polls []*types2.Poll) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so")
 	if err != nil {
@@ -88,10 +89,10 @@ func createParsingService(vlanId int32, port uint32, pb proto.Message, key strin
 	resourcs := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
 	resourcs.Config().VnetPort = port
 
-	polling.RegisterPollCenter(vlanId, resourcs, nil)
-	pc := polling.Polling(resourcs)
+	polling.RegisterPollCenter(serviceArea, resourcs, nil)
+	pc := polling.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
-	parsing.RegisterParsingServicePoint(vlanId, pb, key, resourcs)
+	parsing.RegisterParsingServicePoint(reflect.ValueOf(pb).Elem().Type().Name(), serviceArea, pb, key, resourcs, nil)
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

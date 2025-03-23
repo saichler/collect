@@ -5,8 +5,12 @@ import (
 	"github.com/saichler/types/go/common"
 )
 
+const (
+	Parsing_Suffix = "_Parsing"
+)
+
 type CollectNotificationHandler interface {
-	HandleCollectNotification(*types.Job, int32)
+	HandleCollectNotification(*types.Job)
 }
 
 type ProtocolCollector interface {
@@ -18,5 +22,5 @@ type ProtocolCollector interface {
 }
 
 type IController interface {
-	StartPolling(string, int32) error
+	StartPolling(string, string) error
 }

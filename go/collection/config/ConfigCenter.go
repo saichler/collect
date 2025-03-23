@@ -10,9 +10,9 @@ type ConfigCenter struct {
 	devices *cache.Cache
 }
 
-func newConfigCenter(resources common.IResources, listener cache.ICacheListener) *ConfigCenter {
+func newConfigCenter(serviceArea int32, resources common.IResources, listener cache.ICacheListener) *ConfigCenter {
 	this := &ConfigCenter{}
-	this.devices = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
+	this.devices = cache.NewModelCache(ServiceName, serviceArea, "Device", resources.Config().LocalUuid, listener, resources.Introspector())
 	return this
 }
 
@@ -26,6 +26,9 @@ func (this *ConfigCenter) DeviceById(id string) *types.Device {
 }
 
 func (this *ConfigCenter) HostConfigs(deviceId, hostId string) map[int32]*types.Config {
+	if this == nil {
+		panic("nil")
+	}
 	device, _ := this.devices.Get(deviceId).(*types.Device)
 	if device == nil {
 		return nil
@@ -33,8 +36,8 @@ func (this *ConfigCenter) HostConfigs(deviceId, hostId string) map[int32]*types.
 	return device.Hosts[hostId].Configs
 }
 
-func Configs(resource common.IResources) *ConfigCenter {
-	sp, ok := resource.ServicePoints().ServicePointHandler(TOPIC)
+func Configs(resource common.IResources, serviceArea int32) *ConfigCenter {
+	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, serviceArea)
 	if !ok {
 		return nil
 	}

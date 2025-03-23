@@ -53,6 +53,7 @@ func (this *SNMPCollector) Disconnect() error {
 }
 
 func (this *SNMPCollector) Exec(job *types.Job) {
+	this.resources.Logger().Debug("Exec Job Start ", job.DeviceId, " ", job.PollName)
 	if !this.connected {
 		err := this.Connect()
 		if err != nil {
@@ -60,17 +61,19 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 			return
 		}
 	}
-	pollCenter := polling.Polling(this.resources)
+	pollCenter := polling.Polling(this.resources, job.CServiceArea)
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)
 		return
 	}
+
 	if pll.Operation == types.Operation__Map {
 		this.walk(job, pll, true)
 	} else if pll.Operation == types.Operation__Table {
 		this.table(job, pll)
 	}
+	this.resources.Logger().Debug("Exec Job End ", job.DeviceId, " ", job.PollName)
 }
 
 func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool) *types.Map {

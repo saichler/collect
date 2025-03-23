@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	TOPIC    = "Device"
-	ENDPOINT = "device"
+	ServiceName = "Config"
+	ENDPOINT    = "config"
 )
 
 type ConfigServicePoint struct {
@@ -19,22 +19,25 @@ type ConfigServicePoint struct {
 	controller   base.IController
 }
 
-func RegisterConfigCenter(area int32, resources common.IResources, listener cache.ICacheListener,
+func RegisterConfigCenter(serviceArea int32, resources common.IResources, listener cache.ICacheListener,
 	controller base.IController) {
 	this := &ConfigServicePoint{}
 	this.controller = controller
-	this.configCenter = newConfigCenter(resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(area, &types.Device{}, this)
+	this.configCenter = newConfigCenter(serviceArea, resources, listener)
+	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea)
 	if err != nil {
 		panic(err)
 	}
 }
 
+var Count = 0
+
 func (this *ConfigServicePoint) Post(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
 	device := pb.(*types.Device)
 	this.configCenter.Add(device)
 	if this.controller != nil {
-		this.controller.StartPolling(device.Id, device.Area)
+		resourcs.Logger().Info("Start Polling Device ", device.Id, " ", device.ServiceName)
+		this.controller.StartPolling(device.Id, device.ServiceName)
 	}
 	return nil, nil
 }
@@ -59,7 +62,16 @@ func (this *ConfigServicePoint) Failed(pb proto.Message, resourcs common.IResour
 func (this *ConfigServicePoint) EndPoint() string {
 	return ENDPOINT
 }
-func (this *ConfigServicePoint) Topic() string {
-	return TOPIC
+func (this *ConfigServicePoint) ServiceName() string {
+	return ServiceName
 }
 func (this *ConfigServicePoint) Transactional() bool { return false }
+func (this *ConfigServicePoint) ServiceModel() proto.Message {
+	return &types.Device{}
+}
+func (this *ConfigServicePoint) ReplicationCount() int {
+	return 0
+}
+func (this *ConfigServicePoint) ReplicationScore() int {
+	return 0
+}

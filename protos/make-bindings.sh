@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Use the protoc image to run protoc.sh and generate the bindings.
-docker run -e PROTO=collect.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
-docker run -e PROTO=inventory.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
+docker run --user "$(id -u):$(id -g)" -e PROTO=collect.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
+docker run --user "$(id -u):$(id -g)" -e PROTO=inventory.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 
 # Now move the generated bindings to the models directory and clean up
 mkdir -p ../go/types

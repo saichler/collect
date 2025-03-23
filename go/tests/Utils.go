@@ -19,6 +19,15 @@ import (
 )
 
 var home, _ = os.LookupEnv("HOME")
+var admin1 = home + "/admin.conf"
+var context1 = "kubernetes-admin@kubernetes"
+var admin2 = home + "/lab.conf"
+var context2 = "lab"
+
+const (
+	InvServiceName = "NetworkBox"
+	K8sServiceName = "Cluster"
+)
 
 func init() {
 	protocol.UsingContainers = false
@@ -54,11 +63,11 @@ func createResources(alias string) common.IResources {
 	return ress
 }
 
-func (l *CollectorListener) HandleCollectNotification(job *types.Job, area int32) {
+func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
 	if l.ph != nil {
 		l.ph.HandleCollectNotification(job)
 	}
-	pc := polling.Polling(l.resources)
+	pc := polling.Polling(l.resources, job.CServiceArea)
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		l.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
@@ -153,10 +162,11 @@ func CreateCommands() ([]*model.CollectCommand, map[string]string) {
 	return []*model.CollectCommand{cVersion, cSystem, cClock, cTimezone, cTeTunnelId}, m
 }*/
 
-func CreateDevice(ip string, area int32) *types.Device {
+func CreateDevice(ip string, serviceArea int32) *types.Device {
 	device := &types.Device{}
 	device.Id = ip
-	device.Area = area
+	device.ServiceName = InvServiceName
+	device.ServiceArea = serviceArea
 	device.Hosts = make(map[string]*types.Host)
 	host := &types.Host{}
 	host.Id = device.Id
@@ -187,10 +197,11 @@ func CreateDevice(ip string, area int32) *types.Device {
 	return device
 }
 
-func CreateCluster(kubeconfig, context string, area int32) *types.Device {
+func CreateCluster(kubeconfig, context string, serviceArea int32) *types.Device {
 	device := &types.Device{}
 	device.Id = context
-	device.Area = area
+	device.ServiceName = K8sServiceName
+	device.ServiceArea = serviceArea
 	device.Hosts = make(map[string]*types.Host)
 	host := &types.Host{}
 	host.Id = device.Id

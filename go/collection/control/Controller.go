@@ -18,9 +18,10 @@ type Controller struct {
 	mtx                 *sync.Mutex
 	notificationHandler common2.CollectNotificationHandler
 	resources           common.IResources
+	serviceArea         int32
 }
 
-func NewController(handler common2.CollectNotificationHandler, resources common.IResources) *Controller {
+func NewController(handler common2.CollectNotificationHandler, resources common.IResources, serviceArea int32) *Controller {
 	resources.Logger().Debug("*** Creating new controller for vnet ", resources.Config().VnetPort)
 	controller := &Controller{}
 	controller.resources = resources
@@ -29,6 +30,7 @@ func NewController(handler common2.CollectNotificationHandler, resources common.
 	controller.notificationHandler = handler
 	resources.Registry().Register(&types.Map{})
 	resources.Registry().Register(&types.Table{})
+	controller.serviceArea = serviceArea
 	return controller
 }
 
@@ -47,14 +49,15 @@ func newProtocolCollector(config *types.Config, resource common.IResources) (com
 	return protocolCollector, err
 }
 
-func (this *Controller) StartPolling(deviceId string, area int32) error {
-	cc := config.Configs(this.resources)
+func (this *Controller) StartPolling(deviceId, serviceName string) error {
+	cc := config.Configs(this.resources, this.serviceArea)
 	device := cc.DeviceById(deviceId)
 	if device == nil {
 		return errors.New("device with id " + deviceId + " does not exist")
 	}
 	for _, host := range device.Hosts {
-		hostCol, _ := this.hostCollector(deviceId, host.Id, area)
+		hostCol, _ := this.hostCollector(deviceId, host.Id, serviceName,
+			this.serviceArea, device.ServiceArea)
 		hostCol.start()
 	}
 	return nil
@@ -64,7 +67,7 @@ func hcKey(deviceId, hostId string) string {
 	return strings.New(deviceId, hostId).String()
 }
 
-func (this *Controller) hostCollector(deviceId, hostId string, area int32) (*HostCollector, bool) {
+func (this *Controller) hostCollector(deviceId, hostId, serviceName string, cServiceArea, dServiceArea int32) (*HostCollector, bool) {
 	key := hcKey(deviceId, hostId)
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
@@ -72,13 +75,14 @@ func (this *Controller) hostCollector(deviceId, hostId string, area int32) (*Hos
 	if ok {
 		return hc, ok
 	}
-	hc = newHostCollector(deviceId, hostId, area, this)
+	hc = newHostCollector(deviceId, hostId, serviceName, cServiceArea, dServiceArea, this)
 	this.hcollectors[key] = hc
 	return hc, ok
 }
 
-func (this *Controller) jobComplete(job *types.Job, area int32) {
+func (this *Controller) jobComplete(job *types.Job) {
+	this.resources.Logger().Debug("Job Complete For ", job.DeviceId, " ", job.PollName)
 	if this.notificationHandler != nil {
-		this.notificationHandler.HandleCollectNotification(job, area)
+		this.notificationHandler.HandleCollectNotification(job)
 	}
 }

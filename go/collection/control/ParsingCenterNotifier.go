@@ -16,6 +16,9 @@ func NewParsingCenterNotifier(nic common.IVirtualNetworkInterface) *ParsingCente
 	return jn
 }
 
-func (this *ParsingCenterNotifier) HandleCollectNotification(job *types.Job, area int32) {
-	this.nic.Multicast(types2.CastMode_All, types2.Action_POST, area, "Job", job)
+func (this *ParsingCenterNotifier) HandleCollectNotification(job *types.Job) {
+	err := this.nic.Multicast(job.ServiceName, job.DServiceArea, types2.Action_POST, job)
+	if err != nil {
+		this.nic.Resources().Logger().Error("Failed to notify on job: ", err)
+	}
 }

@@ -58,8 +58,9 @@ message Parameter {
 
 message Device {
   string id = 1;
-  int32 area = 2;
-  map<string, Host> hosts = 3;
+  string service_name = 2;
+  int32 service_area = 3;
+  map<string, Host> hosts = 4;
 }
 
 message Host {
@@ -95,6 +96,9 @@ message Job {
   string device_id = 7;
   string host_id = 8;
   string poll_name = 9;
+  string service_name = 10;
+  int32 c_service_area = 11;
+  int32 d_service_area = 12;
 }
 
 message Map {

@@ -7,21 +7,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var TOPIC = ""
-var ENDPOINT = ""
-
 type InventoryServicePoint struct {
 	inventoryCenter *InventoryCenter
 }
 
-func RegisterInventoryCenter(area int32, elem proto.Message, primaryKey string, resources common.IResources, listener cache.ICacheListener) {
+func RegisterInventoryCenter(serviceName string, serviceArea int32, elem proto.Message, primaryKey string,
+	resources common.IResources, listener cache.ICacheListener) {
 	this := &InventoryServicePoint{}
-	this.inventoryCenter = newInventoryCenter(primaryKey, elem, resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(area, elem, this)
+	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, elem, resources, listener)
+	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea)
 	if err != nil {
 		panic(err)
 	}
-	this.inventoryCenter.setTopic(elem, resources)
 }
 
 func (this *InventoryServicePoint) Post(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
@@ -47,9 +44,18 @@ func (this *InventoryServicePoint) Failed(pb proto.Message, resourcs common.IRes
 	return nil, nil
 }
 func (this *InventoryServicePoint) EndPoint() string {
-	return ENDPOINT
+	return this.inventoryCenter.serviceName
 }
-func (this *InventoryServicePoint) Topic() string {
-	return TOPIC
+func (this *InventoryServicePoint) ServiceName() string {
+	return this.inventoryCenter.serviceName
 }
 func (this *InventoryServicePoint) Transactional() bool { return false }
+func (this *InventoryServicePoint) ServiceModel() proto.Message {
+	return this.inventoryCenter.element.(proto.Message)
+}
+func (this *InventoryServicePoint) ReplicationCount() int {
+	return 0
+}
+func (this *InventoryServicePoint) ReplicationScore() int {
+	return 0
+}

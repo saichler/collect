@@ -27,7 +27,7 @@ func (this *Kubernetes) Protocol() types.Protocol {
 }
 
 func (this *Kubernetes) Exec(job *types.Job) {
-	pollCenter := polling.Polling(this.resources)
+	pollCenter := polling.Polling(this.resources, job.CServiceArea)
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)

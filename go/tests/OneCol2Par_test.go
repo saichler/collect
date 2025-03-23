@@ -13,7 +13,6 @@ import (
 )
 
 func TestOneCollectorTwoParsers(t *testing.T) {
-
 	sw := createVNet(vNetPort1)
 	sleep()
 	col := createCollectionService(0, vNetPort1, boot.CreateSNMPBootPolls())
@@ -41,23 +40,22 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	device1 := CreateDevice(ip1, 0)
 	//assign device 2 to parser in area 1
 	device2 := CreateDevice(ip2, 1)
-
-	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, device1)
-	cli.Multicast(types2.CastMode_All, types2.Action_POST, 0, config.TOPIC, device2)
+	cli.Multicast(config.ServiceName, 0, types2.Action_POST, device1)
+	cli.Multicast(config.ServiceName, 0, types2.Action_POST, device2)
 
 	time.Sleep(2 * time.Second)
 
-	if !checkInventory(ip1, par1.Resources(), t) {
+	if !checkInventory(ip1, par1.Resources(), t, 0) {
 		return
 	}
-	if !checkInventory(ip2, par2.Resources(), t) {
+	if !checkInventory(ip2, par2.Resources(), t, 1) {
 		return
 	}
 }
 
-func checkInventory(ip string, resours common.IResources, t *testing.T) bool {
-	ic := inventory.Inventory(resours)
-	box := ic.ElementByKey(ip).(*types.NetworkBox)
+func checkInventory(ip string, resours common.IResources, t *testing.T, serviceArea int32) bool {
+	ic := inventory.Inventory(resours, "NetworkBox", serviceArea)
+	box, _ := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {
 		Log.Fail(t, ip, " Expected box to be non-nil")
 		return false

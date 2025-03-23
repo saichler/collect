@@ -3,7 +3,6 @@ package inventory
 import (
 	"github.com/saichler/types/go/common"
 	"reflect"
-	"strings"
 )
 
 func primaryKeyValue(attr string, any interface{}, resources common.IResources) string {
@@ -24,23 +23,8 @@ func primaryKeyValue(attr string, any interface{}, resources common.IResources) 
 	return field.String()
 }
 
-func (this *InventoryCenter) setTopic(any interface{}, resources common.IResources) {
-	if any == nil {
-		resources.Logger().Error("element is nil")
-		return
-	}
-	v := reflect.ValueOf(any)
-	if v.Kind() != reflect.Ptr {
-		resources.Logger().Error("element is not a pointer")
-		return
-	}
-	this.elemType = v.Elem().Type()
-	TOPIC = v.Elem().Type().Name()
-	ENDPOINT = strings.ToLower(TOPIC)
-}
-
 func (this *InventoryCenter) AddEmpty(key string) {
-	elem := reflect.New(this.elemType)
+	elem := reflect.New(this.elementType)
 	field := elem.Elem().FieldByName(this.primaryKeyAttribute)
 	field.Set(reflect.ValueOf(key))
 	this.Add(elem.Interface())

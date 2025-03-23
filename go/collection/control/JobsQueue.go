@@ -2,6 +2,7 @@ package control
 
 import (
 	"errors"
+	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/types/go/common"
@@ -10,15 +11,18 @@ import (
 )
 
 type JobsQueue struct {
-	deviceId  string
-	hostId    string
-	jobs      []*types.Job
-	jobsMap   map[string]*types.Job
-	mtx       *sync.Mutex
-	resources common.IResources
+	deviceId     string
+	hostId       string
+	jobs         []*types.Job
+	jobsMap      map[string]*types.Job
+	mtx          *sync.Mutex
+	resources    common.IResources
+	cServiceArea int32
+	dServiceArea int32
+	serviceName  string
 }
 
-func NewJobsQueue(deviceId, hostId string, resources common.IResources) *JobsQueue {
+func NewJobsQueue(deviceId, hostId string, resources common.IResources, serviceName string, cServiceArea, dServiceArea int32) *JobsQueue {
 	jq := &JobsQueue{}
 	jq.resources = resources
 	jq.mtx = &sync.Mutex{}
@@ -26,11 +30,14 @@ func NewJobsQueue(deviceId, hostId string, resources common.IResources) *JobsQue
 	jq.jobsMap = make(map[string]*types.Job)
 	jq.deviceId = deviceId
 	jq.hostId = hostId
+	jq.cServiceArea = cServiceArea
+	jq.dServiceArea = dServiceArea
+	jq.serviceName = serviceName + base.Parsing_Suffix
 	return jq
 }
 
 func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, version string, cadence, timeout int64) *types.Job {
-	pc := polling.Polling(this.resources)
+	pc := polling.Polling(this.resources, this.cServiceArea)
 	poll := pc.PollByKey(name, vendor, series, family, software, hardware, version)
 	if poll == nil {
 		return nil
@@ -41,6 +48,9 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 	job.Timeout = timeout
 	job.DeviceId = this.deviceId
 	job.HostId = this.hostId
+	job.CServiceArea = this.cServiceArea
+	job.DServiceArea = this.dServiceArea
+	job.ServiceName = this.serviceName
 
 	if job.Cadence == 0 {
 		job.Cadence = poll.DefaultCadence
@@ -52,7 +62,7 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 }
 
 func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hardware, version string) []*types.Job {
-	pc := polling.Polling(this.resources)
+	pc := polling.Polling(this.resources, this.cServiceArea)
 	polls := pc.PollsByGroup(groupName, vendor, series, family, software, hardware, version)
 	jobs := make([]*types.Job, 0)
 	for _, poll := range polls {
@@ -62,6 +72,9 @@ func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hard
 		job.PollName = poll.Name
 		job.Cadence = poll.DefaultCadence
 		job.Timeout = poll.DefaultTimeout
+		job.DServiceArea = this.dServiceArea
+		job.CServiceArea = this.cServiceArea
+		job.ServiceName = this.serviceName
 		jobs = append(jobs, job)
 	}
 	return jobs

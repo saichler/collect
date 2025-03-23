@@ -17,9 +17,10 @@ type PollCenter struct {
 	mtx       *sync.RWMutex
 }
 
-func newPollCenter(resources common.IResources, listener cache.ICacheListener) *PollCenter {
+func newPollCenter(serviceArea int32, resources common.IResources, listener cache.ICacheListener) *PollCenter {
 	pc := &PollCenter{}
-	pc.name2Poll = cache.NewModelCache(resources.Config().LocalUuid, listener, resources.Introspector())
+	pc.name2Poll = cache.NewModelCache(ServiceName, serviceArea, "Poll",
+		resources.Config().LocalUuid, listener, resources.Introspector())
 	pc.key2Name = make(map[string]string)
 	pc.groups = make(map[string]map[string]string)
 	pc.log = resources.Logger()
@@ -163,8 +164,8 @@ func (this *PollCenter) PollsByGroup(groupName, vendor, series, family, software
 	return result
 }
 
-func Polling(resource common.IResources) *PollCenter {
-	sp, ok := resource.ServicePoints().ServicePointHandler(TOPIC)
+func Polling(resource common.IResources, serviceArea int32) *PollCenter {
+	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, serviceArea)
 	if !ok {
 		return nil
 	}

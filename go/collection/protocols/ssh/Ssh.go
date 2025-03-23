@@ -234,7 +234,7 @@ func (sshc *SshCollector) exec(cmd string, timeout int64) (string, error) {
 }
 
 func (sshc *SshCollector) Exec(job *types.Job) {
-	pollCenter := polling.Polling(sshc.resources)
+	pollCenter := polling.Polling(sshc.resources, job.CServiceArea)
 	poll := pollCenter.PollByName(job.PollName)
 	if poll == nil {
 		sshc.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
