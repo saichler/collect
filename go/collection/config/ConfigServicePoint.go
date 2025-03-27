@@ -3,10 +3,10 @@ package config
 import (
 	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/types"
+	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
 	types2 "github.com/saichler/types/go/types"
-	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -32,32 +32,32 @@ func RegisterConfigCenter(serviceArea int32, resources common.IResources, listen
 
 var Count = 0
 
-func (this *ConfigServicePoint) Post(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
-	device := pb.(*types.Device)
+func (this *ConfigServicePoint) Post(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+	device := pb.Element().(*types.Device)
 	this.configCenter.Add(device)
 	if this.controller != nil {
 		resourcs.Logger().Info("Start Polling Device ", device.Id, " ", device.ServiceName)
 		this.controller.StartPolling(device.Id, device.ServiceName)
 	}
-	return nil, nil
+	return nil
 }
-func (this *ConfigServicePoint) Put(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
-	return nil, nil
+func (this *ConfigServicePoint) Put(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+	return nil
 }
-func (this *ConfigServicePoint) Patch(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
-	return nil, nil
+func (this *ConfigServicePoint) Patch(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+	return nil
 }
-func (this *ConfigServicePoint) Delete(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
-	return nil, nil
+func (this *ConfigServicePoint) Delete(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+	return nil
 }
-func (this *ConfigServicePoint) Get(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
-	return nil, nil
+func (this *ConfigServicePoint) Get(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+	return nil
 }
-func (this *ConfigServicePoint) GetCopy(pb proto.Message, resourcs common.IResources) (proto.Message, error) {
-	return nil, nil
+func (this *ConfigServicePoint) GetCopy(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+	return nil
 }
-func (this *ConfigServicePoint) Failed(pb proto.Message, resourcs common.IResources, msg *types2.Message) (proto.Message, error) {
-	return nil, nil
+func (this *ConfigServicePoint) Failed(pb common.IMObjects, resourcs common.IResources, msg *types2.Message) common.IMObjects {
+	return nil
 }
 func (this *ConfigServicePoint) EndPoint() string {
 	return ENDPOINT
@@ -66,8 +66,8 @@ func (this *ConfigServicePoint) ServiceName() string {
 	return ServiceName
 }
 func (this *ConfigServicePoint) Transactional() bool { return false }
-func (this *ConfigServicePoint) ServiceModel() proto.Message {
-	return &types.Device{}
+func (this *ConfigServicePoint) ServiceModel() common.IMObjects {
+	return object.New(nil, &types.Device{})
 }
 func (this *ConfigServicePoint) ReplicationCount() int {
 	return 0

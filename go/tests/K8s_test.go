@@ -9,7 +9,7 @@ import (
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/k8s_observer/go/serializers"
 	types3 "github.com/saichler/k8s_observer/go/types"
-	. "github.com/saichler/shared/go/tests/infra"
+	. "github.com/saichler/l8test/go/infra/t_resources"
 	types2 "github.com/saichler/types/go/types"
 	"sync"
 	"testing"

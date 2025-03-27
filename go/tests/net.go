@@ -6,13 +6,14 @@ import (
 	"github.com/saichler/collect/go/collection/parsing"
 	"github.com/saichler/collect/go/collection/polling"
 	types2 "github.com/saichler/collect/go/types"
+	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	vnic2 "github.com/saichler/layer8/go/overlay/vnic"
 	"github.com/saichler/reflect/go/reflect/introspecting"
+	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/service_points"
 	"github.com/saichler/shared/go/share/registry"
 	"github.com/saichler/shared/go/share/resources"
-	. "github.com/saichler/shared/go/tests/infra"
 	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/types"
 	"google.golang.org/protobuf/proto"
@@ -92,7 +93,7 @@ func createParsingService(serviceArea int32, port uint32, pb proto.Message, key 
 	polling.RegisterPollCenter(serviceArea, resourcs, nil)
 	pc := polling.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
-	parsing.RegisterParsingServicePoint(reflect.ValueOf(pb).Elem().Type().Name(), serviceArea, pb, key, resourcs, nil)
+	parsing.RegisterParsingServicePoint(reflect.ValueOf(pb).Elem().Type().Name(), serviceArea, object.New(nil, pb), key, resourcs, nil)
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

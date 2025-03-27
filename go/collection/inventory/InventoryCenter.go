@@ -2,9 +2,9 @@ package inventory
 
 import (
 	"github.com/saichler/collect/go/collection/base"
+	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 	"reflect"
 	"strings"
 )
@@ -20,22 +20,26 @@ type InventoryCenter struct {
 }
 
 func newInventoryCenter(serviceName string, serviceArea int32, primaryKeyAttribute string,
-	element interface{}, resources common.IResources, listener cache.ICacheListener) *InventoryCenter {
+	element common.IMObjects, resources common.IResources, listener cache.ICacheListener) *InventoryCenter {
 	this := &InventoryCenter{}
 	this.serviceName = serviceName
 	this.serviceArea = serviceArea
 	this.element = element
-	this.elementType = reflect.ValueOf(element).Elem().Type()
+	this.elementType = reflect.ValueOf(element.Element()).Elem().Type()
 	this.resources = resources
 	this.primaryKeyAttribute = primaryKeyAttribute
 	this.elements = cache.NewModelCache(this.serviceName, this.serviceArea, this.elementType.Name(),
 		resources.Config().LocalUuid, listener, resources.Introspector())
-	node, _ := resources.Introspector().Inspect(element)
-	resources.Introspector().AddDecorator(types2.DecoratorType_Primary, []string{primaryKeyAttribute}, node)
+	node, _ := resources.Introspector().Inspect(element.Element())
+	introspecting.AddPrimaryKeyDecorator(node, primaryKeyAttribute)
 	return this
 }
 
 func (this *InventoryCenter) Add(elem interface{}) {
+	_, ok := elem.(common.IMObjects)
+	if ok {
+		panic("")
+	}
 	key := primaryKeyValue(this.primaryKeyAttribute, elem, this.resources)
 	if key != "" {
 		this.elements.Put(key, elem)

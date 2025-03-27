@@ -90,7 +90,7 @@ func getValue(data []byte, resources common.IResources) interface{} {
 	if len(data) == 0 {
 		return nil
 	}
-	obj := object.NewDecode(data, 0, "", resources.Registry())
+	obj := object.NewDecode(data, 0, resources.Registry())
 	val, _ := obj.Get()
 	return val
 }

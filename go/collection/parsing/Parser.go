@@ -30,7 +30,7 @@ func newParser() *_Parser {
 
 func (this *_Parser) Parse(job *types.Job, any interface{}, resources common.IResources) error {
 	workSpace := make(map[string]interface{})
-	enc := object.NewDecode(job.Result, 0, "", resources.Registry())
+	enc := object.NewDecode(job.Result, 0, resources.Registry())
 	data, err := enc.Get()
 	if err != nil {
 		return resources.Logger().Error(err)

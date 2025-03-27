@@ -5,7 +5,7 @@ import (
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/polling/boot"
 	"github.com/saichler/collect/go/types"
-	. "github.com/saichler/shared/go/tests/infra"
+	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/types/go/common"
 	types2 "github.com/saichler/types/go/types"
 	"testing"

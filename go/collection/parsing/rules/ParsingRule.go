@@ -22,7 +22,7 @@ func getStringInput(resources common.IResources, input interface{}, params map[s
 			return "", resources.Logger().Error("missing 'from' key in map input")
 		}
 		strData := m.Data[from.Value]
-		enc := object.NewDecode(strData, 0, "Map", resources.Registry())
+		enc := object.NewDecode(strData, 0, resources.Registry())
 		strInt, _ := enc.Get()
 		str, ok := strInt.(string)
 		if ok {
