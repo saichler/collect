@@ -17,12 +17,12 @@ type JobsQueue struct {
 	jobsMap      map[string]*types.Job
 	mtx          *sync.Mutex
 	resources    common.IResources
-	cServiceArea int32
-	dServiceArea int32
+	cServiceArea uint16
+	dServiceArea uint16
 	serviceName  string
 }
 
-func NewJobsQueue(deviceId, hostId string, resources common.IResources, serviceName string, cServiceArea, dServiceArea int32) *JobsQueue {
+func NewJobsQueue(deviceId, hostId string, resources common.IResources, serviceName string, cServiceArea, dServiceArea uint16) *JobsQueue {
 	jq := &JobsQueue{}
 	jq.resources = resources
 	jq.mtx = &sync.Mutex{}
@@ -48,8 +48,8 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 	job.Timeout = timeout
 	job.DeviceId = this.deviceId
 	job.HostId = this.hostId
-	job.CServiceArea = this.cServiceArea
-	job.DServiceArea = this.dServiceArea
+	job.CServiceArea = int32(this.cServiceArea)
+	job.DServiceArea = int32(this.dServiceArea)
 	job.ServiceName = this.serviceName
 
 	if job.Cadence == 0 {
@@ -72,8 +72,8 @@ func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hard
 		job.PollName = poll.Name
 		job.Cadence = poll.DefaultCadence
 		job.Timeout = poll.DefaultTimeout
-		job.DServiceArea = this.dServiceArea
-		job.CServiceArea = this.cServiceArea
+		job.DServiceArea = int32(this.dServiceArea)
+		job.CServiceArea = int32(this.cServiceArea)
 		job.ServiceName = this.serviceName
 		jobs = append(jobs, job)
 	}

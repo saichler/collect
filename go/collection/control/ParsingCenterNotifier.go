@@ -3,7 +3,6 @@ package control
 import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 )
 
 type ParsingCenterNotifier struct {
@@ -17,7 +16,7 @@ func NewParsingCenterNotifier(nic common.IVirtualNetworkInterface) *ParsingCente
 }
 
 func (this *ParsingCenterNotifier) HandleCollectNotification(job *types.Job) {
-	err := this.nic.Multicast(job.ServiceName, job.DServiceArea, types2.Action_POST, job)
+	err := this.nic.Multicast(job.ServiceName, uint16(job.DServiceArea), common.POST, job)
 	if err != nil {
 		this.nic.Resources().Logger().Error("Failed to notify on job: ", err)
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 func TestCollectionController(t *testing.T) {
-	serviceArea := int32(0)
+	serviceArea := uint16(0)
 	resourcs := createResources("collect")
 
 	config.RegisterConfigCenter(serviceArea, resourcs, nil, nil)

@@ -6,7 +6,6 @@ import (
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 )
 
 const (
@@ -19,7 +18,7 @@ type ConfigServicePoint struct {
 	controller   base.IController
 }
 
-func RegisterConfigCenter(serviceArea int32, resources common.IResources, listener cache.ICacheListener,
+func RegisterConfigCenter(serviceArea uint16, resources common.IResources, listener cache.ICacheListener,
 	controller base.IController) {
 	this := &ConfigServicePoint{}
 	this.controller = controller
@@ -32,7 +31,7 @@ func RegisterConfigCenter(serviceArea int32, resources common.IResources, listen
 
 var Count = 0
 
-func (this *ConfigServicePoint) Post(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	device := pb.Element().(*types.Device)
 	this.configCenter.Add(device)
 	if this.controller != nil {
@@ -41,22 +40,22 @@ func (this *ConfigServicePoint) Post(pb common.IMObjects, resourcs common.IResou
 	}
 	return nil
 }
-func (this *ConfigServicePoint) Put(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ConfigServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ConfigServicePoint) Patch(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ConfigServicePoint) Patch(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ConfigServicePoint) Delete(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ConfigServicePoint) Delete(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ConfigServicePoint) Get(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ConfigServicePoint) Get(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ConfigServicePoint) GetCopy(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ConfigServicePoint) GetCopy(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ConfigServicePoint) Failed(pb common.IMObjects, resourcs common.IResources, msg *types2.Message) common.IMObjects {
+func (this *ConfigServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
 func (this *ConfigServicePoint) EndPoint() string {
@@ -66,7 +65,7 @@ func (this *ConfigServicePoint) ServiceName() string {
 	return ServiceName
 }
 func (this *ConfigServicePoint) Transactional() bool { return false }
-func (this *ConfigServicePoint) ServiceModel() common.IMObjects {
+func (this *ConfigServicePoint) ServiceModel() common.IElements {
 	return object.New(nil, &types.Device{})
 }
 func (this *ConfigServicePoint) ReplicationCount() int {

@@ -7,7 +7,6 @@ import (
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 	"testing"
 	"time"
 )
@@ -40,8 +39,8 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	device1 := CreateDevice(ip1, 0)
 	//assign device 2 to parser in area 1
 	device2 := CreateDevice(ip2, 1)
-	cli.Multicast(config.ServiceName, 0, types2.Action_POST, device1)
-	cli.Multicast(config.ServiceName, 0, types2.Action_POST, device2)
+	cli.Multicast(config.ServiceName, 0, common.POST, device1)
+	cli.Multicast(config.ServiceName, 0, common.POST, device2)
 
 	time.Sleep(2 * time.Second)
 
@@ -53,7 +52,7 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	}
 }
 
-func checkInventory(ip string, resours common.IResources, t *testing.T, serviceArea int32) bool {
+func checkInventory(ip string, resours common.IResources, t *testing.T, serviceArea uint16) bool {
 	ic := inventory.Inventory(resours, "NetworkBox", serviceArea)
 	box, _ := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {

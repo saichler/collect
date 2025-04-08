@@ -18,11 +18,11 @@ type Controller struct {
 	mtx                 *sync.Mutex
 	notificationHandler common2.CollectNotificationHandler
 	resources           common.IResources
-	serviceArea         int32
+	serviceArea         uint16
 }
 
-func NewController(handler common2.CollectNotificationHandler, resources common.IResources, serviceArea int32) *Controller {
-	resources.Logger().Debug("*** Creating new controller for vnet ", resources.Config().VnetPort)
+func NewController(handler common2.CollectNotificationHandler, resources common.IResources, serviceArea uint16) *Controller {
+	resources.Logger().Debug("*** Creating new controller for vnet ", resources.SysConfig().VnetPort)
 	controller := &Controller{}
 	controller.resources = resources
 	controller.hcollectors = make(map[string]*HostCollector)
@@ -57,7 +57,7 @@ func (this *Controller) StartPolling(deviceId, serviceName string) error {
 	}
 	for _, host := range device.Hosts {
 		hostCol, _ := this.hostCollector(deviceId, host.Id, serviceName,
-			this.serviceArea, device.ServiceArea)
+			this.serviceArea, uint16(device.ServiceArea))
 		hostCol.start()
 	}
 	return nil
@@ -67,7 +67,7 @@ func hcKey(deviceId, hostId string) string {
 	return strings.New(deviceId, hostId).String()
 }
 
-func (this *Controller) hostCollector(deviceId, hostId, serviceName string, cServiceArea, dServiceArea int32) (*HostCollector, bool) {
+func (this *Controller) hostCollector(deviceId, hostId, serviceName string, cServiceArea, dServiceArea uint16) (*HostCollector, bool) {
 	key := hcKey(deviceId, hostId)
 	this.mtx.Lock()
 	defer this.mtx.Unlock()

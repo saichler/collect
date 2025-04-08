@@ -15,12 +15,12 @@ type InventoryCenter struct {
 	primaryKeyAttribute string
 	resources           common.IResources
 	serviceName         string
-	serviceArea         int32
+	serviceArea         uint16
 	element             interface{}
 }
 
-func newInventoryCenter(serviceName string, serviceArea int32, primaryKeyAttribute string,
-	element common.IMObjects, resources common.IResources, listener cache.ICacheListener) *InventoryCenter {
+func newInventoryCenter(serviceName string, serviceArea uint16, primaryKeyAttribute string,
+	element common.IElements, resources common.IResources, listener cache.ICacheListener) *InventoryCenter {
 	this := &InventoryCenter{}
 	this.serviceName = serviceName
 	this.serviceArea = serviceArea
@@ -29,14 +29,14 @@ func newInventoryCenter(serviceName string, serviceArea int32, primaryKeyAttribu
 	this.resources = resources
 	this.primaryKeyAttribute = primaryKeyAttribute
 	this.elements = cache.NewModelCache(this.serviceName, this.serviceArea, this.elementType.Name(),
-		resources.Config().LocalUuid, listener, resources.Introspector())
+		resources.SysConfig().LocalUuid, listener, resources.Introspector())
 	node, _ := resources.Introspector().Inspect(element.Element())
 	introspecting.AddPrimaryKeyDecorator(node, primaryKeyAttribute)
 	return this
 }
 
 func (this *InventoryCenter) Add(elem interface{}) {
-	_, ok := elem.(common.IMObjects)
+	_, ok := elem.(common.IElements)
 	if ok {
 		panic("")
 	}
@@ -65,7 +65,7 @@ func removeParsingSuffix(serviceName string) string {
 	return serviceName[:index]
 }
 
-func Inventory(resource common.IResources, serviceName string, serviceArea int32) *InventoryCenter {
+func Inventory(resource common.IResources, serviceName string, serviceArea uint16) *InventoryCenter {
 	serviceName = removeParsingSuffix(serviceName)
 	sp, ok := resource.ServicePoints().ServicePointHandler(serviceName, serviceArea)
 	if !ok {

@@ -3,14 +3,13 @@ package inventory
 import (
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
-	"github.com/saichler/types/go/types"
 )
 
 type InventoryServicePoint struct {
 	inventoryCenter *InventoryCenter
 }
 
-func RegisterInventoryCenter(serviceName string, serviceArea int32, elem common.IMObjects, primaryKey string,
+func RegisterInventoryCenter(serviceName string, serviceArea uint16, elem common.IElements, primaryKey string,
 	resources common.IResources, listener cache.ICacheListener) {
 	this := &InventoryServicePoint{}
 	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, elem, resources, listener)
@@ -20,26 +19,26 @@ func RegisterInventoryCenter(serviceName string, serviceArea int32, elem common.
 	}
 }
 
-func (this *InventoryServicePoint) Post(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *InventoryServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	this.inventoryCenter.Add(pb)
 	return nil
 }
-func (this *InventoryServicePoint) Put(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *InventoryServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Patch(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *InventoryServicePoint) Patch(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Delete(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *InventoryServicePoint) Delete(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Get(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *InventoryServicePoint) Get(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) GetCopy(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *InventoryServicePoint) GetCopy(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Failed(pb common.IMObjects, resourcs common.IResources, msg *types.Message) common.IMObjects {
+func (this *InventoryServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
 func (this *InventoryServicePoint) EndPoint() string {
@@ -49,8 +48,8 @@ func (this *InventoryServicePoint) ServiceName() string {
 	return this.inventoryCenter.serviceName
 }
 func (this *InventoryServicePoint) Transactional() bool { return false }
-func (this *InventoryServicePoint) ServiceModel() common.IMObjects {
-	return this.inventoryCenter.element.(common.IMObjects)
+func (this *InventoryServicePoint) ServiceModel() common.IElements {
+	return this.inventoryCenter.element.(common.IElements)
 }
 func (this *InventoryServicePoint) ReplicationCount() int {
 	return 0

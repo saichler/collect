@@ -10,7 +10,7 @@ import (
 	"github.com/saichler/k8s_observer/go/serializers"
 	types3 "github.com/saichler/k8s_observer/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
-	types2 "github.com/saichler/types/go/types"
+	"github.com/saichler/types/go/common"
 	"sync"
 	"testing"
 	"time"
@@ -77,7 +77,7 @@ func TestParsingForK8s(t *testing.T) {
 	context := "kubernetes-admin@kubernetes"
 
 	cluster := CreateCluster(admin, context, 0)
-	cli.Multicast(config.ServiceName, 0, types2.Action_POST, cluster)
+	cli.Multicast(config.ServiceName, 0, common.POST, cluster)
 
 	time.Sleep(2 * time.Second)
 

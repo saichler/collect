@@ -61,7 +61,7 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 			return
 		}
 	}
-	pollCenter := polling.Polling(this.resources, job.CServiceArea)
+	pollCenter := polling.Polling(this.resources, uint16(job.CServiceArea))
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)
@@ -90,7 +90,7 @@ func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool)
 	m := &types.Map{}
 	m.Data = make(map[string][]byte)
 	for _, pdu := range pdus {
-		enc := object.NewEncode([]byte{}, 0)
+		enc := object.NewEncode()
 		err := enc.Add(pdu.Value)
 		if err != nil {
 			this.resources.Logger().Error("Object Value Error: ", err.Error())
@@ -98,7 +98,7 @@ func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool)
 		m.Data[pdu.Name] = enc.Data()
 	}
 	if encodeMap {
-		enc := object.NewEncode([]byte{}, 0)
+		enc := object.NewEncode()
 		err := enc.Add(m)
 		if err != nil {
 			this.resources.Logger().Error("Object Table Error: ", err)
@@ -125,7 +125,7 @@ func (this *SNMPCollector) table(job *types.Job, pll *types.Poll) {
 		protocols.SetValue(rowIndex, col, colIndex, m.Data[key], tbl)
 	}
 
-	enc := object.NewEncode([]byte{}, 0)
+	enc := object.NewEncode()
 	err := enc.Add(tbl)
 	if err != nil {
 		this.resources.Logger().Error("Object Table Error: ", err)

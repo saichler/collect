@@ -29,7 +29,7 @@ func createVNet(port uint32) *vnet.VNet {
 	if err != nil {
 		panic("Failed to load security provider")
 	}
-	config := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	config := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:  "vnet"}
@@ -37,19 +37,19 @@ func createVNet(port uint32) *vnet.VNet {
 	sps := service_points.NewServicePoints(ins, config)
 
 	res := resources.NewResources(reg, secure, sps, Log, nil, nil, config, ins)
-	res.Config().VnetPort = port
+	res.SysConfig().VnetPort = port
 	sw := vnet.NewVNet(res)
 	sw.Start()
 	return sw
 }
 
-func createCollectionService(serviceArea int32, port uint32, polls []*types2.Poll) common.IVirtualNetworkInterface {
+func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Poll) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so")
 	if err != nil {
 		panic("Failed to load security provider")
 	}
-	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	cfg := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:  "collector"}
@@ -57,7 +57,7 @@ func createCollectionService(serviceArea int32, port uint32, polls []*types2.Pol
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
-	resourcs.Config().VnetPort = port
+	resourcs.SysConfig().VnetPort = port
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 
@@ -74,13 +74,13 @@ func createCollectionService(serviceArea int32, port uint32, polls []*types2.Pol
 	return vnic
 }
 
-func createParsingService(serviceArea int32, port uint32, pb proto.Message, key string, polls []*types2.Poll) common.IVirtualNetworkInterface {
+func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key string, polls []*types2.Poll) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so")
 	if err != nil {
 		panic("Failed to load security provider")
 	}
-	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	cfg := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:  "parsing"}
@@ -88,7 +88,7 @@ func createParsingService(serviceArea int32, port uint32, pb proto.Message, key 
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
-	resourcs.Config().VnetPort = port
+	resourcs.SysConfig().VnetPort = port
 
 	polling.RegisterPollCenter(serviceArea, resourcs, nil)
 	pc := polling.Polling(resourcs, serviceArea)
@@ -107,7 +107,7 @@ func createClient(port uint32) common.IVirtualNetworkInterface {
 	if err != nil {
 		panic("Failed to load security provider")
 	}
-	cfg := &types.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	cfg := &types.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:  "parsing"}
@@ -115,7 +115,7 @@ func createClient(port uint32) common.IVirtualNetworkInterface {
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	resourcs := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
-	resourcs.Config().VnetPort = port
+	resourcs.SysConfig().VnetPort = port
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()

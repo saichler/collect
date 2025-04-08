@@ -14,15 +14,15 @@ type HostCollector struct {
 	deviceId     string
 	hostId       string
 	serviceName  string
-	cServiceArea int32
-	dServiceArea int32
+	cServiceArea uint16
+	dServiceArea uint16
 	collectors   map[int32]base.ProtocolCollector
 	jobsQueue    *JobsQueue
 	mtx          *sync.Mutex
 	running      bool
 }
 
-func newHostCollector(deviceId, hoistId, serviceName string, cServiceArea, dServiceArea int32, controller *Controller) *HostCollector {
+func newHostCollector(deviceId, hoistId, serviceName string, cServiceArea, dServiceArea uint16, controller *Controller) *HostCollector {
 	hc := &HostCollector{}
 	hc.deviceId = deviceId
 	hc.hostId = hoistId

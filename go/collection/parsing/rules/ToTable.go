@@ -57,7 +57,7 @@ func getValues(line string, columns map[int32]string) map[int32][]byte {
 			result[int32(i)] = []byte{}
 		} else {
 			value := strings.TrimSpace(line[begin : begin+len(col)])
-			obj := object.NewEncode([]byte{}, 0)
+			obj := object.NewEncode()
 			obj.Add(value)
 			result[int32(i)] = obj.Data()
 			begin = begin + len(col)

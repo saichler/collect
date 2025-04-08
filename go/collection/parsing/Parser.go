@@ -35,7 +35,7 @@ func (this *_Parser) Parse(job *types.Job, any interface{}, resources common.IRe
 	if err != nil {
 		return resources.Logger().Error(err)
 	}
-	pc := polling.Polling(resources, job.DServiceArea)
+	pc := polling.Polling(resources, uint16(job.DServiceArea))
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		return resources.Logger().Error("cannot find poll for name ", job.PollName)

@@ -5,7 +5,6 @@ import (
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 )
 
 const (
@@ -17,7 +16,7 @@ type PollServicePoint struct {
 	pollCenter *PollCenter
 }
 
-func RegisterPollCenter(serviceArea int32, resources common.IResources, listener cache.ICacheListener) {
+func RegisterPollCenter(serviceArea uint16, resources common.IResources, listener cache.ICacheListener) {
 	psp := &PollServicePoint{}
 	psp.pollCenter = newPollCenter(serviceArea, resources, listener)
 	err := resources.ServicePoints().RegisterServicePoint(psp, serviceArea)
@@ -26,27 +25,27 @@ func RegisterPollCenter(serviceArea int32, resources common.IResources, listener
 	}
 }
 
-func (this *PollServicePoint) Post(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *PollServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	hp := pb.Element().(*types.Poll)
 	this.pollCenter.Add(hp)
 	return nil
 }
-func (this *PollServicePoint) Put(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *PollServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *PollServicePoint) Patch(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *PollServicePoint) Patch(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *PollServicePoint) Delete(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *PollServicePoint) Delete(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *PollServicePoint) Get(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *PollServicePoint) Get(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *PollServicePoint) GetCopy(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *PollServicePoint) GetCopy(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *PollServicePoint) Failed(pb common.IMObjects, resourcs common.IResources, msg *types2.Message) common.IMObjects {
+func (this *PollServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
 func (this *PollServicePoint) EndPoint() string {
@@ -56,7 +55,7 @@ func (this *PollServicePoint) ServiceName() string {
 	return ServiceName
 }
 func (this *PollServicePoint) Transactional() bool { return false }
-func (this *PollServicePoint) ServiceModel() common.IMObjects {
+func (this *PollServicePoint) ServiceModel() common.IElements {
 	return object.New(nil, &types.Poll{})
 }
 func (this *PollServicePoint) ReplicationCount() int {

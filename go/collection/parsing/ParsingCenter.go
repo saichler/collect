@@ -9,14 +9,14 @@ import (
 )
 
 func JobComplete(job *types.Job, resources common.IResources) {
-	pc := polling.Polling(resources, job.DServiceArea)
+	pc := polling.Polling(resources, uint16(job.DServiceArea))
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		resources.Logger().Error("cannot find poll for uuid ", job.PollName)
 		return
 	}
 	if job.Error == "" && poll.Attributes != nil {
-		inv := inventory.Inventory(resources, job.ServiceName, job.DServiceArea)
+		inv := inventory.Inventory(resources, job.ServiceName, uint16(job.DServiceArea))
 		elem := inv.ElementByKey(job.DeviceId)
 		if elem == nil {
 			inv.AddEmpty(job.DeviceId)

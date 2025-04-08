@@ -7,17 +7,16 @@ import (
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 	"strings"
 )
 
 type ParsingServicePoint struct {
 	resources   common.IResources
 	serviceName string
-	serviceArea int32
+	serviceArea uint16
 }
 
-func RegisterParsingServicePoint(serviceName string, serviceArea int32, elem common.IMObjects,
+func RegisterParsingServicePoint(serviceName string, serviceArea uint16, elem common.IElements,
 	primaryKeyAttr string, resources common.IResources, listener cache.ICacheListener) {
 	this := &ParsingServicePoint{}
 	this.serviceName = serviceName
@@ -34,28 +33,28 @@ func RegisterParsingServicePoint(serviceName string, serviceArea int32, elem com
 	}
 }
 
-func (this *ParsingServicePoint) Post(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ParsingServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	job := pb.Element().(*types.Job)
 	resourcs.Logger().Debug("Job ", job.PollName, " completed!")
 	JobComplete(job, this.resources)
 	return nil
 }
-func (this *ParsingServicePoint) Put(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ParsingServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Patch(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ParsingServicePoint) Patch(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Delete(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ParsingServicePoint) Delete(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Get(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ParsingServicePoint) Get(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) GetCopy(pb common.IMObjects, resourcs common.IResources) common.IMObjects {
+func (this *ParsingServicePoint) GetCopy(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Failed(pb common.IMObjects, resourcs common.IResources, msg *types2.Message) common.IMObjects {
+func (this *ParsingServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
 func (this *ParsingServicePoint) EndPoint() string {
@@ -65,7 +64,7 @@ func (this *ParsingServicePoint) ServiceName() string {
 	return this.serviceName + base.Parsing_Suffix
 }
 func (this *ParsingServicePoint) Transactional() bool { return false }
-func (this *ParsingServicePoint) ServiceModel() common.IMObjects {
+func (this *ParsingServicePoint) ServiceModel() common.IElements {
 	return object.New(nil, &types.Job{})
 }
 func (this *ParsingServicePoint) ReplicationCount() int {

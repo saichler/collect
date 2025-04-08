@@ -52,7 +52,7 @@ func createResources(alias string) common.IResources {
 	if err != nil {
 		panic("Failed to load security provider")
 	}
-	cfg := &types2.VNicConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
+	cfg := &types2.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
 		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
 		LocalAlias:  alias}
@@ -67,7 +67,7 @@ func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
 	if l.ph != nil {
 		l.ph.HandleCollectNotification(job)
 	}
-	pc := polling.Polling(l.resources, job.CServiceArea)
+	pc := polling.Polling(l.resources, uint16(job.CServiceArea))
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		l.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
@@ -162,11 +162,11 @@ func CreateCommands() ([]*model.CollectCommand, map[string]string) {
 	return []*model.CollectCommand{cVersion, cSystem, cClock, cTimezone, cTeTunnelId}, m
 }*/
 
-func CreateDevice(ip string, serviceArea int32) *types.Device {
+func CreateDevice(ip string, serviceArea uint16) *types.Device {
 	device := &types.Device{}
 	device.Id = ip
 	device.ServiceName = InvServiceName
-	device.ServiceArea = serviceArea
+	device.ServiceArea = int32(serviceArea)
 	device.Hosts = make(map[string]*types.Host)
 	host := &types.Host{}
 	host.Id = device.Id

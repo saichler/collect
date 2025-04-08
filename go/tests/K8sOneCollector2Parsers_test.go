@@ -8,7 +8,6 @@ import (
 	types3 "github.com/saichler/k8s_observer/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 	"testing"
 	"time"
 )
@@ -57,8 +56,8 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
-	cli.Multicast(config.ServiceName, 0, types2.Action_POST, cluster1)
-	cli.Multicast(config.ServiceName, 0, types2.Action_POST, cluster2)
+	cli.Multicast(config.ServiceName, 0, common.POST, cluster1)
+	cli.Multicast(config.ServiceName, 0, common.POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 
@@ -71,7 +70,7 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	}
 }
 
-func checkCluster(resourcs common.IResources, context string, t *testing.T, serviceArea int32) bool {
+func checkCluster(resourcs common.IResources, context string, t *testing.T, serviceArea uint16) bool {
 	ic := inventory.Inventory(resourcs, "Cluster", serviceArea)
 	k8sCluster := ic.ElementByKey(context).(*types3.Cluster)
 	if k8sCluster == nil {
