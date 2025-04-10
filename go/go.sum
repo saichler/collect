@@ -14,8 +14,8 @@ github.com/saichler/l8test v0.0.0-20250410134117-8b286ad81d8c h1:aZyQ8JzXu/cvU6n
 github.com/saichler/l8test v0.0.0-20250410134117-8b286ad81d8c/go.mod h1:C4B8Zpv0L/Di/qB0lOWHOXF3r3Pz/6Oabu730TthWsc=
 github.com/saichler/layer8 v0.0.0-20250409145156-819f8f57943a h1:RWtlxr+V/BiKvgUelPG6sHc6pKIoJppn2yvwQaVjShs=
 github.com/saichler/layer8 v0.0.0-20250409145156-819f8f57943a/go.mod h1:MGf/M+PjUV1JYEu6Cbi1XT+Rb8zQ3YWPWCz447SeTio=
-github.com/saichler/probler v0.0.0-20250409192834-a0f0f9edad43 h1:6cLDWd7VxGcjkgJPV6kmJ8eGmeASkj5izCPYrTCm6xs=
-github.com/saichler/probler v0.0.0-20250409192834-a0f0f9edad43/go.mod h1:3SmozVci2+FIzlQkm7PuXcUxfG8Qjc+Nml1/0AJPQrc=
+github.com/saichler/probler v0.0.0-20250410135936-436d42c71b82 h1:8XBwh5HJuMXKJlpAB75NfALEUIY7spc43/7UATwENoI=
+github.com/saichler/probler v0.0.0-20250410135936-436d42c71b82/go.mod h1:3SmozVci2+FIzlQkm7PuXcUxfG8Qjc+Nml1/0AJPQrc=
 github.com/saichler/reflect v0.0.0-20250409143305-178f5c019dcd h1:3w4m37XoL+p25KsdVSNsJs4TD5XmPdWKzxt/VNRUa9w=
 github.com/saichler/reflect v0.0.0-20250409143305-178f5c019dcd/go.mod h1:i81Zz9kp1G4AR6fYqkA9rWCkIm2zCgxH+9CLj9Uty1o=
 github.com/saichler/serializer v0.0.0-20250409173259-0fe904e19055 h1:VrW1QS0knoW5OthAEIQDUGGavQ/vyDaVIybF9V5P6d4=

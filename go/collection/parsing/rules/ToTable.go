@@ -29,8 +29,8 @@ func (this *ToTable) Parse(resources common.IResources, workSpace map[string]int
 	}
 
 	lines := strings.Split(input, "\n")
-	table := &types.Table{}
-	table.Rows = make(map[int32]*types.Row)
+	table := &types.CTable{}
+	table.Rows = make(map[int32]*types.CRow)
 	for i, line := range lines {
 		if table.Columns == nil {
 			table.Columns = getColumns(line, colmns)
@@ -39,7 +39,7 @@ func (this *ToTable) Parse(resources common.IResources, workSpace map[string]int
 			}
 			continue
 		}
-		row := &types.Row{}
+		row := &types.CRow{}
 		row.Data = getValues(line, table.Columns)
 		table.Rows[int32(i)] = row
 	}

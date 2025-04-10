@@ -22,7 +22,7 @@ func (this *TableToMap) ParamNames() []string {
 }
 
 func (this *TableToMap) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
-	table, ok := workSpace[Output].(*types.Table)
+	table, ok := workSpace[Output].(*types.CTable)
 	if !ok {
 		return errors.New("Workspace had an invalid output object")
 	}

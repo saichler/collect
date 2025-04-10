@@ -23,8 +23,8 @@ func RegisterParsingServicePoint(serviceName string, serviceArea uint16, elem co
 	this.serviceArea = serviceArea
 	this.resources = resources
 
-	resources.Registry().Register(&types.Map{})
-	resources.Registry().Register(&types.Table{})
+	resources.Registry().Register(&types.CMap{})
+	resources.Registry().Register(&types.CTable{})
 
 	inventory.RegisterInventoryCenter(serviceName, serviceArea, elem, primaryKeyAttr, resources, listener)
 	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea)

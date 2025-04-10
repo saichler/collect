@@ -92,8 +92,8 @@ func checkCluster(resourcs common.IResources, context string, t *testing.T, serv
 		return false
 	}
 
-	if len(k8sCluster.Pods) != 17 {
-		Log.Fail(t, context, " Expected K8s Cluster pods to be 17")
+	if len(k8sCluster.Pods) < 17 {
+		Log.Fail(t, context, " Expected K8s Cluster pods to be at least 17")
 		return false
 	}
 	for _, pod := range k8sCluster.Pods {

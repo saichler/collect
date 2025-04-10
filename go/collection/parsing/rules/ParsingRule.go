@@ -15,7 +15,7 @@ type ParsingRule interface {
 }
 
 func getStringInput(resources common.IResources, input interface{}, params map[string]*types.Parameter) (string, error) {
-	m, ok := input.(*types.Map)
+	m, ok := input.(*types.CMap)
 	if ok {
 		from := params[From]
 		if from == nil {

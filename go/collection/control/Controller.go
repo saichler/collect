@@ -28,8 +28,8 @@ func NewController(handler common2.CollectNotificationHandler, resources common.
 	controller.hcollectors = make(map[string]*HostCollector)
 	controller.mtx = &sync.Mutex{}
 	controller.notificationHandler = handler
-	resources.Registry().Register(&types.Map{})
-	resources.Registry().Register(&types.Table{})
+	resources.Registry().Register(&types.CMap{})
+	resources.Registry().Register(&types.CTable{})
 	controller.serviceArea = serviceArea
 	return controller
 }

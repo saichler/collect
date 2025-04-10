@@ -76,7 +76,7 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 	this.resources.Logger().Debug("Exec Job End ", job.DeviceId, " ", job.PollName)
 }
 
-func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool) *types.Map {
+func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool) *types.CMap {
 	if job.Timeout != 0 {
 		this.agent.Timeout = time.Second * time.Duration(job.Timeout)
 		defer func() { this.agent.Timeout = time.Second * time.Duration(this.config.Timeout) }()
@@ -87,7 +87,7 @@ func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool)
 			strconv.Itoa(int(this.config.Port)), " Oid:", pll.What, e.Error()).String()
 		return nil
 	}
-	m := &types.Map{}
+	m := &types.CMap{}
 	m.Data = make(map[string][]byte)
 	for _, pdu := range pdus {
 		enc := object.NewEncode()
@@ -113,7 +113,7 @@ func (this *SNMPCollector) table(job *types.Job, pll *types.Poll) {
 	if job.Error != "" {
 		return
 	}
-	tbl := &types.Table{}
+	tbl := &types.CTable{}
 	var lastRowIndex int32 = -1
 	keys := protocols.Keys(m)
 	var col int32 = 0

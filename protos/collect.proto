@@ -101,15 +101,15 @@ message Job {
   int32 d_service_area = 12;
 }
 
-message Map {
+message CMap {
   map<string, bytes> data = 1;
 }
 
-message Table {
+message CTable {
   map<int32, string> columns = 1;
-  map<int32, Row> rows = 2;
+  map<int32, CRow> rows = 2;
 }
 
-message Row {
+message CRow {
   map<int32, bytes> data = 1;
 }

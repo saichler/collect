@@ -7,7 +7,7 @@ require (
 	github.com/gosnmp/gosnmp v1.39.0
 	github.com/saichler/l8test v0.0.0-20250410134117-8b286ad81d8c
 	github.com/saichler/layer8 v0.0.0-20250409145156-819f8f57943a
-	github.com/saichler/probler v0.0.0-20250409192834-a0f0f9edad43
+	github.com/saichler/probler v0.0.0-20250410135936-436d42c71b82
 	github.com/saichler/reflect v0.0.0-20250409143305-178f5c019dcd
 	github.com/saichler/serializer v0.0.0-20250409173259-0fe904e19055
 	github.com/saichler/servicepoints v0.0.0-20250409024502-ed15daef4c93
