@@ -48,7 +48,7 @@ type CollectorListener struct {
 
 func createResources(alias string) common.IResources {
 	reg := registry.NewRegistry()
-	secure, err := common.LoadSecurityProvider("security.so")
+	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
 		panic("Failed to load security provider")
 	}

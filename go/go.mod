@@ -1,18 +1,18 @@
 module github.com/saichler/collect/go
 
-go 1.24.1
+go 1.23.8
 
 require (
 	github.com/google/uuid v1.6.0
 	github.com/gosnmp/gosnmp v1.39.0
-	github.com/saichler/k8s_observer v0.0.0-20250327191433-107b978228cd
-	github.com/saichler/l8test v0.0.0-20250404045950-82257b7e0c6e
-	github.com/saichler/layer8 v0.0.0-20250407120040-f95323c28a0f
-	github.com/saichler/reflect v0.0.0-20250403132434-ebbc965f43b1
-	github.com/saichler/serializer v0.0.0-20250407015406-a634fc53446b
-	github.com/saichler/servicepoints v0.0.0-20250408142513-b9d72a7f0b6a
+	github.com/saichler/l8test v0.0.0-20250410134117-8b286ad81d8c
+	github.com/saichler/layer8 v0.0.0-20250409145156-819f8f57943a
+	github.com/saichler/probler v0.0.0-20250409192834-a0f0f9edad43
+	github.com/saichler/reflect v0.0.0-20250409143305-178f5c019dcd
+	github.com/saichler/serializer v0.0.0-20250409173259-0fe904e19055
+	github.com/saichler/servicepoints v0.0.0-20250409024502-ed15daef4c93
 	github.com/saichler/shared v0.0.0-20250405113010-2d5a47c0ec01
-	github.com/saichler/types/go v0.0.0-20250404164548-fda7ac9b6793
+	github.com/saichler/types v0.0.0-20250409200718-759c653577c7
 	golang.org/x/crypto v0.37.0
 	google.golang.org/protobuf v1.36.6
 )

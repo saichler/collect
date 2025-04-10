@@ -25,7 +25,7 @@ var vNetPort2 uint32 = 40000
 
 func createVNet(port uint32) *vnet.VNet {
 	reg := registry.NewRegistry()
-	secure, err := common.LoadSecurityProvider("security.so")
+	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
 		panic("Failed to load security provider")
 	}
@@ -45,7 +45,7 @@ func createVNet(port uint32) *vnet.VNet {
 
 func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Poll) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
-	secure, err := common.LoadSecurityProvider("security.so")
+	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
 		panic("Failed to load security provider")
 	}
@@ -76,7 +76,7 @@ func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Po
 
 func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key string, polls []*types2.Poll) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
-	secure, err := common.LoadSecurityProvider("security.so")
+	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
 		panic("Failed to load security provider")
 	}
@@ -103,7 +103,7 @@ func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key
 
 func createClient(port uint32) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
-	secure, err := common.LoadSecurityProvider("security.so")
+	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
 		panic("Failed to load security provider")
 	}
