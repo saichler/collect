@@ -6,7 +6,6 @@ import (
 	"github.com/saichler/collect/go/collection/polling"
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
-	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/servicepoints/go/points/service_points"
 	"github.com/saichler/shared/go/share/registry"
@@ -28,10 +27,6 @@ const (
 	InvServiceName = "NetworkBox"
 	K8sServiceName = "Cluster"
 )
-
-func init() {
-	protocol.UsingContainers = false
-}
 
 func sleep() {
 	time.Sleep(time.Millisecond * 100)

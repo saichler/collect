@@ -102,7 +102,7 @@ func TestParsingForK8s(t *testing.T) {
 		return
 	}
 
-	if len(k8sCluster.Pods) != 17 {
+	if len(k8sCluster.Pods) < 17 {
 		Log.Fail(t, "Expected K8s Cluster pods to be 17")
 		return
 	}

@@ -4,7 +4,6 @@ import (
 	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
 )
 
@@ -18,18 +17,16 @@ type ConfigServicePoint struct {
 	controller   base.IController
 }
 
-func RegisterConfigCenter(serviceArea uint16, resources common.IResources, listener cache.ICacheListener,
+func RegisterConfigCenter(serviceArea uint16, resources common.IResources, vnic common.IVirtualNetworkInterface,
 	controller base.IController) {
 	this := &ConfigServicePoint{}
 	this.controller = controller
-	this.configCenter = newConfigCenter(serviceArea, resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea)
+	this.configCenter = newConfigCenter(serviceArea, resources, vnic)
+	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea, vnic)
 	if err != nil {
 		panic(err)
 	}
 }
-
-var Count = 0
 
 func (this *ConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	device := pb.Element().(*types.Device)

@@ -1,7 +1,6 @@
 package inventory
 
 import (
-	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
 )
 
@@ -10,10 +9,10 @@ type InventoryServicePoint struct {
 }
 
 func RegisterInventoryCenter(serviceName string, serviceArea uint16, elem common.IElements, primaryKey string,
-	resources common.IResources, listener cache.ICacheListener) {
+	resources common.IResources, vnic common.IVirtualNetworkInterface) {
 	this := &InventoryServicePoint{}
-	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, elem, resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea)
+	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, elem, resources, vnic)
+	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea, vnic)
 	if err != nil {
 		panic(err)
 	}

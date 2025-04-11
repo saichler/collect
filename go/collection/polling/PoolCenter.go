@@ -17,7 +17,7 @@ type PollCenter struct {
 	mtx       *sync.RWMutex
 }
 
-func newPollCenter(serviceArea uint16, resources common.IResources, listener cache.ICacheListener) *PollCenter {
+func newPollCenter(serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *PollCenter {
 	pc := &PollCenter{}
 	pc.name2Poll = cache.NewModelCache(ServiceName, serviceArea, "Poll",
 		resources.SysConfig().LocalUuid, listener, resources.Introspector())

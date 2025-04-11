@@ -10,7 +10,7 @@ type ConfigCenter struct {
 	devices *cache.Cache
 }
 
-func newConfigCenter(serviceArea uint16, resources common.IResources, listener cache.ICacheListener) *ConfigCenter {
+func newConfigCenter(serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *ConfigCenter {
 	this := &ConfigCenter{}
 	this.devices = cache.NewModelCache(ServiceName, serviceArea, "Device", resources.SysConfig().LocalUuid, listener, resources.Introspector())
 	return this

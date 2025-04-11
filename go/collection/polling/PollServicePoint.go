@@ -3,7 +3,6 @@ package polling
 import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
 )
 
@@ -16,10 +15,10 @@ type PollServicePoint struct {
 	pollCenter *PollCenter
 }
 
-func RegisterPollCenter(serviceArea uint16, resources common.IResources, listener cache.ICacheListener) {
+func RegisterPollCenter(serviceArea uint16, resources common.IResources, vnic common.IVirtualNetworkInterface) {
 	psp := &PollServicePoint{}
-	psp.pollCenter = newPollCenter(serviceArea, resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(psp, serviceArea)
+	psp.pollCenter = newPollCenter(serviceArea, resources, vnic)
+	err := resources.ServicePoints().RegisterServicePoint(psp, serviceArea, vnic)
 	if err != nil {
 		panic(err)
 	}

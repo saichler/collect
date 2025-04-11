@@ -20,7 +20,7 @@ type InventoryCenter struct {
 }
 
 func newInventoryCenter(serviceName string, serviceArea uint16, primaryKeyAttribute string,
-	element common.IElements, resources common.IResources, listener cache.ICacheListener) *InventoryCenter {
+	element common.IElements, resources common.IResources, listener common.IServicePointCacheListener) *InventoryCenter {
 	this := &InventoryCenter{}
 	this.serviceName = serviceName
 	this.serviceArea = serviceArea

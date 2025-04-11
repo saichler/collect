@@ -5,7 +5,6 @@ import (
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
 	"strings"
 )
@@ -17,7 +16,7 @@ type ParsingServicePoint struct {
 }
 
 func RegisterParsingServicePoint(serviceName string, serviceArea uint16, elem common.IElements,
-	primaryKeyAttr string, resources common.IResources, listener cache.ICacheListener) {
+	primaryKeyAttr string, resources common.IResources, vnic common.IVirtualNetworkInterface) {
 	this := &ParsingServicePoint{}
 	this.serviceName = serviceName
 	this.serviceArea = serviceArea
@@ -26,8 +25,8 @@ func RegisterParsingServicePoint(serviceName string, serviceArea uint16, elem co
 	resources.Registry().Register(&types.CMap{})
 	resources.Registry().Register(&types.CTable{})
 
-	inventory.RegisterInventoryCenter(serviceName, serviceArea, elem, primaryKeyAttr, resources, listener)
-	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea)
+	inventory.RegisterInventoryCenter(serviceName, serviceArea, elem, primaryKeyAttr, resources, vnic)
+	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea, vnic)
 	if err != nil {
 		panic(err)
 	}
