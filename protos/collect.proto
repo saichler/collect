@@ -24,7 +24,7 @@ enum Protocol {
   K8s = 6;
 }
 
-message Poll {
+message PollConfig {
   string name = 1;
   string vendor = 2;
   string series = 3;
@@ -56,7 +56,7 @@ message Parameter {
   string value = 2;
 }
 
-message Device {
+message DeviceConfig {
   string id = 1;
   string service_name = 2;
   int32 service_area = 3;
@@ -65,12 +65,12 @@ message Device {
 
 message Host {
   string id = 1;
-  map<int32, Config> configs = 2;
+  map<int32, HostConfig> configs = 2;
   map<string, string> polls = 3;
   map<string, string> groups = 4;
 }
 
-message Config {
+message HostConfig {
   Protocol protocol = 1;
   string addr = 2;
   int32 port = 3;

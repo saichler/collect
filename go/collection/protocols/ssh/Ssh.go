@@ -2,7 +2,7 @@ package ssh
 
 import (
 	"bytes"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/shared/go/share/queues"
@@ -20,7 +20,7 @@ var CR = []byte("\n")
 
 type SshCollector struct {
 	resources common.IResources
-	config    *types.Config
+	config    *types.HostConfig
 	client    *ssh2.Client
 	session   *ssh2.Session
 	in        io.WriteCloser
@@ -35,7 +35,7 @@ func (sshc *SshCollector) Protocol() types.Protocol {
 	return types.Protocol_SSH
 }
 
-func (sshc *SshCollector) Init(conf *types.Config, resources common.IResources) error {
+func (sshc *SshCollector) Init(conf *types.HostConfig, resources common.IResources) error {
 	sshc.config = conf
 	sshc.resources = resources
 	sshc.queue = queues.NewQueue("SSh Collector", 1024)
@@ -234,7 +234,7 @@ func (sshc *SshCollector) exec(cmd string, timeout int64) (string, error) {
 }
 
 func (sshc *SshCollector) Exec(job *types.Job) {
-	pollCenter := polling.Polling(sshc.resources, uint16(job.CServiceArea))
+	pollCenter := poll_config.Polling(sshc.resources, uint16(job.CServiceArea))
 	poll := pollCenter.PollByName(job.PollName)
 	if poll == nil {
 		sshc.resources.Logger().Error("cannot find poll for uuid ", job.PollName)

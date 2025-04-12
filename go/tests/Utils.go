@@ -3,7 +3,7 @@ package tests
 import (
 	"fmt"
 	"github.com/saichler/collect/go/collection/control"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/reflect/go/reflect/introspecting"
@@ -62,7 +62,7 @@ func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
 	if l.ph != nil {
 		l.ph.HandleCollectNotification(job)
 	}
-	pc := polling.Polling(l.resources, uint16(job.CServiceArea))
+	pc := poll_config.Polling(l.resources, uint16(job.CServiceArea))
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		l.resources.Logger().Error("cannot find poll for uuid ", job.PollName)

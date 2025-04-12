@@ -2,7 +2,7 @@ package snmp
 
 import (
 	"github.com/gosnmp/gosnmp"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/collection/protocols"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
@@ -14,7 +14,7 @@ import (
 
 type SNMPCollector struct {
 	resources common.IResources
-	config    *types.Config
+	config    *types.HostConfig
 	agent     *gosnmp.GoSNMP
 	connected bool
 }
@@ -23,7 +23,7 @@ func (this *SNMPCollector) Protocol() types.Protocol {
 	return types.Protocol_SNMPV2
 }
 
-func (this *SNMPCollector) Init(conf *types.Config, resources common.IResources) error {
+func (this *SNMPCollector) Init(conf *types.HostConfig, resources common.IResources) error {
 	this.config = conf
 	this.resources = resources
 	this.agent = &gosnmp.GoSNMP{}
@@ -61,7 +61,7 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 			return
 		}
 	}
-	pollCenter := polling.Polling(this.resources, uint16(job.CServiceArea))
+	pollCenter := poll_config.Polling(this.resources, uint16(job.CServiceArea))
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)
@@ -76,7 +76,7 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 	this.resources.Logger().Debug("Exec Job End ", job.DeviceId, " ", job.PollName)
 }
 
-func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool) *types.CMap {
+func (this *SNMPCollector) walk(job *types.Job, pll *types.PollConfig, encodeMap bool) *types.CMap {
 	if job.Timeout != 0 {
 		this.agent.Timeout = time.Second * time.Duration(job.Timeout)
 		defer func() { this.agent.Timeout = time.Second * time.Duration(this.config.Timeout) }()
@@ -108,7 +108,7 @@ func (this *SNMPCollector) walk(job *types.Job, pll *types.Poll, encodeMap bool)
 	return m
 }
 
-func (this *SNMPCollector) table(job *types.Job, pll *types.Poll) {
+func (this *SNMPCollector) table(job *types.Job, pll *types.PollConfig) {
 	m := this.walk(job, pll, false)
 	if job.Error != "" {
 		return

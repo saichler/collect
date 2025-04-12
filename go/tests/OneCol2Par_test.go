@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/config"
+	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
-	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/types/go/common"
@@ -39,8 +39,8 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	device1 := CreateDevice(ip1, 0)
 	//assign device 2 to parser in area 1
 	device2 := CreateDevice(ip2, 1)
-	cli.Multicast(config.ServiceName, 0, common.POST, device1)
-	cli.Multicast(config.ServiceName, 0, common.POST, device2)
+	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, device1)
+	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, device2)
 
 	time.Sleep(2 * time.Second)
 

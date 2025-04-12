@@ -4,9 +4,7 @@ import (
 	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/types/go/common"
-	"strings"
 )
 
 type ParsingServicePoint struct {
@@ -15,21 +13,20 @@ type ParsingServicePoint struct {
 	serviceArea uint16
 }
 
-func RegisterParsingServicePoint(serviceName string, serviceArea uint16, elem common.IElements,
-	primaryKeyAttr string, resources common.IResources, vnic common.IVirtualNetworkInterface) {
-	this := &ParsingServicePoint{}
+func (this ParsingServicePoint) Activate(serviceName string, serviceArea uint16,
+	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
+
 	this.serviceName = serviceName
 	this.serviceArea = serviceArea
-	this.resources = resources
+	this.resources = r
+	this.resources.Registry().Register(&types.CMap{})
+	this.resources.Registry().Register(&types.CTable{})
+	this.resources.Registry().Register(&types.Job{})
 
-	resources.Registry().Register(&types.CMap{})
-	resources.Registry().Register(&types.CTable{})
-
-	inventory.RegisterInventoryCenter(serviceName, serviceArea, elem, primaryKeyAttr, resources, vnic)
-	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea, vnic)
-	if err != nil {
-		panic(err)
-	}
+	this.resources.ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
+	this.resources.ServicePoints().Activate(inventory.ServicePointType, serviceName+base.Inventory_Suffix,
+		serviceArea, r, l, args...)
+	return nil
 }
 
 func (this *ParsingServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
@@ -56,16 +53,8 @@ func (this *ParsingServicePoint) GetCopy(pb common.IElements, resourcs common.IR
 func (this *ParsingServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) EndPoint() string {
-	return strings.ToLower(this.ServiceName())
-}
-func (this *ParsingServicePoint) ServiceName() string {
-	return this.serviceName + base.Parsing_Suffix
-}
 func (this *ParsingServicePoint) Transactional() bool { return false }
-func (this *ParsingServicePoint) ServiceModel() common.IElements {
-	return object.New(nil, &types.Job{})
-}
+
 func (this *ParsingServicePoint) ReplicationCount() int {
 	return 0
 }

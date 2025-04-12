@@ -1,9 +1,9 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/config"
+	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
-	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/types/go/common"
@@ -34,7 +34,7 @@ func TestParsingAndInventory(t *testing.T) {
 
 	device := CreateDevice(ip, 0)
 
-	cli.Multicast(config.ServiceName, 0, common.POST, device)
+	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, device)
 
 	time.Sleep(1 * time.Second)
 

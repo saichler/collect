@@ -1,4 +1,4 @@
-package polling
+package poll_config
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-type PollCenter struct {
+type PollConfigCenter struct {
 	name2Poll *cache.Cache
 	key2Name  map[string]string
 	groups    map[string]map[string]string
@@ -17,8 +17,8 @@ type PollCenter struct {
 	mtx       *sync.RWMutex
 }
 
-func newPollCenter(serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *PollCenter {
-	pc := &PollCenter{}
+func newPollConfigCenter(serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *PollConfigCenter {
+	pc := &PollConfigCenter{}
 	pc.name2Poll = cache.NewModelCache(ServiceName, serviceArea, "Poll",
 		resources.SysConfig().LocalUuid, listener, resources.Introspector())
 	pc.key2Name = make(map[string]string)
@@ -28,33 +28,33 @@ func newPollCenter(serviceArea uint16, resources common.IResources, listener com
 	return pc
 }
 
-func (this *PollCenter) getPollName(key string) (string, bool) {
+func (this *PollConfigCenter) getPollName(key string) (string, bool) {
 	this.mtx.RLock()
 	defer this.mtx.RUnlock()
 	pollName, ok := this.key2Name[key]
 	return pollName, ok
 }
 
-func (this *PollCenter) getGroup(name string) map[string]string {
+func (this *PollConfigCenter) getGroup(name string) map[string]string {
 	this.mtx.RLock()
 	defer this.mtx.RUnlock()
 	return this.groups[name]
 }
 
-func (this *PollCenter) deleteFromGroup(gEntry map[string]string, key string) {
+func (this *PollConfigCenter) deleteFromGroup(gEntry map[string]string, key string) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
 	delete(gEntry, key)
 }
 
-func (this *PollCenter) deleteFromKey2Name(key string) {
+func (this *PollConfigCenter) deleteFromKey2Name(key string) {
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
 	delete(this.key2Name, key)
 }
 
-func (this *PollCenter) deleteExisting(poll *types.Poll, key string) {
-	existPoll := this.name2Poll.Get(poll.Name).(*types.Poll)
+func (this *PollConfigCenter) deleteExisting(poll *types.PollConfig, key string) {
+	existPoll := this.name2Poll.Get(poll.Name).(*types.PollConfig)
 	if existPoll.Groups != nil {
 		for _, gName := range existPoll.Groups {
 			gEntry := this.getGroup(gName)
@@ -67,13 +67,13 @@ func (this *PollCenter) deleteExisting(poll *types.Poll, key string) {
 	this.name2Poll.Delete(poll.Name)
 }
 
-func (this *PollCenter) AddAll(polls []*types.Poll) {
+func (this *PollConfigCenter) AddAll(polls []*types.PollConfig) {
 	for _, poll := range polls {
 		this.Add(poll)
 	}
 }
 
-func (this *PollCenter) Add(poll *types.Poll) error {
+func (this *PollConfigCenter) Add(poll *types.PollConfig) error {
 	if poll.What == "" {
 		return errors.New("poll does not contain a What value")
 	}
@@ -107,22 +107,22 @@ func (this *PollCenter) Add(poll *types.Poll) error {
 	return nil
 }
 
-func (this *PollCenter) PollKey(poll *types.Poll) string {
+func (this *PollConfigCenter) PollKey(poll *types.PollConfig) string {
 	return pollKey(poll.Name, poll.Vendor, poll.Series, poll.Family, poll.Software, poll.Hardware, poll.Version)
 }
 
-func (this *PollCenter) PollByName(name string) *types.Poll {
-	poll, _ := this.name2Poll.Get(name).(*types.Poll)
+func (this *PollConfigCenter) PollByName(name string) *types.PollConfig {
+	poll, _ := this.name2Poll.Get(name).(*types.PollConfig)
 	return poll
 }
 
-func (this *PollCenter) PollByKey(args ...string) *types.Poll {
+func (this *PollConfigCenter) PollByKey(args ...string) *types.PollConfig {
 	if args == nil || len(args) == 0 {
 		return nil
 	}
 	if len(args) == 1 {
 		pollName := this.key2Name[args[0]]
-		poll, _ := this.name2Poll.Get(pollName).(*types.Poll)
+		poll, _ := this.name2Poll.Get(pollName).(*types.PollConfig)
 		return poll
 	}
 	buff := strings.New()
@@ -132,13 +132,13 @@ func (this *PollCenter) PollByKey(args ...string) *types.Poll {
 	}
 	p, ok := this.getPollName(buff.String())
 	if ok {
-		poll, _ := this.name2Poll.Get(p).(*types.Poll)
+		poll, _ := this.name2Poll.Get(p).(*types.PollConfig)
 		return poll
 	}
 	return this.PollByKey(args[0 : len(args)-1]...)
 }
 
-func (this *PollCenter) Names(groupName, vendor, series, family, software, hardware, version string) []string {
+func (this *PollConfigCenter) Names(groupName, vendor, series, family, software, hardware, version string) []string {
 	this.mtx.RLock()
 	defer this.mtx.RUnlock()
 	result := make([]string, 0)
@@ -152,9 +152,9 @@ func (this *PollCenter) Names(groupName, vendor, series, family, software, hardw
 	return result
 }
 
-func (this *PollCenter) PollsByGroup(groupName, vendor, series, family, software, hardware, version string) []*types.Poll {
+func (this *PollConfigCenter) PollsByGroup(groupName, vendor, series, family, software, hardware, version string) []*types.PollConfig {
 	names := this.Names(groupName, vendor, series, family, software, hardware, version)
-	result := make([]*types.Poll, 0)
+	result := make([]*types.PollConfig, 0)
 	for _, name := range names {
 		poll := this.PollByKey(name, vendor, series, family, software, hardware, version)
 		if poll != nil {
@@ -164,10 +164,10 @@ func (this *PollCenter) PollsByGroup(groupName, vendor, series, family, software
 	return result
 }
 
-func Polling(resource common.IResources, serviceArea uint16) *PollCenter {
+func Polling(resource common.IResources, serviceArea uint16) *PollConfigCenter {
 	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, serviceArea)
 	if !ok {
 		return nil
 	}
-	return (sp.(*PollServicePoint)).pollCenter
+	return (sp.(*PollConfigServicePoint)).pollCenter
 }

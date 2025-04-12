@@ -2,11 +2,11 @@ package tests
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/control"
+	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
-	"github.com/saichler/collect/go/collection/polling"
-	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/collection/poll_config"
+	"github.com/saichler/collect/go/collection/poll_config/boot"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/probler/go/serializers"
 	types3 "github.com/saichler/probler/go/types"
@@ -27,12 +27,12 @@ func TestK8sCollector(t *testing.T) {
 	//l.ph = control.NewDirectParsingHandler(nil, resourcs)
 	cont := control.NewController(l, resourcs, 0)
 
-	config.RegisterConfigCenter(0, resourcs, nil, cont)
-	polling.RegisterPollCenter(0, resourcs, nil)
+	deviceconfig.RegisterConfigCenter(0, resourcs, nil, cont)
+	poll_config.RegisterPollCenter(0, resourcs, nil)
 
 	l.expected = 1
-	cc := config.Configs(resourcs, 0)
-	pp := polling.Polling(resourcs, 0)
+	cc := deviceconfig.Configs(resourcs, 0)
+	pp := poll_config.Polling(resourcs, 0)
 
 	pp.AddAll(boot.CreateK8sBootPolls())
 
@@ -77,7 +77,7 @@ func TestParsingForK8s(t *testing.T) {
 	context := "kubernetes-admin@kubernetes"
 
 	cluster := CreateCluster(admin, context, 0)
-	cli.Multicast(config.ServiceName, 0, common.POST, cluster)
+	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, cluster)
 
 	time.Sleep(2 * time.Second)
 

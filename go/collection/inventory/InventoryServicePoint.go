@@ -1,21 +1,24 @@
 package inventory
 
 import (
+	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/types/go/common"
+)
+
+const (
+	ServicePointType = "InventoryServicePoint"
 )
 
 type InventoryServicePoint struct {
 	inventoryCenter *InventoryCenter
 }
 
-func RegisterInventoryCenter(serviceName string, serviceArea uint16, elem common.IElements, primaryKey string,
-	resources common.IResources, vnic common.IVirtualNetworkInterface) {
-	this := &InventoryServicePoint{}
-	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, elem, resources, vnic)
-	err := resources.ServicePoints().RegisterServicePoint(this, serviceArea, vnic)
-	if err != nil {
-		panic(err)
-	}
+func (this InventoryServicePoint) Activate(serviceName string, serviceArea uint16,
+	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
+	primaryKey := args[0].(string)
+	elem := object.New(nil, args[1])
+	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, elem, r, l)
+	return nil
 }
 
 func (this *InventoryServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
@@ -40,16 +43,8 @@ func (this *InventoryServicePoint) GetCopy(pb common.IElements, resourcs common.
 func (this *InventoryServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) EndPoint() string {
-	return this.inventoryCenter.serviceName
-}
-func (this *InventoryServicePoint) ServiceName() string {
-	return this.inventoryCenter.serviceName
-}
 func (this *InventoryServicePoint) Transactional() bool { return false }
-func (this *InventoryServicePoint) ServiceModel() common.IElements {
-	return this.inventoryCenter.element.(common.IElements)
-}
+
 func (this *InventoryServicePoint) ReplicationCount() int {
 	return 0
 }

@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/config"
-	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/collection/device_config"
+	"github.com/saichler/collect/go/collection/poll_config/boot"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/probler/go/serializers"
 	types3 "github.com/saichler/probler/go/types"
@@ -56,8 +56,8 @@ func TestK8s2Collector2Parsers(t *testing.T) {
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
-	cli.Multicast(config.ServiceName, 1, common.POST, cluster1)
-	cli.Multicast(config.ServiceName, 0, common.POST, cluster2)
+	cli.Multicast(deviceconfig.ServiceName, 1, common.POST, cluster1)
+	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 

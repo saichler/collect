@@ -3,7 +3,7 @@ package control
 import (
 	"errors"
 	"github.com/saichler/collect/go/collection/base"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/types/go/common"
 	"sync"
@@ -32,12 +32,12 @@ func NewJobsQueue(deviceId, hostId string, resources common.IResources, serviceN
 	jq.hostId = hostId
 	jq.cServiceArea = cServiceArea
 	jq.dServiceArea = dServiceArea
-	jq.serviceName = serviceName + base.Parsing_Suffix
+	jq.serviceName = serviceName
 	return jq
 }
 
 func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, version string, cadence, timeout int64) *types.Job {
-	pc := polling.Polling(this.resources, this.cServiceArea)
+	pc := poll_config.Polling(this.resources, this.cServiceArea)
 	poll := pc.PollByKey(name, vendor, series, family, software, hardware, version)
 	if poll == nil {
 		return nil
@@ -62,7 +62,7 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 }
 
 func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hardware, version string) []*types.Job {
-	pc := polling.Polling(this.resources, this.cServiceArea)
+	pc := poll_config.Polling(this.resources, this.cServiceArea)
 	polls := pc.PollsByGroup(groupName, vendor, series, family, software, hardware, version)
 	jobs := make([]*types.Job, 0)
 	for _, poll := range polls {

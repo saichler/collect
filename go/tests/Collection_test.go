@@ -2,10 +2,10 @@ package tests
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/control"
-	"github.com/saichler/collect/go/collection/polling"
-	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/collection/device_config"
+	"github.com/saichler/collect/go/collection/poll_config"
+	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"sync"
 	"testing"
 )
@@ -14,9 +14,9 @@ func TestCollectionController(t *testing.T) {
 	serviceArea := uint16(0)
 	resourcs := createResources("collect")
 
-	config.RegisterConfigCenter(serviceArea, resourcs, nil, nil)
-	polling.RegisterPollCenter(serviceArea, resourcs, nil)
-	pc := polling.Polling(resourcs, serviceArea)
+	device_config.RegisterConfigCenter(serviceArea, resourcs, nil, nil)
+	poll_config.RegisterPollCenter(serviceArea, resourcs, nil)
+	pc := poll_config.Polling(resourcs, serviceArea)
 	pc.AddAll(boot.CreateSNMPBootPolls())
 
 	l := &CollectorListener{}
@@ -30,7 +30,7 @@ func TestCollectionController(t *testing.T) {
 		}*/
 	device := CreateDevice("192.168.86.179", serviceArea)
 	l.expected = 1
-	cc := config.Configs(resourcs, serviceArea)
+	cc := device_config.Configs(resourcs, serviceArea)
 
 	cc.Add(device)
 	cont.StartPolling(device.Id, "")

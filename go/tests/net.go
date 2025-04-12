@@ -1,10 +1,10 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/config"
 	"github.com/saichler/collect/go/collection/control"
+	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/parsing"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	types2 "github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/layer8/go/overlay/vnet"
@@ -64,9 +64,9 @@ func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Po
 	l := control.NewParsingCenterNotifier(vnic)
 	controller := control.NewController(l, resourcs, serviceArea)
 
-	config.RegisterConfigCenter(serviceArea, resourcs, nil, controller)
-	polling.RegisterPollCenter(serviceArea, resourcs, nil)
-	pc := polling.Polling(resourcs, serviceArea)
+	deviceconfig.RegisterConfigCenter(serviceArea, resourcs, nil, controller)
+	poll_config.RegisterPollCenter(serviceArea, resourcs, nil)
+	pc := poll_config.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
 
 	vnic.Start()
@@ -90,8 +90,8 @@ func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key
 	resourcs := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
 	resourcs.SysConfig().VnetPort = port
 
-	polling.RegisterPollCenter(serviceArea, resourcs, nil)
-	pc := polling.Polling(resourcs, serviceArea)
+	poll_config.RegisterPollCenter(serviceArea, resourcs, nil)
+	pc := poll_config.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
 	parsing.RegisterParsingServicePoint(reflect.ValueOf(pb).Elem().Type().Name(), serviceArea, object.New(nil, pb), key, resourcs, nil)
 

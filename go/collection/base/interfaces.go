@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	Parsing_Suffix = "_Parsing"
+	Inventory_Suffix = "-inv"
 )
 
 type CollectNotificationHandler interface {

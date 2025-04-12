@@ -3,7 +3,7 @@ package control
 import (
 	"errors"
 	common2 "github.com/saichler/collect/go/collection/base"
-	"github.com/saichler/collect/go/collection/config"
+	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/protocols/k8s"
 	"github.com/saichler/collect/go/collection/protocols/snmp"
 	"github.com/saichler/collect/go/collection/protocols/ssh"
@@ -50,7 +50,7 @@ func newProtocolCollector(config *types.Config, resource common.IResources) (com
 }
 
 func (this *Controller) StartPolling(deviceId, serviceName string) error {
-	cc := config.Configs(this.resources, this.serviceArea)
+	cc := deviceconfig.Configs(this.resources, this.serviceArea)
 	device := cc.DeviceById(deviceId)
 	if device == nil {
 		return errors.New("device with id " + deviceId + " does not exist")

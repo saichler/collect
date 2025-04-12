@@ -13,13 +13,13 @@ const (
 	BOOT_GROUP = "BOOT"
 )
 
-func CreateSNMPBootPolls() []*types.Poll {
-	result := make([]*types.Poll, 0)
+func CreateSNMPBootPolls() []*types.PollConfig {
+	result := make([]*types.PollConfig, 0)
 	result = append(result, createSystemMibPoll())
 	return result
 }
 
-func createSystemMibPoll() *types.Poll {
+func createSystemMibPoll() *types.PollConfig {
 	poll := createBaseSNMPPoll("systemMib", BOOT_GROUP)
 	poll.What = ".1.3.6.1.2.1.1"
 	poll.Operation = types.Operation__Map
@@ -96,8 +96,8 @@ func createSetRule(from string) *types.Rule {
 	return rule
 }
 
-func createBaseSNMPPoll(name string, groups ...string) *types.Poll {
-	poll := &types.Poll{}
+func createBaseSNMPPoll(name string, groups ...string) *types.PollConfig {
+	poll := &types.PollConfig{}
 	poll.Name = name
 	poll.Groups = groups
 	poll.DefaultTimeout = DEFAULT_TIMEOUT

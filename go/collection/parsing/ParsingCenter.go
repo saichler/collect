@@ -9,7 +9,7 @@ import (
 )
 
 func JobComplete(job *types.Job, resources common.IResources) {
-	pc := polling.Polling(resources, uint16(job.DServiceArea))
+	pc := poll_config.Polling(resources, uint16(job.DServiceArea))
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		resources.Logger().Error("cannot find poll for uuid ", job.PollName)

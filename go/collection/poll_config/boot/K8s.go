@@ -2,14 +2,14 @@ package boot
 
 import "github.com/saichler/collect/go/types"
 
-func CreateK8sBootPolls() []*types.Poll {
-	result := make([]*types.Poll, 0)
+func CreateK8sBootPolls() []*types.PollConfig {
+	result := make([]*types.PollConfig, 0)
 	result = append(result, createNodesPoll())
 	result = append(result, createPodsPoll())
 	return result
 }
 
-func createNodesPoll() *types.Poll {
+func createNodesPoll() *types.PollConfig {
 	poll := createBaseK8sPoll("nodes", BOOT_GROUP)
 	poll.What = "get nodes -o wide"
 	poll.Operation = types.Operation__Table
@@ -18,7 +18,7 @@ func createNodesPoll() *types.Poll {
 	return poll
 }
 
-func createPodsPoll() *types.Poll {
+func createPodsPoll() *types.PollConfig {
 	poll := createBaseK8sPoll("pods", BOOT_GROUP)
 	poll.What = "get pods -A -o wide"
 	poll.Operation = types.Operation__Table
@@ -45,8 +45,8 @@ func createPodsTable() *types.Attribute {
 	return attr
 }
 
-func createBaseK8sPoll(name string, groups ...string) *types.Poll {
-	poll := &types.Poll{}
+func createBaseK8sPoll(name string, groups ...string) *types.PollConfig {
+	poll := &types.PollConfig{}
 	poll.Name = name
 	poll.Groups = groups
 	poll.DefaultTimeout = DEFAULT_TIMEOUT

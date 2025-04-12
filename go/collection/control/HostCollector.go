@@ -2,9 +2,9 @@ package control
 
 import (
 	"github.com/saichler/collect/go/collection/base"
-	"github.com/saichler/collect/go/collection/config"
-	"github.com/saichler/collect/go/collection/polling"
-	"github.com/saichler/collect/go/collection/polling/boot"
+	"github.com/saichler/collect/go/collection/device_config"
+	"github.com/saichler/collect/go/collection/poll_config"
+	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"sync"
 	"time"
 )
@@ -38,7 +38,7 @@ func newHostCollector(deviceId, hoistId, serviceName string, cServiceArea, dServ
 }
 
 func (this *HostCollector) update() error {
-	cc := config.Configs(this.controller.resources, this.cServiceArea)
+	cc := device_config.Configs(this.controller.resources, this.cServiceArea)
 	configs := cc.HostConfigs(this.deviceId, this.hostId)
 	for _, config := range configs {
 		this.mtx.Lock()
@@ -58,7 +58,7 @@ func (this *HostCollector) update() error {
 		}
 	}
 
-	pc := polling.Polling(this.controller.resources, this.cServiceArea)
+	pc := poll_config.Polling(this.controller.resources, this.cServiceArea)
 	bootPollList := pc.PollsByGroup(boot.BOOT_GROUP, "", "", "", "", "", "")
 	for _, pollName := range bootPollList {
 		this.jobsQueue.InsertJob(pollName.Name, "", "", "", "", "", "", 0, 0)
@@ -77,7 +77,7 @@ func (this *HostCollector) stop() {
 }
 
 func (this *HostCollector) start() error {
-	cc := config.Configs(this.controller.resources, this.cServiceArea)
+	cc := device_config.Configs(this.controller.resources, this.cServiceArea)
 	configs := cc.HostConfigs(this.deviceId, this.hostId)
 	for _, config := range configs {
 		col, err := newProtocolCollector(config, this.controller.resources)
@@ -91,7 +91,7 @@ func (this *HostCollector) start() error {
 		}
 	}
 
-	pc := polling.Polling(this.controller.resources, this.cServiceArea)
+	pc := poll_config.Polling(this.controller.resources, this.cServiceArea)
 	bootPollList := pc.PollsByGroup(boot.BOOT_GROUP, "", "", "", "", "", "")
 	for _, pollName := range bootPollList {
 		this.jobsQueue.InsertJob(pollName.Name, "", "", "", "", "", "", 0, 0)
@@ -104,7 +104,7 @@ func (this *HostCollector) start() error {
 
 func (this *HostCollector) collect() {
 	this.controller.resources.Logger().Info("** Starting Collection on host ", this.hostId)
-	pc := polling.Polling(this.controller.resources, this.cServiceArea)
+	pc := poll_config.Polling(this.controller.resources, this.cServiceArea)
 	for this.running {
 		job, waitTime := this.jobsQueue.Pop()
 		if job != nil {

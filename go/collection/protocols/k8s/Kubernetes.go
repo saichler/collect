@@ -2,7 +2,7 @@ package k8s
 
 import (
 	"github.com/google/uuid"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/shared/go/share/strings"
@@ -13,10 +13,10 @@ import (
 
 type Kubernetes struct {
 	resources common.IResources
-	config    *types.Config
+	config    *types.HostConfig
 }
 
-func (this *Kubernetes) Init(config *types.Config, resources common.IResources) error {
+func (this *Kubernetes) Init(config *types.HostConfig, resources common.IResources) error {
 	this.resources = resources
 	this.config = config
 	return nil
@@ -27,7 +27,7 @@ func (this *Kubernetes) Protocol() types.Protocol {
 }
 
 func (this *Kubernetes) Exec(job *types.Job) {
-	pollCenter := polling.Polling(this.resources, uint16(job.CServiceArea))
+	pollCenter := poll_config.Polling(this.resources, uint16(job.CServiceArea))
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)
