@@ -20,12 +20,12 @@ func TestParsingAndInventory(t *testing.T) {
 	inv := topo.VnicByVnetNum(1, 3)
 
 	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateSNMPBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
 	activateParsingAndPollConfigServices(par, device.ParsingService,
 		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
 	activateInventoryService(inv, device.InventoryService, &types.NetworkBox{}, "Id")
 	defer func() {
-		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateDeviceAndPollConfigServices(cfg, 0)
 		deActivateParsingAndPollConfigServices(par, device.ParsingService)
 		deActivateInventoryService(inv, device.InventoryService)
 	}()

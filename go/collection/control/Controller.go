@@ -75,7 +75,7 @@ func (this *Controller) hostCollector(hostId string, device *types.DeviceConfig)
 	if ok {
 		return hc, ok
 	}
-	hc = newHostCollector(hostId, device, this.resources, this.jobCompleteHandler)
+	hc = newHostCollector(device, hostId, this.resources, this.jobCompleteHandler)
 	this.hcollectors[key] = hc
 	return hc, ok
 }

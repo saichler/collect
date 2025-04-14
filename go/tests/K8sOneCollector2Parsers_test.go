@@ -1,11 +1,19 @@
 package tests
 
+import (
+	"github.com/saichler/collect/go/collection/inventory"
+	. "github.com/saichler/l8test/go/infra/t_resources"
+	types3 "github.com/saichler/probler/go/types"
+	"github.com/saichler/types/go/common"
+	"testing"
+)
+
 /*
 import (
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
-	. "github.com/saichler/l8test/go/infra/t_resources"
+
 	"github.com/saichler/probler/go/serializers"
 	types3 "github.com/saichler/probler/go/types"
 	"github.com/saichler/types/go/common"
@@ -70,6 +78,7 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 		return
 	}
 }
+*/
 
 func checkCluster(resourcs common.IResources, context string, t *testing.T, serviceArea uint16) bool {
 	ic := inventory.Inventory(resourcs, "Cluster", serviceArea)
@@ -109,4 +118,3 @@ func checkCluster(resourcs common.IResources, context string, t *testing.T, serv
 	}
 	return true
 }
-*/

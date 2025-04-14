@@ -23,9 +23,9 @@ func TestCollectionController(t *testing.T) {
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = cfg.Resources()
 	cont := control.NewController(l, cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateSNMPBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
 	defer func() {
-		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateDeviceAndPollConfigServices(cfg, 0)
 	}()
 
 	/*
@@ -36,7 +36,7 @@ func TestCollectionController(t *testing.T) {
 	serviceArea := uint16(0)
 	device := CreateDevice("192.168.86.179", serviceArea)
 	l.expected = 1
-	cc := device_config.Configs(cfg.Resources())
+	cc := device_config.Configs(cfg.Resources(), 0)
 
 	cc.Add(device)
 	cont.StartPolling(device)

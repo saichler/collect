@@ -23,14 +23,14 @@ func TestK8sCollector(t *testing.T) {
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = cfg.Resources()
 	cont := control.NewController(l, cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateK8sBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateK8sBootPolls())
 	defer func() {
-		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateDeviceAndPollConfigServices(cfg, 0)
 	}()
 
 	cluster := CreateCluster(admin1, context1, 0)
 
-	cc := device_config.Configs(cfg.Resources())
+	cc := device_config.Configs(cfg.Resources(), 0)
 
 	cc.Add(cluster)
 	cont.StartPolling(cluster)
@@ -43,23 +43,20 @@ func TestK8sCollector(t *testing.T) {
 
 func TestParsingForK8s(t *testing.T) {
 
-	admin := home + "/admin.conf"
-	context := "kubernetes-admin@kubernetes"
-
-	cluster := CreateCluster(admin, context, 0)
+	cluster := CreateCluster(admin1, context1, 0)
 
 	cfg := topo.VnicByVnetNum(2, 4)
 	par := topo.VnicByVnetNum(3, 1)
 	inv := topo.VnicByVnetNum(1, 3)
 
 	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateK8sBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateK8sBootPolls())
 	activateParsingAndPollConfigServices(par, cluster.ParsingService,
 		&types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
 	activateInventoryService(inv, cluster.InventoryService, &types3.Cluster{}, "Name")
 
 	defer func() {
-		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateDeviceAndPollConfigServices(cfg, 0)
 		deActivateParsingAndPollConfigServices(par, cluster.ParsingService)
 		deActivateInventoryService(inv, cluster.InventoryService)
 	}()
@@ -83,7 +80,7 @@ func TestParsingForK8s(t *testing.T) {
 	var k8sCluster *types3.Cluster
 	var ok bool
 	for i := 0; i < 10; i++ {
-		k8sCluster, ok = ic.ElementByKey(context).(*types3.Cluster)
+		k8sCluster, ok = ic.ElementByKey(context1).(*types3.Cluster)
 		if ok {
 			break
 		}

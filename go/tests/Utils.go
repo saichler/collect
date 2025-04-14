@@ -8,6 +8,7 @@ import (
 	"github.com/saichler/collect/go/collection/parsing"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
+	"github.com/saichler/probler/go/serializers"
 	types3 "github.com/saichler/probler/go/types"
 	"github.com/saichler/types/go/common"
 	"os"
@@ -39,19 +40,19 @@ type CollectorListener struct {
 	area      int32
 }
 
-func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface,
+func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16,
 	controller *control.Controller, polls []*types.PollConfig) {
 	vnic.Resources().ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
 	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
 	vnic.Resources().ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName,
-		device_config.ServiceArea, vnic.Resources(), vnic, controller)
+		serviceArea, vnic.Resources(), vnic, controller)
 	vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 	pc := poll_config.PollConfig(vnic.Resources())
 	pc.AddAll(polls)
 }
 
-func deActivateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface) {
-	vnic.Resources().ServicePoints().DeActivate(device_config.ServiceName, device_config.ServiceArea, vnic.Resources(), vnic)
+func deActivateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16) {
+	vnic.Resources().ServicePoints().DeActivate(device_config.ServiceName, serviceArea, vnic.Resources(), vnic)
 	vnic.Resources().ServicePoints().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 }
 
@@ -65,6 +66,8 @@ func activateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface,
 
 	vnic.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
 	vnic.Resources().Registry().RegisterEnums(types3.PodStatus_value)
+	info, _ := vnic.Resources().Registry().Info("ReadyState")
+	info.AddSerializer(&serializers.Ready{})
 
 	pc := poll_config.PollConfig(vnic.Resources())
 	pc.AddAll(polls)
@@ -243,8 +246,8 @@ func CreateDevice(ip string, serviceArea uint16) *types.DeviceConfig {
 func CreateCluster(kubeconfig, context string, serviceArea int32) *types.DeviceConfig {
 	device := &types.DeviceConfig{}
 	device.DeviceId = context
-	device.InventoryService = &types.DeviceServiceInfo{ServiceName: K8sServiceName, ServiceArea: int32(serviceArea)}
-	device.ParsingService = &types.DeviceServiceInfo{ServiceName: K8sServiceName + "P", ServiceArea: int32(serviceArea)}
+	device.InventoryService = &types.DeviceServiceInfo{ServiceName: K8sServiceName, ServiceArea: serviceArea}
+	device.ParsingService = &types.DeviceServiceInfo{ServiceName: K8sServiceName + "P", ServiceArea: serviceArea}
 	device.Hosts = make(map[string]*types.HostConfig)
 	host := &types.HostConfig{}
 	host.DeviceId = device.DeviceId

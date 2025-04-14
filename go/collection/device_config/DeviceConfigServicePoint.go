@@ -8,7 +8,6 @@ import (
 
 const (
 	ServiceName      = "DeviceConfig"
-	ServiceArea      = uint16(0)
 	ServicePointType = "DeviceConfigServicePoint"
 )
 
@@ -21,7 +20,7 @@ func (this *DeviceConfigServicePoint) Activate(serviceName string, serviceArea u
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.DeviceConfig{})
 	this.controller, _ = args[0].(base.IController)
-	this.configCenter = newConfigCenter(ServiceName, ServiceArea, r, l)
+	this.configCenter = newConfigCenter(ServiceName, serviceArea, r, l)
 	return nil
 }
 

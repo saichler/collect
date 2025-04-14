@@ -2,7 +2,6 @@ package control
 
 import (
 	"github.com/saichler/collect/go/collection/base"
-	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"github.com/saichler/collect/go/types"
@@ -13,29 +12,24 @@ import (
 
 type HostCollector struct {
 	resources          common.IResources
-	jobCompleteHandler base.IJobCompleteHandler
-	deviceId           string
+	deviceConfig       *types.DeviceConfig
 	hostId             string
-	iService           *types.DeviceServiceInfo
-	pService           *types.DeviceServiceInfo
+	jobCompleteHandler base.IJobCompleteHandler
 	collectors         map[int32]base.ProtocolCollector
 	jobsQueue          *JobsQueue
 	mtx                *sync.Mutex
 	running            bool
 }
 
-func newHostCollector(hoistId string, device *types.DeviceConfig, resources common.IResources, handler base.IJobCompleteHandler) *HostCollector {
+func newHostCollector(deviceConfig *types.DeviceConfig, hostId string, resources common.IResources, handler base.IJobCompleteHandler) *HostCollector {
 	hc := &HostCollector{}
-	hc.deviceId = device.DeviceId
-	hc.hostId = hoistId
+	hc.deviceConfig = deviceConfig
+	hc.hostId = hostId
 	hc.collectors = make(map[int32]base.ProtocolCollector)
 	hc.resources = resources
 	hc.jobCompleteHandler = handler
 
-	hc.iService = device.InventoryService
-	hc.pService = device.ParsingService
-
-	hc.jobsQueue = NewJobsQueue(device.DeviceId, hoistId, hc.resources, device.InventoryService, device.ParsingService)
+	hc.jobsQueue = NewJobsQueue(deviceConfig.DeviceId, hostId, hc.resources, deviceConfig.InventoryService, deviceConfig.ParsingService)
 	hc.mtx = &sync.Mutex{}
 	hc.running = true
 
@@ -43,9 +37,8 @@ func newHostCollector(hoistId string, device *types.DeviceConfig, resources comm
 }
 
 func (this *HostCollector) update() error {
-	cc := device_config.Configs(this.resources)
-	configs := cc.HostConnectionConfigs(this.deviceId, this.hostId)
-	for _, config := range configs {
+	host := this.deviceConfig.Hosts[this.hostId]
+	for _, config := range host.Configs {
 		this.mtx.Lock()
 		_, exist := this.collectors[int32(config.Protocol)]
 		this.mtx.Unlock()
@@ -84,9 +77,8 @@ func (this *HostCollector) stop() {
 }
 
 func (this *HostCollector) start() error {
-	cc := device_config.Configs(this.resources)
-	configs := cc.HostConnectionConfigs(this.deviceId, this.hostId)
-	for _, config := range configs {
+	host := this.deviceConfig.Hosts[this.hostId]
+	for _, config := range host.Configs {
 		col, err := newProtocolCollector(config, this.resources)
 		if err != nil {
 			this.resources.Logger().Error(err)
@@ -137,6 +129,6 @@ func (this *HostCollector) collect() {
 			time.Sleep(time.Second * time.Duration(waitTime))
 		}
 	}
-	this.resources.Logger().Info("Host collection for device ", this.deviceId, " host ", this.hostId, " has ended.")
+	this.resources.Logger().Info("Host collection for device ", this.deviceConfig.DeviceId, " host ", this.hostId, " has ended.")
 	this.resources = nil
 }

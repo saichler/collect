@@ -26,7 +26,7 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	inv2 := topo.VnicByVnetNum(2, 3)
 
 	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateSNMPBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
 
 	activateParsingAndPollConfigServices(par1, device1.ParsingService,
 		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
@@ -37,7 +37,7 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	activateInventoryService(inv2, device2.InventoryService, &types.NetworkBox{}, "Id")
 
 	defer func() {
-		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateDeviceAndPollConfigServices(cfg, 0)
 		deActivateParsingAndPollConfigServices(par1, device1.ParsingService)
 		deActivateParsingAndPollConfigServices(par2, device2.ParsingService)
 		deActivateInventoryService(inv1, device1.InventoryService)
