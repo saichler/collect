@@ -2,7 +2,7 @@ package parsing
 
 import (
 	"github.com/saichler/collect/go/collection/parsing/rules"
-	"github.com/saichler/collect/go/collection/polling"
+	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/types/go/common"
@@ -35,13 +35,16 @@ func (this *_Parser) Parse(job *types.Job, any interface{}, resources common.IRe
 	if err != nil {
 		return resources.Logger().Error(err)
 	}
-	pc := poll_config.Polling(resources, uint16(job.DServiceArea))
+	pc := poll_config.PollConfig(resources)
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		return resources.Logger().Error("cannot find poll for name ", job.PollName)
 	}
 	workSpace[rules.Input] = data
-	for _, attr := range poll.Attributes {
+	if poll.Parsing == nil {
+		panic("")
+	}
+	for _, attr := range poll.Parsing.Attributes {
 		workSpace[rules.PropertyId] = attr.PropertyId
 		for _, rData := range attr.Rules {
 			if rData.Params != nil {

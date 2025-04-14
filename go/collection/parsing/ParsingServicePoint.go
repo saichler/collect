@@ -1,38 +1,49 @@
 package parsing
 
 import (
-	"github.com/saichler/collect/go/collection/base"
-	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/types/go/common"
 )
 
+const (
+	ServicePointType = "ParsingServicePoint"
+)
+
 type ParsingServicePoint struct {
-	resources   common.IResources
-	serviceName string
-	serviceArea uint16
+	resources  common.IResources
+	elem       interface{}
+	primaryKey string
+	vnic       common.IVirtualNetworkInterface
 }
 
-func (this ParsingServicePoint) Activate(serviceName string, serviceArea uint16,
+func (this *ParsingServicePoint) Activate(serviceName string, serviceArea uint16,
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
 
-	this.serviceName = serviceName
-	this.serviceArea = serviceArea
 	this.resources = r
 	this.resources.Registry().Register(&types.CMap{})
 	this.resources.Registry().Register(&types.CTable{})
 	this.resources.Registry().Register(&types.Job{})
+	this.elem = args[0]
+	this.primaryKey = args[1].(string)
+	vnic, ok := l.(common.IVirtualNetworkInterface)
+	if ok {
+		this.vnic = vnic
+	}
+	this.resources.Introspector().Inspect(this.elem)
+	return nil
+}
 
-	this.resources.ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
-	this.resources.ServicePoints().Activate(inventory.ServicePointType, serviceName+base.Inventory_Suffix,
-		serviceArea, r, l, args...)
+func (this *ParsingServicePoint) DeActivate() error {
+	this.vnic = nil
+	this.resources = nil
+	this.elem = nil
 	return nil
 }
 
 func (this *ParsingServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	job := pb.Element().(*types.Job)
 	resourcs.Logger().Debug("Job ", job.PollName, " completed!")
-	JobComplete(job, this.resources)
+	this.JobComplete(job, this.resources)
 	return nil
 }
 func (this *ParsingServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {

@@ -13,10 +13,10 @@ import (
 
 type Kubernetes struct {
 	resources common.IResources
-	config    *types.HostConfig
+	config    *types.ConnectionConfig
 }
 
-func (this *Kubernetes) Init(config *types.HostConfig, resources common.IResources) error {
+func (this *Kubernetes) Init(config *types.ConnectionConfig, resources common.IResources) error {
 	this.resources = resources
 	this.config = config
 	return nil
@@ -27,7 +27,7 @@ func (this *Kubernetes) Protocol() types.Protocol {
 }
 
 func (this *Kubernetes) Exec(job *types.Job) {
-	pollCenter := poll_config.Polling(this.resources, uint16(job.CServiceArea))
+	pollCenter := poll_config.PollConfig(this.resources)
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)

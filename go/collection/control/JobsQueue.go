@@ -2,7 +2,6 @@ package control
 
 import (
 	"errors"
-	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/types/go/common"
@@ -11,18 +10,32 @@ import (
 )
 
 type JobsQueue struct {
-	deviceId     string
-	hostId       string
-	jobs         []*types.Job
-	jobsMap      map[string]*types.Job
-	mtx          *sync.Mutex
-	resources    common.IResources
-	cServiceArea uint16
-	dServiceArea uint16
-	serviceName  string
+	deviceId  string
+	hostId    string
+	jobs      []*types.Job
+	jobsMap   map[string]*types.Job
+	mtx       *sync.Mutex
+	resources common.IResources
+	iService  *types.DeviceServiceInfo
+	pService  *types.DeviceServiceInfo
+	shutdown  bool
 }
 
-func NewJobsQueue(deviceId, hostId string, resources common.IResources, serviceName string, cServiceArea, dServiceArea uint16) *JobsQueue {
+func (this *JobsQueue) Shutdown() {
+	this.mtx.Lock()
+	defer this.mtx.Unlock()
+	this.shutdown = true
+	this.jobs = nil
+	this.jobsMap = nil
+	this.resources = nil
+	this.iService = nil
+	this.pService = nil
+	this.hostId = ""
+	this.deviceId = ""
+}
+
+func NewJobsQueue(deviceId, hostId string, resources common.IResources,
+	iService *types.DeviceServiceInfo, pService *types.DeviceServiceInfo) *JobsQueue {
 	jq := &JobsQueue{}
 	jq.resources = resources
 	jq.mtx = &sync.Mutex{}
@@ -30,14 +43,13 @@ func NewJobsQueue(deviceId, hostId string, resources common.IResources, serviceN
 	jq.jobsMap = make(map[string]*types.Job)
 	jq.deviceId = deviceId
 	jq.hostId = hostId
-	jq.cServiceArea = cServiceArea
-	jq.dServiceArea = dServiceArea
-	jq.serviceName = serviceName
+	jq.iService = iService
+	jq.pService = pService
 	return jq
 }
 
 func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, version string, cadence, timeout int64) *types.Job {
-	pc := poll_config.Polling(this.resources, this.cServiceArea)
+	pc := poll_config.PollConfig(this.resources)
 	poll := pc.PollByKey(name, vendor, series, family, software, hardware, version)
 	if poll == nil {
 		return nil
@@ -48,9 +60,8 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 	job.Timeout = timeout
 	job.DeviceId = this.deviceId
 	job.HostId = this.hostId
-	job.CServiceArea = int32(this.cServiceArea)
-	job.DServiceArea = int32(this.dServiceArea)
-	job.ServiceName = this.serviceName
+	job.IService = this.iService
+	job.PService = this.pService
 
 	if job.Cadence == 0 {
 		job.Cadence = poll.DefaultCadence
@@ -62,7 +73,7 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 }
 
 func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hardware, version string) []*types.Job {
-	pc := poll_config.Polling(this.resources, this.cServiceArea)
+	pc := poll_config.PollConfig(this.resources)
 	polls := pc.PollsByGroup(groupName, vendor, series, family, software, hardware, version)
 	jobs := make([]*types.Job, 0)
 	for _, poll := range polls {
@@ -72,21 +83,26 @@ func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hard
 		job.PollName = poll.Name
 		job.Cadence = poll.DefaultCadence
 		job.Timeout = poll.DefaultTimeout
-		job.DServiceArea = int32(this.dServiceArea)
-		job.CServiceArea = int32(this.cServiceArea)
-		job.ServiceName = this.serviceName
+		job.IService = this.iService
+		job.PService = this.pService
 		jobs = append(jobs, job)
 	}
 	return jobs
 }
 
 func (this *JobsQueue) InsertJob(name, vendor, series, family, software, hardware, version string, cadence, timeout int64) error {
+	if this == nil {
+		return errors.New("Job Queue is already shutdown")
+	}
 	job := this.newJob(name, vendor, series, family, software, hardware, version, cadence, timeout)
 	if job == nil {
 		return errors.New("cannot find poll to create job")
 	}
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
+	if this.shutdown {
+		return errors.New("Job Queue is already shutdown")
+	}
 
 	old, ok := this.jobsMap[job.PollName]
 	if !ok {
@@ -100,8 +116,14 @@ func (this *JobsQueue) InsertJob(name, vendor, series, family, software, hardwar
 }
 
 func (this *JobsQueue) Pop() (*types.Job, int64) {
+	if this == nil {
+		return nil, -1
+	}
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
+	if this.shutdown {
+		return nil, -1
+	}
 	var job *types.Job
 	index := -1
 	now := time.Now().Unix()

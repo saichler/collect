@@ -23,9 +23,10 @@ func createSystemMibPoll() *types.PollConfig {
 	poll := createBaseSNMPPoll("systemMib", BOOT_GROUP)
 	poll.What = ".1.3.6.1.2.1.1"
 	poll.Operation = types.Operation__Map
-	poll.Attributes = make([]*types.Attribute, 0)
-	poll.Attributes = append(poll.Attributes, createVendor())
-	poll.Attributes = append(poll.Attributes, createSysName())
+	poll.Parsing = &types.ParsingConfig{}
+	poll.Parsing.Attributes = make([]*types.Attribute, 0)
+	poll.Parsing.Attributes = append(poll.Parsing.Attributes, createVendor())
+	poll.Parsing.Attributes = append(poll.Parsing.Attributes, createSysName())
 	return poll
 }
 

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Use the protoc image to run protoc.sh and generate the bindings.
+docker run --user "$(id -u):$(id -g)" -e PROTO=device-config.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
+docker run --user "$(id -u):$(id -g)" -e PROTO=parsing-config.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 docker run --user "$(id -u):$(id -g)" -e PROTO=collect.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 docker run --user "$(id -u):$(id -g)" -e PROTO=inventory.proto --mount type=bind,source="$PWD",target=/home/proto/ -it saichler/protoc:latest
 

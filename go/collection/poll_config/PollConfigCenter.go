@@ -17,9 +17,9 @@ type PollConfigCenter struct {
 	mtx       *sync.RWMutex
 }
 
-func newPollConfigCenter(serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *PollConfigCenter {
+func newPollConfigCenter(resources common.IResources, listener common.IServicePointCacheListener) *PollConfigCenter {
 	pc := &PollConfigCenter{}
-	pc.name2Poll = cache.NewModelCache(ServiceName, serviceArea, "Poll",
+	pc.name2Poll = cache.NewModelCache(ServiceName, ServiceArea, "PollConfig",
 		resources.SysConfig().LocalUuid, listener, resources.Introspector())
 	pc.key2Name = make(map[string]string)
 	pc.groups = make(map[string]map[string]string)
@@ -64,7 +64,6 @@ func (this *PollConfigCenter) deleteExisting(poll *types.PollConfig, key string)
 		}
 	}
 	this.deleteFromKey2Name(key)
-	this.name2Poll.Delete(poll.Name)
 }
 
 func (this *PollConfigCenter) AddAll(polls []*types.PollConfig) {
@@ -164,8 +163,8 @@ func (this *PollConfigCenter) PollsByGroup(groupName, vendor, series, family, so
 	return result
 }
 
-func Polling(resource common.IResources, serviceArea uint16) *PollConfigCenter {
-	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, serviceArea)
+func PollConfig(resource common.IResources) *PollConfigCenter {
+	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, ServiceArea)
 	if !ok {
 		return nil
 	}

@@ -7,6 +7,7 @@ import (
 
 const (
 	ServiceName      = "PollConfig"
+	ServiceArea      = 0
 	ServicePointType = "PollConfigServicePoint"
 )
 
@@ -14,10 +15,15 @@ type PollConfigServicePoint struct {
 	pollCenter *PollConfigCenter
 }
 
-func (this PollConfigServicePoint) Activate(serviceName string, serviceArea uint16,
+func (this *PollConfigServicePoint) Activate(serviceName string, serviceArea uint16,
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.PollConfig{})
-	this.pollCenter = newPollConfigCenter(serviceArea, r, l)
+	this.pollCenter = newPollConfigCenter(r, l)
+	return nil
+}
+
+func (this *PollConfigServicePoint) DeActivate() error {
+	this.pollCenter = nil
 	return nil
 }
 

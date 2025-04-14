@@ -14,7 +14,7 @@ import (
 
 type SNMPCollector struct {
 	resources common.IResources
-	config    *types.HostConfig
+	config    *types.ConnectionConfig
 	agent     *gosnmp.GoSNMP
 	connected bool
 }
@@ -23,7 +23,7 @@ func (this *SNMPCollector) Protocol() types.Protocol {
 	return types.Protocol_SNMPV2
 }
 
-func (this *SNMPCollector) Init(conf *types.HostConfig, resources common.IResources) error {
+func (this *SNMPCollector) Init(conf *types.ConnectionConfig, resources common.IResources) error {
 	this.config = conf
 	this.resources = resources
 	this.agent = &gosnmp.GoSNMP{}
@@ -61,7 +61,7 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 			return
 		}
 	}
-	pollCenter := poll_config.Polling(this.resources, uint16(job.CServiceArea))
+	pollCenter := poll_config.PollConfig(this.resources)
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
 		this.resources.Logger().Error("cannot find poll for name ", job.PollName)

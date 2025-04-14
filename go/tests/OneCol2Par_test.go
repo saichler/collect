@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
@@ -12,42 +13,56 @@ import (
 )
 
 func TestOneCollectorTwoParsers(t *testing.T) {
-	sw := createVNet(vNetPort1)
-	sleep()
-	col := createCollectionService(0, vNetPort1, boot.CreateSNMPBootPolls())
-	sleep()
-	par1 := createParsingService(0, vNetPort1, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
-	par2 := createParsingService(1, vNetPort1, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
-	sleep()
-	cli := createClient(vNetPort1)
-	sleep()
+	ip2 := "192.168.86.179"
+	ip1 := "192.168.86.198"
+
+	device1 := CreateDevice(ip1, 0)
+	device2 := CreateDevice(ip2, 1)
+
+	cfg := topo.VnicByVnetNum(2, 4)
+	par1 := topo.VnicByVnetNum(3, 1)
+	par2 := topo.VnicByVnetNum(1, 1)
+	inv1 := topo.VnicByVnetNum(1, 3)
+	inv2 := topo.VnicByVnetNum(2, 3)
+
+	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
+	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateSNMPBootPolls())
+
+	activateParsingAndPollConfigServices(par1, device1.ParsingService,
+		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
+	activateParsingAndPollConfigServices(par2, device2.ParsingService,
+		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
+
+	activateInventoryService(inv1, device1.InventoryService, &types.NetworkBox{}, "Id")
+	activateInventoryService(inv2, device2.InventoryService, &types.NetworkBox{}, "Id")
 
 	defer func() {
-		cli.Shutdown()
-		par1.Shutdown()
-		par2.Shutdown()
-		col.Shutdown()
-		sw.Shutdown()
+		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateParsingAndPollConfigServices(par1, device1.ParsingService)
+		deActivateParsingAndPollConfigServices(par2, device2.ParsingService)
+		deActivateInventoryService(inv1, device1.InventoryService)
+		deActivateInventoryService(inv2, device2.InventoryService)
 	}()
-
 	sleep()
 
-	ip1 := "192.168.86.198"
-	ip2 := "192.168.86.179"
+	cli := topo.VnicByVnetNum(1, 2)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, device1)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, device2)
 
-	//assign device 1 to parser in area 0
-	device1 := CreateDevice(ip1, 0)
-	//assign device 2 to parser in area 1
-	device2 := CreateDevice(ip2, 1)
-	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, device1)
-	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, device2)
+	ic := inventory.Inventory(inv2.Resources(), device2.InventoryService.ServiceName, uint16(device2.InventoryService.ServiceArea))
 
-	time.Sleep(2 * time.Second)
+	for i := 0; i < 10; i++ {
+		_, ok := ic.ElementByKey(ip2).(*types.NetworkBox)
+		if ok {
+			break
+		}
+		time.Sleep(time.Second)
+	}
 
-	if !checkInventory(ip1, par1.Resources(), t, 0) {
+	if !checkInventory(ip1, inv1.Resources(), t, 0) {
 		return
 	}
-	if !checkInventory(ip2, par2.Resources(), t, 1) {
+	if !checkInventory(ip2, inv2.Resources(), t, 1) {
 		return
 	}
 }

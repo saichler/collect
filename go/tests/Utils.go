@@ -3,15 +3,13 @@ package tests
 import (
 	"fmt"
 	"github.com/saichler/collect/go/collection/control"
+	"github.com/saichler/collect/go/collection/device_config"
+	"github.com/saichler/collect/go/collection/inventory"
+	"github.com/saichler/collect/go/collection/parsing"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
-	. "github.com/saichler/l8test/go/infra/t_resources"
-	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/servicepoints/go/points/service_points"
-	"github.com/saichler/shared/go/share/registry"
-	"github.com/saichler/shared/go/share/resources"
+	types3 "github.com/saichler/probler/go/types"
 	"github.com/saichler/types/go/common"
-	types2 "github.com/saichler/types/go/types"
 	"os"
 	"sync"
 	"time"
@@ -41,6 +39,54 @@ type CollectorListener struct {
 	area      int32
 }
 
+func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface,
+	controller *control.Controller, polls []*types.PollConfig) {
+	vnic.Resources().ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
+	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
+	vnic.Resources().ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName,
+		device_config.ServiceArea, vnic.Resources(), vnic, controller)
+	vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	pc := poll_config.PollConfig(vnic.Resources())
+	pc.AddAll(polls)
+}
+
+func deActivateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface) {
+	vnic.Resources().ServicePoints().DeActivate(device_config.ServiceName, device_config.ServiceArea, vnic.Resources(), vnic)
+	vnic.Resources().ServicePoints().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+}
+
+func activateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface,
+	pService *types.DeviceServiceInfo, elem interface{}, primaryKey string, polls []*types.PollConfig) {
+	vnic.Resources().ServicePoints().AddServicePointType(&parsing.ParsingServicePoint{})
+	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
+	vnic.Resources().ServicePoints().Activate(parsing.ServicePointType, pService.ServiceName,
+		uint16(pService.ServiceArea), vnic.Resources(), vnic, elem, primaryKey)
+	vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+
+	vnic.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
+	vnic.Resources().Registry().RegisterEnums(types3.PodStatus_value)
+
+	pc := poll_config.PollConfig(vnic.Resources())
+	pc.AddAll(polls)
+}
+
+func deActivateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface, pService *types.DeviceServiceInfo) {
+	vnic.Resources().ServicePoints().DeActivate(pService.ServiceName, uint16(pService.ServiceArea), vnic.Resources(), vnic)
+	vnic.Resources().ServicePoints().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+}
+
+func activateInventoryService(vnic common.IVirtualNetworkInterface, iService *types.DeviceServiceInfo,
+	elem interface{}, primaryKey string) {
+	vnic.Resources().ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
+	vnic.Resources().ServicePoints().Activate(inventory.ServicePointType, iService.ServiceName,
+		uint16(iService.ServiceArea), vnic.Resources(), vnic, primaryKey, elem)
+}
+
+func deActivateInventoryService(vnic common.IVirtualNetworkInterface, iService *types.DeviceServiceInfo) {
+	vnic.Resources().ServicePoints().DeActivate(iService.ServiceName, uint16(iService.ServiceArea), vnic.Resources(), vnic)
+}
+
+/*
 func createResources(alias string) common.IResources {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so", "../../../")
@@ -55,14 +101,16 @@ func createResources(alias string) common.IResources {
 	sps := service_points.NewServicePoints(ins, cfg)
 
 	ress := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
+	ress.ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
+	ress.ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
 	return ress
-}
+}*/
 
-func (l *CollectorListener) HandleCollectNotification(job *types.Job) {
+func (l *CollectorListener) JobCompleted(job *types.Job) {
 	if l.ph != nil {
 		l.ph.HandleCollectNotification(job)
 	}
-	pc := poll_config.Polling(l.resources, uint16(job.CServiceArea))
+	pc := poll_config.PollConfig(l.resources)
 	poll := pc.PollByName(job.PollName)
 	if poll == nil {
 		l.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
@@ -157,19 +205,19 @@ func CreateCommands() ([]*model.CollectCommand, map[string]string) {
 	return []*model.CollectCommand{cVersion, cSystem, cClock, cTimezone, cTeTunnelId}, m
 }*/
 
-func CreateDevice(ip string, serviceArea uint16) *types.Device {
-	device := &types.Device{}
-	device.Id = ip
-	device.ServiceName = InvServiceName
-	device.ServiceArea = int32(serviceArea)
-	device.Hosts = make(map[string]*types.Host)
-	host := &types.Host{}
-	host.Id = device.Id
+func CreateDevice(ip string, serviceArea uint16) *types.DeviceConfig {
+	device := &types.DeviceConfig{}
+	device.DeviceId = ip
+	device.InventoryService = &types.DeviceServiceInfo{ServiceName: InvServiceName, ServiceArea: int32(serviceArea)}
+	device.ParsingService = &types.DeviceServiceInfo{ServiceName: InvServiceName + "P", ServiceArea: int32(serviceArea)}
+	device.Hosts = make(map[string]*types.HostConfig)
+	host := &types.HostConfig{}
+	host.DeviceId = device.DeviceId
 
-	host.Configs = make(map[int32]*types.Config)
-	device.Hosts[device.Id] = host
+	host.Configs = make(map[int32]*types.ConnectionConfig)
+	device.Hosts[device.DeviceId] = host
 
-	sshConfig := &types.Config{}
+	sshConfig := &types.ConnectionConfig{}
 	sshConfig.Protocol = types.Protocol_SSH
 	sshConfig.Port = 22
 	sshConfig.Addr = ip
@@ -180,7 +228,7 @@ func CreateDevice(ip string, serviceArea uint16) *types.Device {
 
 	host.Configs[int32(sshConfig.Protocol)] = sshConfig
 
-	snmpConfig := &types.Config{}
+	snmpConfig := &types.ConnectionConfig{}
 	snmpConfig.Protocol = types.Protocol_SNMPV2
 	snmpConfig.Addr = ip
 	snmpConfig.Port = 161
@@ -192,19 +240,19 @@ func CreateDevice(ip string, serviceArea uint16) *types.Device {
 	return device
 }
 
-func CreateCluster(kubeconfig, context string, serviceArea int32) *types.Device {
-	device := &types.Device{}
-	device.Id = context
-	device.ServiceName = K8sServiceName
-	device.ServiceArea = serviceArea
-	device.Hosts = make(map[string]*types.Host)
-	host := &types.Host{}
-	host.Id = device.Id
+func CreateCluster(kubeconfig, context string, serviceArea int32) *types.DeviceConfig {
+	device := &types.DeviceConfig{}
+	device.DeviceId = context
+	device.InventoryService = &types.DeviceServiceInfo{ServiceName: K8sServiceName, ServiceArea: int32(serviceArea)}
+	device.ParsingService = &types.DeviceServiceInfo{ServiceName: K8sServiceName + "P", ServiceArea: int32(serviceArea)}
+	device.Hosts = make(map[string]*types.HostConfig)
+	host := &types.HostConfig{}
+	host.DeviceId = device.DeviceId
 
-	host.Configs = make(map[int32]*types.Config)
-	device.Hosts[device.Id] = host
+	host.Configs = make(map[int32]*types.ConnectionConfig)
+	device.Hosts[device.DeviceId] = host
 
-	k8sConfig := &types.Config{}
+	k8sConfig := &types.ConnectionConfig{}
 	k8sConfig.KubeConfig = kubeconfig
 	k8sConfig.KukeContext = context
 	k8sConfig.Protocol = types.Protocol_K8s

@@ -5,50 +5,55 @@ import (
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
+	"github.com/saichler/collect/go/types"
+	"github.com/saichler/types/go/common"
 	"sync"
 	"time"
 )
 
 type HostCollector struct {
-	controller   *Controller
-	deviceId     string
-	hostId       string
-	serviceName  string
-	cServiceArea uint16
-	dServiceArea uint16
-	collectors   map[int32]base.ProtocolCollector
-	jobsQueue    *JobsQueue
-	mtx          *sync.Mutex
-	running      bool
+	resources          common.IResources
+	jobCompleteHandler base.IJobCompleteHandler
+	deviceId           string
+	hostId             string
+	iService           *types.DeviceServiceInfo
+	pService           *types.DeviceServiceInfo
+	collectors         map[int32]base.ProtocolCollector
+	jobsQueue          *JobsQueue
+	mtx                *sync.Mutex
+	running            bool
 }
 
-func newHostCollector(deviceId, hoistId, serviceName string, cServiceArea, dServiceArea uint16, controller *Controller) *HostCollector {
+func newHostCollector(hoistId string, device *types.DeviceConfig, resources common.IResources, handler base.IJobCompleteHandler) *HostCollector {
 	hc := &HostCollector{}
-	hc.deviceId = deviceId
+	hc.deviceId = device.DeviceId
 	hc.hostId = hoistId
 	hc.collectors = make(map[int32]base.ProtocolCollector)
-	hc.controller = controller
-	hc.jobsQueue = NewJobsQueue(deviceId, hoistId, controller.resources, serviceName, cServiceArea, dServiceArea)
+	hc.resources = resources
+	hc.jobCompleteHandler = handler
+
+	hc.iService = device.InventoryService
+	hc.pService = device.ParsingService
+
+	hc.jobsQueue = NewJobsQueue(device.DeviceId, hoistId, hc.resources, device.InventoryService, device.ParsingService)
 	hc.mtx = &sync.Mutex{}
 	hc.running = true
-	hc.cServiceArea = cServiceArea
-	hc.dServiceArea = dServiceArea
-	hc.serviceName = serviceName
+
 	return hc
 }
 
 func (this *HostCollector) update() error {
-	cc := device_config.Configs(this.controller.resources, this.cServiceArea)
-	configs := cc.HostConfigs(this.deviceId, this.hostId)
+	cc := device_config.Configs(this.resources)
+	configs := cc.HostConnectionConfigs(this.deviceId, this.hostId)
 	for _, config := range configs {
 		this.mtx.Lock()
 		_, exist := this.collectors[int32(config.Protocol)]
 		this.mtx.Unlock()
 
 		if !exist {
-			col, err := newProtocolCollector(config, this.controller.resources)
+			col, err := newProtocolCollector(config, this.resources)
 			if err != nil {
-				this.controller.resources.Logger().Error(err)
+				this.resources.Logger().Error(err)
 			}
 			if col != nil {
 				this.mtx.Lock()
@@ -58,7 +63,7 @@ func (this *HostCollector) update() error {
 		}
 	}
 
-	pc := poll_config.Polling(this.controller.resources, this.cServiceArea)
+	pc := poll_config.PollConfig(this.resources)
 	bootPollList := pc.PollsByGroup(boot.BOOT_GROUP, "", "", "", "", "", "")
 	for _, pollName := range bootPollList {
 		this.jobsQueue.InsertJob(pollName.Name, "", "", "", "", "", "", 0, 0)
@@ -74,15 +79,17 @@ func (this *HostCollector) stop() {
 	for _, collector := range this.collectors {
 		collector.Disconnect()
 	}
+	this.collectors = nil
+	this.jobsQueue.Shutdown()
 }
 
 func (this *HostCollector) start() error {
-	cc := device_config.Configs(this.controller.resources, this.cServiceArea)
-	configs := cc.HostConfigs(this.deviceId, this.hostId)
+	cc := device_config.Configs(this.resources)
+	configs := cc.HostConnectionConfigs(this.deviceId, this.hostId)
 	for _, config := range configs {
-		col, err := newProtocolCollector(config, this.controller.resources)
+		col, err := newProtocolCollector(config, this.resources)
 		if err != nil {
-			this.controller.resources.Logger().Error(err)
+			this.resources.Logger().Error(err)
 		}
 		if col != nil {
 			this.mtx.Lock()
@@ -91,7 +98,7 @@ func (this *HostCollector) start() error {
 		}
 	}
 
-	pc := poll_config.Polling(this.controller.resources, this.cServiceArea)
+	pc := poll_config.PollConfig(this.resources)
 	bootPollList := pc.PollsByGroup(boot.BOOT_GROUP, "", "", "", "", "", "")
 	for _, pollName := range bootPollList {
 		this.jobsQueue.InsertJob(pollName.Name, "", "", "", "", "", "", 0, 0)
@@ -103,14 +110,14 @@ func (this *HostCollector) start() error {
 }
 
 func (this *HostCollector) collect() {
-	this.controller.resources.Logger().Info("** Starting Collection on host ", this.hostId)
-	pc := poll_config.Polling(this.controller.resources, this.cServiceArea)
+	this.resources.Logger().Info("** Starting Collection on host ", this.hostId)
+	pc := poll_config.PollConfig(this.resources)
 	for this.running {
 		job, waitTime := this.jobsQueue.Pop()
 		if job != nil {
 			poll := pc.PollByName(job.PollName)
 			if poll == nil {
-				this.controller.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
+				this.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
 				continue
 			}
 			MarkStart(job)
@@ -123,10 +130,13 @@ func (this *HostCollector) collect() {
 			}
 			col.Exec(job)
 			MarkEnded(job)
-			this.controller.jobComplete(job)
+			if this.running {
+				this.jobCompleteHandler.JobCompleted(job)
+			}
 		} else {
 			time.Sleep(time.Second * time.Duration(waitTime))
 		}
 	}
-	this.controller.resources.Logger().Info("Host collection for device ", this.deviceId, " host ", this.hostId, " has ended.")
+	this.resources.Logger().Info("Host collection for device ", this.deviceId, " host ", this.hostId, " has ended.")
+	this.resources = nil
 }

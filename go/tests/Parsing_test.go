@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
@@ -12,34 +13,40 @@ import (
 )
 
 func TestParsingAndInventory(t *testing.T) {
-	sw := createVNet(vNetPort1)
-	sleep()
-	col := createCollectionService(0, vNetPort1, boot.CreateSNMPBootPolls())
-	sleep()
-	par := createParsingService(0, vNetPort1, &types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
-	sleep()
-	cli := createClient(vNetPort1)
-	sleep()
-
-	defer func() {
-		cli.Shutdown()
-		par.Shutdown()
-		col.Shutdown()
-		sw.Shutdown()
-	}()
-
-	sleep()
-
 	ip := "192.168.86.179"
-
 	device := CreateDevice(ip, 0)
+	cfg := topo.VnicByVnetNum(2, 4)
+	par := topo.VnicByVnetNum(3, 1)
+	inv := topo.VnicByVnetNum(1, 3)
 
-	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, device)
+	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
+	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateSNMPBootPolls())
+	activateParsingAndPollConfigServices(par, device.ParsingService,
+		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
+	activateInventoryService(inv, device.InventoryService, &types.NetworkBox{}, "Id")
+	defer func() {
+		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateParsingAndPollConfigServices(par, device.ParsingService)
+		deActivateInventoryService(inv, device.InventoryService)
+	}()
+	sleep()
 
-	time.Sleep(1 * time.Second)
+	Log.Info("Test Multicast")
+	cli := topo.VnicByVnetNum(1, 2)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, device)
 
-	ic := inventory.Inventory(par.Resources(), InvServiceName, 0)
-	box := ic.ElementByKey(ip).(*types.NetworkBox)
+	ic := inventory.Inventory(inv.Resources(), device.InventoryService.ServiceName, uint16(device.InventoryService.ServiceArea))
+
+	var box *types.NetworkBox
+	var ok bool
+	for i := 0; i < 10; i++ {
+		box, ok = ic.ElementByKey(ip).(*types.NetworkBox)
+		if ok {
+			break
+		}
+		time.Sleep(time.Second)
+	}
+
 	if box == nil {
 		Log.Fail(t, "Expected box to be non-nil")
 		return

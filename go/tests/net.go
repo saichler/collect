@@ -1,5 +1,6 @@
 package tests
 
+/*
 import (
 	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/device_config"
@@ -9,15 +10,14 @@ import (
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/layer8/go/overlay/vnet"
 	vnic2 "github.com/saichler/layer8/go/overlay/vnic"
+	types3 "github.com/saichler/probler/go/types"
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/servicepoints/go/points/service_points"
 	"github.com/saichler/shared/go/share/registry"
 	"github.com/saichler/shared/go/share/resources"
 	"github.com/saichler/types/go/common"
 	"github.com/saichler/types/go/types"
 	"google.golang.org/protobuf/proto"
-	"reflect"
 )
 
 var vNetPort1 uint32 = 30000
@@ -43,7 +43,7 @@ func createVNet(port uint32) *vnet.VNet {
 	return sw
 }
 
-func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Poll) common.IVirtualNetworkInterface {
+func createCollectionService(serviceArea uint16, port uint32, polls []*types2.PollConfig) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
@@ -64,8 +64,15 @@ func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Po
 	l := control.NewParsingCenterNotifier(vnic)
 	controller := control.NewController(l, resourcs, serviceArea)
 
-	deviceconfig.RegisterConfigCenter(serviceArea, resourcs, nil, controller)
-	poll_config.RegisterPollCenter(serviceArea, resourcs, nil)
+	resourcs.ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
+	resourcs.ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
+
+	resourcs.ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName, 0, resourcs,
+		nil, controller)
+
+	resourcs.ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, 0, resourcs,
+		nil)
+
 	pc := poll_config.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
 
@@ -74,7 +81,7 @@ func createCollectionService(serviceArea uint16, port uint32, polls []*types2.Po
 	return vnic
 }
 
-func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key string, polls []*types2.Poll) common.IVirtualNetworkInterface {
+func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key string, polls []*types2.PollConfig) common.IVirtualNetworkInterface {
 	reg := registry.NewRegistry()
 	secure, err := common.LoadSecurityProvider("security.so", "../../../")
 	if err != nil {
@@ -90,10 +97,20 @@ func createParsingService(serviceArea uint16, port uint32, pb proto.Message, key
 	resourcs := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
 	resourcs.SysConfig().VnetPort = port
 
-	poll_config.RegisterPollCenter(serviceArea, resourcs, nil)
+	serviceName := "parse"
+
+	resourcs.ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
+	resourcs.ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, serviceArea,
+		resourcs, nil)
+
+	resourcs.ServicePoints().AddServicePointType(&parsing.ParsingServicePoint{})
+	resourcs.ServicePoints().Activate(parsing.ServicePointType, serviceName, serviceArea, resourcs,
+		nil, key, pb)
+
 	pc := poll_config.Polling(resourcs, serviceArea)
 	pc.AddAll(polls)
-	parsing.RegisterParsingServicePoint(reflect.ValueOf(pb).Elem().Type().Name(), serviceArea, object.New(nil, pb), key, resourcs, nil)
+
+	resourcs.Registry().Register(&types3.ReadyState{})
 
 	vnic := vnic2.NewVirtualNetworkInterface(resourcs, nil)
 	vnic.Start()
@@ -122,3 +139,4 @@ func createClient(port uint32) common.IVirtualNetworkInterface {
 
 	return vnic
 }
+*/

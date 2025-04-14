@@ -20,7 +20,7 @@ var CR = []byte("\n")
 
 type SshCollector struct {
 	resources common.IResources
-	config    *types.HostConfig
+	config    *types.ConnectionConfig
 	client    *ssh2.Client
 	session   *ssh2.Session
 	in        io.WriteCloser
@@ -35,7 +35,7 @@ func (sshc *SshCollector) Protocol() types.Protocol {
 	return types.Protocol_SSH
 }
 
-func (sshc *SshCollector) Init(conf *types.HostConfig, resources common.IResources) error {
+func (sshc *SshCollector) Init(conf *types.ConnectionConfig, resources common.IResources) error {
 	sshc.config = conf
 	sshc.resources = resources
 	sshc.queue = queues.NewQueue("SSh Collector", 1024)
@@ -234,7 +234,7 @@ func (sshc *SshCollector) exec(cmd string, timeout int64) (string, error) {
 }
 
 func (sshc *SshCollector) Exec(job *types.Job) {
-	pollCenter := poll_config.Polling(sshc.resources, uint16(job.CServiceArea))
+	pollCenter := poll_config.PollConfig(sshc.resources)
 	poll := pollCenter.PollByName(job.PollName)
 	if poll == nil {
 		sshc.resources.Logger().Error("cannot find poll for uuid ", job.PollName)

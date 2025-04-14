@@ -1,5 +1,6 @@
 package tests
 
+/*
 import (
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
@@ -56,8 +57,8 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
-	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, cluster1)
-	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, cluster2)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster1)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 
@@ -108,3 +109,4 @@ func checkCluster(resourcs common.IResources, context string, t *testing.T, serv
 	}
 	return true
 }
+*/

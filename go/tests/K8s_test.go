@@ -5,7 +5,6 @@ import (
 	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
-	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/probler/go/serializers"
@@ -17,27 +16,24 @@ import (
 )
 
 func TestK8sCollector(t *testing.T) {
-	resourcs := createResources("k8s")
 
-	cluster := CreateCluster(admin1, context1, 0)
+	cfg := topo.VnicByVnetNum(2, 4)
 
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
-	l.resources = resourcs
-	//l.ph = control.NewDirectParsingHandler(nil, resourcs)
-	cont := control.NewController(l, resourcs, 0)
+	l.resources = cfg.Resources()
+	cont := control.NewController(l, cfg.Resources())
+	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateK8sBootPolls())
+	defer func() {
+		deActivateDeviceAndPollConfigServices(cfg)
+	}()
 
-	deviceconfig.RegisterConfigCenter(0, resourcs, nil, cont)
-	poll_config.RegisterPollCenter(0, resourcs, nil)
+	cluster := CreateCluster(admin1, context1, 0)
 
-	l.expected = 1
-	cc := deviceconfig.Configs(resourcs, 0)
-	pp := poll_config.Polling(resourcs, 0)
-
-	pp.AddAll(boot.CreateK8sBootPolls())
+	cc := device_config.Configs(cfg.Resources())
 
 	cc.Add(cluster)
-	cont.StartPolling(cluster.Id, K8sServiceName)
+	cont.StartPolling(cluster)
 
 	l.cond.L.Lock()
 	defer l.cond.L.Unlock()
@@ -47,42 +43,53 @@ func TestK8sCollector(t *testing.T) {
 
 func TestParsingForK8s(t *testing.T) {
 
-	sw := createVNet(vNetPort1)
-	sleep()
-	col := createCollectionService(0, vNetPort1, boot.CreateK8sBootPolls())
-	sleep()
-	par := createParsingService(0, vNetPort1, &types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
-	sleep()
-	cli := createClient(vNetPort1)
+	admin := home + "/admin.conf"
+	context := "kubernetes-admin@kubernetes"
+
+	cluster := CreateCluster(admin, context, 0)
+
+	cfg := topo.VnicByVnetNum(2, 4)
+	par := topo.VnicByVnetNum(3, 1)
+	inv := topo.VnicByVnetNum(1, 3)
+
+	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
+	activateDeviceAndPollConfigServices(cfg, cont, boot.CreateK8sBootPolls())
+	activateParsingAndPollConfigServices(par, cluster.ParsingService,
+		&types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
+	activateInventoryService(inv, cluster.InventoryService, &types3.Cluster{}, "Name")
+
+	defer func() {
+		deActivateDeviceAndPollConfigServices(cfg)
+		deActivateParsingAndPollConfigServices(par, cluster.ParsingService)
+		deActivateInventoryService(inv, cluster.InventoryService)
+	}()
 	sleep()
 
-	par.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
-	par.Resources().Registry().RegisterEnums(types3.PodStatus_value)
 	info, err := par.Resources().Registry().Info("ReadyState")
 	if err != nil {
 		Log.Fail(t, "Error getting registry info")
 		return
 	}
 	info.AddSerializer(&serializers.Ready{})
-	defer func() {
-		cli.Shutdown()
-		par.Shutdown()
-		col.Shutdown()
-		sw.Shutdown()
-	}()
 
 	sleep()
 
-	admin := home + "/admin.conf"
-	context := "kubernetes-admin@kubernetes"
-
-	cluster := CreateCluster(admin, context, 0)
-	cli.Multicast(deviceconfig.ServiceName, 0, common.POST, cluster)
+	cli := topo.VnicByVnetNum(1, 2)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster)
 
 	time.Sleep(2 * time.Second)
 
-	ic := inventory.Inventory(par.Resources(), K8sServiceName, 0)
-	k8sCluster := ic.ElementByKey(context).(*types3.Cluster)
+	ic := inventory.Inventory(inv.Resources(), cluster.InventoryService.ServiceName, uint16(cluster.InventoryService.ServiceArea))
+	var k8sCluster *types3.Cluster
+	var ok bool
+	for i := 0; i < 10; i++ {
+		k8sCluster, ok = ic.ElementByKey(context).(*types3.Cluster)
+		if ok {
+			break
+		}
+		time.Sleep(time.Second)
+	}
+
 	if k8sCluster == nil {
 		Log.Fail(t, "Expected K8s Cluster to be non-nil")
 		return

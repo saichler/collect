@@ -1,7 +1,6 @@
 package inventory
 
 import (
-	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/reflect/go/reflect/introspecting"
 	"github.com/saichler/servicepoints/go/points/cache"
 	"github.com/saichler/types/go/common"
@@ -57,7 +56,7 @@ func (this *InventoryCenter) ElementByKey(key string) interface{} {
 }
 
 func Inventory(resource common.IResources, serviceName string, serviceArea uint16) *InventoryCenter {
-	serviceName = serviceName + base.Inventory_Suffix
+	//serviceName = serviceName
 	sp, ok := resource.ServicePoints().ServicePointHandler(serviceName, serviceArea)
 	if !ok {
 		return nil

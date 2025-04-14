@@ -6,15 +6,15 @@ import (
 )
 
 const (
-	Inventory_Suffix = "-inv"
+	Parser_Suffix = "-Parser"
 )
 
-type CollectNotificationHandler interface {
-	HandleCollectNotification(*types.Job)
+type IJobCompleteHandler interface {
+	JobCompleted(*types.Job)
 }
 
 type ProtocolCollector interface {
-	Init(*types.Config, common.IResources) error
+	Init(*types.ConnectionConfig, common.IResources) error
 	Protocol() types.Protocol
 	Exec(*types.Job)
 	Connect() error
@@ -22,5 +22,6 @@ type ProtocolCollector interface {
 }
 
 type IController interface {
-	StartPolling(string, string) error
+	StartPolling(config *types.DeviceConfig) error
+	Shutdown()
 }

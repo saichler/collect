@@ -8,6 +8,7 @@ import (
 
 const (
 	ServiceName      = "DeviceConfig"
+	ServiceArea      = uint16(0)
 	ServicePointType = "DeviceConfigServicePoint"
 )
 
@@ -16,20 +17,28 @@ type DeviceConfigServicePoint struct {
 	controller   base.IController
 }
 
-func (this DeviceConfigServicePoint) Activate(serviceName string, serviceArea uint16,
+func (this *DeviceConfigServicePoint) Activate(serviceName string, serviceArea uint16,
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
-	r.Registry().Register(&types.Device{})
-	this.controller = args[0].(base.IController)
-	this.configCenter = newConfigCenter(serviceName, serviceArea, r, l)
+	r.Registry().Register(&types.DeviceConfig{})
+	this.controller, _ = args[0].(base.IController)
+	this.configCenter = newConfigCenter(ServiceName, ServiceArea, r, l)
+	return nil
+}
+
+func (this *DeviceConfigServicePoint) DeActivate() error {
+	this.controller.Shutdown()
+	this.configCenter.Shutdown()
+	this.controller = nil
+	this.configCenter = nil
 	return nil
 }
 
 func (this *DeviceConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
-	device := pb.Element().(*types.Device)
+	device := pb.Element().(*types.DeviceConfig)
 	this.configCenter.Add(device)
 	if this.controller != nil {
-		resourcs.Logger().Info("Start Polling Device ", device.Id, " ", device.ServiceName)
-		this.controller.StartPolling(device.Id, device.ServiceName)
+		resourcs.Logger().Info("Start Polling Device ", device.DeviceId)
+		this.controller.StartPolling(device)
 	}
 	return nil
 }

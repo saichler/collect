@@ -13,8 +13,9 @@ func createNodesPoll() *types.PollConfig {
 	poll := createBaseK8sPoll("nodes", BOOT_GROUP)
 	poll.What = "get nodes -o wide"
 	poll.Operation = types.Operation__Table
-	poll.Attributes = make([]*types.Attribute, 0)
-	poll.Attributes = append(poll.Attributes, createNodesTable())
+	poll.Parsing = &types.ParsingConfig{}
+	poll.Parsing.Attributes = make([]*types.Attribute, 0)
+	poll.Parsing.Attributes = append(poll.Parsing.Attributes, createNodesTable())
 	return poll
 }
 
@@ -22,8 +23,9 @@ func createPodsPoll() *types.PollConfig {
 	poll := createBaseK8sPoll("pods", BOOT_GROUP)
 	poll.What = "get pods -A -o wide"
 	poll.Operation = types.Operation__Table
-	poll.Attributes = make([]*types.Attribute, 0)
-	poll.Attributes = append(poll.Attributes, createPodsTable())
+	poll.Parsing = &types.ParsingConfig{}
+	poll.Parsing.Attributes = make([]*types.Attribute, 0)
+	poll.Parsing.Attributes = append(poll.Parsing.Attributes, createPodsTable())
 	return poll
 }
 

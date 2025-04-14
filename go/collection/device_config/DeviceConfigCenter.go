@@ -16,28 +16,32 @@ func newConfigCenter(serviceName string, serviceArea uint16, resources common.IR
 	return this
 }
 
-func (this *DeviceConfigCenter) Add(device *types.Device) {
-	this.devices.Put(device.Id, device)
+func (this *DeviceConfigCenter) Shutdown() {
+	this.devices = nil
 }
 
-func (this *DeviceConfigCenter) DeviceById(id string) *types.Device {
-	device, _ := this.devices.Get(id).(*types.Device)
+func (this *DeviceConfigCenter) Add(device *types.DeviceConfig) {
+	this.devices.Put(device.DeviceId, device)
+}
+
+func (this *DeviceConfigCenter) DeviceById(id string) *types.DeviceConfig {
+	device, _ := this.devices.Get(id).(*types.DeviceConfig)
 	return device
 }
 
-func (this *DeviceConfigCenter) HostConfigs(deviceId, hostId string) map[int32]*types.HostConfig {
+func (this *DeviceConfigCenter) HostConnectionConfigs(deviceId, hostId string) map[int32]*types.ConnectionConfig {
 	if this == nil {
 		panic("nil")
 	}
-	device, _ := this.devices.Get(deviceId).(*types.Device)
+	device, _ := this.devices.Get(deviceId).(*types.DeviceConfig)
 	if device == nil {
 		return nil
 	}
 	return device.Hosts[hostId].Configs
 }
 
-func Configs(resource common.IResources, serviceArea uint16) *DeviceConfigCenter {
-	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, serviceArea)
+func Configs(resource common.IResources) *DeviceConfigCenter {
+	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, ServiceArea)
 	if !ok {
 		return nil
 	}
