@@ -1,73 +1,63 @@
 package tests
 
-/*
 import (
+	"github.com/saichler/collect/go/collection/control"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
-	. "github.com/saichler/l8test/go/infra/t_resources"
-	"github.com/saichler/probler/go/serializers"
-	types3 "github.com/saichler/probler/go/types"
+	types2 "github.com/saichler/probler/go/types"
 	"github.com/saichler/types/go/common"
 	"testing"
 	"time"
 )
 
 func TestK8s2Collector2Parsers(t *testing.T) {
-	sw := createVNet(vNetPort1)
-	sleep()
-	col1 := createCollectionService(0, vNetPort1, boot.CreateK8sBootPolls())
-	col2 := createCollectionService(1, vNetPort1, boot.CreateK8sBootPolls())
-	sleep()
-	par1 := createParsingService(0, vNetPort1, &types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
-	par2 := createParsingService(1, vNetPort1, &types3.Cluster{}, "Name", boot.CreateK8sBootPolls())
-	sleep()
-	cli := createClient(vNetPort1)
-	sleep()
-
-	par1.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
-	par1.Resources().Registry().RegisterEnums(types3.PodStatus_value)
-	par2.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
-	par2.Resources().Registry().RegisterEnums(types3.PodStatus_value)
-
-	info, err := par1.Resources().Registry().Info("ReadyState")
-	if err != nil {
-		Log.Fail(t, "Error getting registry info")
-		return
-	}
-	info.AddSerializer(&serializers.Ready{})
-
-	info, err = par2.Resources().Registry().Info("ReadyState")
-	if err != nil {
-		Log.Fail(t, "Error getting registry info")
-		return
-	}
-	info.AddSerializer(&serializers.Ready{})
-
-	defer func() {
-		cli.Shutdown()
-		par1.Shutdown()
-		par2.Shutdown()
-		col1.Shutdown()
-		col2.Shutdown()
-		sw.Shutdown()
-	}()
-
-	sleep()
-
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
-	cli.Multicast(device_config.ServiceName, 1, common.POST, cluster1)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster2)
+	polls := boot.CreateK8sBootPolls()
+
+	cfg1 := topo.VnicByVnetNum(1, 1)
+	cfg2 := topo.VnicByVnetNum(1, 2)
+	par1 := topo.VnicByVnetNum(1, 3)
+	par2 := topo.VnicByVnetNum(1, 4)
+	inv1 := topo.VnicByVnetNum(1, 1)
+	inv2 := topo.VnicByVnetNum(1, 2)
+
+	cont1 := control.NewController(control.NewParsingCenterNotifier(cfg1), cfg1.Resources())
+	activateDeviceAndPollConfigServices(cfg1, 0, cont1, polls)
+
+	cont2 := control.NewController(control.NewParsingCenterNotifier(cfg2), cfg2.Resources())
+	activateDeviceAndPollConfigServices(cfg2, 1, cont2, polls)
+
+	activateParsingAndPollConfigServices(par1, cluster1.ParsingService,
+		&types2.Cluster{}, "Name", polls)
+	activateParsingAndPollConfigServices(par2, cluster2.ParsingService,
+		&types2.Cluster{}, "Name", polls)
+
+	activateInventoryService(inv1, cluster1.InventoryService, &types2.Cluster{}, "Name")
+	activateInventoryService(inv2, cluster2.InventoryService, &types2.Cluster{}, "Name")
+
+	defer func() {
+		deActivateDeviceAndPollConfigServices(cfg1, 0)
+		deActivateDeviceAndPollConfigServices(cfg2, 1)
+		deActivateParsingAndPollConfigServices(par1, cluster1.ParsingService)
+		deActivateParsingAndPollConfigServices(par2, cluster2.ParsingService)
+		deActivateInventoryService(inv1, cluster1.InventoryService)
+		deActivateInventoryService(inv2, cluster2.InventoryService)
+	}()
+	sleep()
+
+	cli := topo.VnicByVnetNum(1, 2)
+	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster1)
+	cli.Multicast(device_config.ServiceName, 1, common.POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 
-	if !checkCluster(par1.Resources(), context1, t, 0) {
+	if !checkCluster(inv1.Resources(), context1, t, 0) {
 		return
 	}
 
-	if !checkCluster(par2.Resources(), context2, t, 1) {
+	if !checkCluster(inv2.Resources(), context2, t, 1) {
 		return
 	}
 }
-*/

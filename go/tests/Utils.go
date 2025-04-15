@@ -89,26 +89,6 @@ func deActivateInventoryService(vnic common.IVirtualNetworkInterface, iService *
 	vnic.Resources().ServicePoints().DeActivate(iService.ServiceName, uint16(iService.ServiceArea), vnic.Resources(), vnic)
 }
 
-/*
-func createResources(alias string) common.IResources {
-	reg := registry.NewRegistry()
-	secure, err := common.LoadSecurityProvider("security.so", "../../../")
-	if err != nil {
-		panic("Failed to load security provider")
-	}
-	cfg := &types2.SysConfig{MaxDataSize: resources.DEFAULT_MAX_DATA_SIZE,
-		RxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		TxQueueSize: resources.DEFAULT_QUEUE_SIZE,
-		LocalAlias:  alias}
-	ins := introspecting.NewIntrospect(reg)
-	sps := service_points.NewServicePoints(ins, cfg)
-
-	ress := resources.NewResources(reg, secure, sps, Log, nil, nil, cfg, ins)
-	ress.ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
-	ress.ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
-	return ress
-}*/
-
 func (l *CollectorListener) JobCompleted(job *types.Job) {
 	if l.ph != nil {
 		l.ph.HandleCollectNotification(job)
@@ -156,57 +136,6 @@ func (l *CollectorListener) JobCompleted(job *types.Job) {
 		l.cond.Broadcast()
 	}
 }
-
-/*
-func CreateCommands() ([]*model.CollectCommand, map[string]string) {
-	cVersion := &model.CollectCommand{}
-	cVersion.Id = "version"
-	cVersion.Enabled = true
-	cVersion.Cadence = 300
-	cVersion.Operation = model.CollectOperation_Get
-	cVersion.Protocol = model.CollectProtocol_SSH
-	cVersion.What = "show version"
-
-	cSystem := &model.CollectCommand{}
-	cSystem.Id = "system"
-	cSystem.Enabled = true
-	cSystem.Cadence = 300
-	cSystem.Operation = model.CollectOperation_Map
-	cSystem.Protocol = model.CollectProtocol_SNMPV2
-	cSystem.What = ".1.3.6.1.2.1.1"
-
-	cClock := &model.CollectCommand{}
-	cClock.Id = "clock"
-	cClock.Enabled = true
-	cClock.Cadence = 900
-	cClock.Operation = model.CollectOperation_Get
-	cClock.Protocol = model.CollectProtocol_SSH
-	cClock.What = "show clock"
-
-	cTimezone := &model.CollectCommand{}
-	cTimezone.Id = "timezone"
-	cTimezone.Enabled = true
-	cTimezone.Cadence = 900
-	cTimezone.Operation = model.CollectOperation_Get
-	cTimezone.Protocol = model.CollectProtocol_SSH
-	cTimezone.What = "show running-config | inc clock"
-
-	cTeTunnelId := &model.CollectCommand{}
-	cTeTunnelId.Id = "te-tunnel-id"
-	cTeTunnelId.Enabled = true
-	cTeTunnelId.Cadence = 900
-	cTeTunnelId.Operation = model.CollectOperation_Get
-	cTeTunnelId.Protocol = model.CollectProtocol_SSH
-	cTeTunnelId.What = "show mpls traffic-eng igp-areas"
-	m := make(map[string]string)
-	m[cSystem.Id] = cSystem.Id
-	m[cVersion.Id] = cVersion.Id
-	m[cClock.Id] = cClock.Id
-	m[cTimezone.Id] = cTimezone.Id
-	m[cTeTunnelId.Id] = cTeTunnelId.Id
-
-	return []*model.CollectCommand{cVersion, cSystem, cClock, cTimezone, cTeTunnelId}, m
-}*/
 
 func CreateDevice(ip string, serviceArea uint16) *types.DeviceConfig {
 	device := &types.DeviceConfig{}

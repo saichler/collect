@@ -28,11 +28,6 @@ func TestCollectionController(t *testing.T) {
 		deActivateDeviceAndPollConfigServices(cfg, 0)
 	}()
 
-	/*
-		cmds, commands := CreateCommands()
-		for _, cmd := range cmds {
-			cont.AddUpdateCommand(cmd)
-		}*/
 	serviceArea := uint16(0)
 	device := CreateDevice("192.168.86.179", serviceArea)
 	l.expected = 1
