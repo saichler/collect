@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/collection/control"
+	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
@@ -22,7 +22,7 @@ func TestK8sCollector(t *testing.T) {
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = cfg.Resources()
-	cont := control.NewController(l, cfg.Resources())
+	cont := collector.NewDeviceCollector(l, cfg.Resources())
 	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateK8sBootPolls())
 	defer func() {
 		deActivateDeviceAndPollConfigServices(cfg, 0)
@@ -49,7 +49,7 @@ func TestParsingForK8s(t *testing.T) {
 	par := topo.VnicByVnetNum(3, 1)
 	inv := topo.VnicByVnetNum(1, 3)
 
-	cont := control.NewController(control.NewParsingCenterNotifier(cfg), cfg.Resources())
+	cont := collector.NewDeviceCollector(collector.NewParsingCenterNotifier(cfg), cfg.Resources())
 	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateK8sBootPolls())
 	activateParsingAndPollConfigServices(par, cluster.ParsingService,
 		&types3.Cluster{}, "Name", boot.CreateK8sBootPolls())

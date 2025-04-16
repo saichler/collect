@@ -2,6 +2,7 @@ package device_config
 
 import (
 	"github.com/saichler/collect/go/collection/base"
+	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/types/go/common"
 )
@@ -19,8 +20,16 @@ type DeviceConfigServicePoint struct {
 func (this *DeviceConfigServicePoint) Activate(serviceName string, serviceArea uint16,
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.DeviceConfig{})
-	this.controller, _ = args[0].(base.IController)
 	this.configCenter = newConfigCenter(ServiceName, serviceArea, r, l)
+	if args == nil {
+		vnic, ok := l.(common.IVirtualNetworkInterface)
+		if ok {
+			pt := collector.NewParsingCenterNotifier(vnic)
+			this.controller = collector.NewDeviceCollector(pt, r)
+		}
+	} else {
+		this.controller, _ = args[0].(base.IController)
+	}
 	return nil
 }
 

@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/collection/control"
+	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"sync"
@@ -22,7 +22,7 @@ func TestCollectionController(t *testing.T) {
 	l := &CollectorListener{}
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = cfg.Resources()
-	cont := control.NewController(l, cfg.Resources())
+	cont := collector.NewDeviceCollector(l, cfg.Resources())
 	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
 	defer func() {
 		deActivateDeviceAndPollConfigServices(cfg, 0)

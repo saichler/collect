@@ -1,4 +1,4 @@
-package control
+package tests
 
 import (
 	"github.com/saichler/collect/go/collection/parsing"

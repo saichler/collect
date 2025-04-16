@@ -1,4 +1,4 @@
-package control
+package collector
 
 import (
 	"github.com/saichler/collect/go/types"

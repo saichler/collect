@@ -2,7 +2,7 @@ package tests
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/collection/control"
+	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/parsing"
@@ -36,12 +36,12 @@ type CollectorListener struct {
 	expected  int
 	received  int
 	cond      *sync.Cond
-	ph        *control.DirectParsingHandler
+	ph        *DirectParsingHandler
 	area      int32
 }
 
 func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16,
-	controller *control.Controller, polls []*types.PollConfig) {
+	controller *collector.DeviceCollector, polls []*types.PollConfig) {
 	vnic.Resources().ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
 	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
 	vnic.Resources().ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName,
