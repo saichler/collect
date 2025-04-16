@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
@@ -25,8 +24,7 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	inv1 := topo.VnicByVnetNum(1, 3)
 	inv2 := topo.VnicByVnetNum(2, 3)
 
-	cont := collector.NewDeviceCollector(collector.NewParsingCenterNotifier(cfg), cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, boot.CreateSNMPBootPolls())
 
 	activateParsingAndPollConfigServices(par1, device1.ParsingService,
 		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())

@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
@@ -19,8 +18,7 @@ func TestParsingAndInventory(t *testing.T) {
 	par := topo.VnicByVnetNum(3, 1)
 	inv := topo.VnicByVnetNum(1, 3)
 
-	cont := collector.NewDeviceCollector(collector.NewParsingCenterNotifier(cfg), cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, boot.CreateSNMPBootPolls())
 	activateParsingAndPollConfigServices(par, device.ParsingService,
 		&types.NetworkBox{}, "Id", boot.CreateSNMPBootPolls())
 	activateInventoryService(inv, device.InventoryService, &types.NetworkBox{}, "Id")

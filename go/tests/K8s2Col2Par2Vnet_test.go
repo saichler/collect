@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	types2 "github.com/saichler/probler/go/types"
@@ -24,11 +23,8 @@ func TestK8s2Collector2Parsers2Vnet(t *testing.T) {
 	inv1 := topo.VnicByVnetNum(1, 3)
 	inv2 := topo.VnicByVnetNum(2, 3)
 
-	cont1 := collector.NewDeviceCollector(collector.NewParsingCenterNotifier(cfg1), cfg1.Resources())
-	activateDeviceAndPollConfigServices(cfg1, 0, cont1, polls)
-
-	cont2 := collector.NewDeviceCollector(collector.NewParsingCenterNotifier(cfg2), cfg2.Resources())
-	activateDeviceAndPollConfigServices(cfg2, 1, cont2, polls)
+	activateDeviceAndPollConfigServices(cfg1, 0, polls)
+	activateDeviceAndPollConfigServices(cfg2, 1, polls)
 
 	activateParsingAndPollConfigServices(par1, cluster1.ParsingService,
 		&types2.Cluster{}, "Name", polls)

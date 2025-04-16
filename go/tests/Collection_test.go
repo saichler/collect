@@ -23,7 +23,7 @@ func TestCollectionController(t *testing.T) {
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = cfg.Resources()
 	cont := collector.NewDeviceCollector(l, cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, 0, cont, boot.CreateSNMPBootPolls())
+	activateDeviceAndPollConfigServices(cfg, 0, boot.CreateSNMPBootPolls(), cont)
 	defer func() {
 		deActivateDeviceAndPollConfigServices(cfg, 0)
 	}()

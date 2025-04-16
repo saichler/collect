@@ -2,7 +2,6 @@ package tests
 
 import (
 	"fmt"
-	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/parsing"
@@ -40,12 +39,11 @@ type CollectorListener struct {
 	area      int32
 }
 
-func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16,
-	controller *collector.DeviceCollector, polls []*types.PollConfig) {
+func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16, polls []*types.PollConfig, args ...interface{}) {
 	vnic.Resources().ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
 	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
 	vnic.Resources().ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName,
-		serviceArea, vnic.Resources(), vnic, controller)
+		serviceArea, vnic.Resources(), vnic, args...)
 	vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 	pc := poll_config.PollConfig(vnic.Resources())
 	pc.AddAll(polls)
@@ -67,8 +65,9 @@ func activateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface,
 	vnic.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
 	vnic.Resources().Registry().RegisterEnums(types3.PodStatus_value)
 	info, _ := vnic.Resources().Registry().Info("ReadyState")
-	info.AddSerializer(&serializers.Ready{})
-
+	if info != nil {
+		info.AddSerializer(&serializers.Ready{})
+	}
 	pc := poll_config.PollConfig(vnic.Resources())
 	pc.AddAll(polls)
 }
