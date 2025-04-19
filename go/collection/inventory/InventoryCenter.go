@@ -55,6 +55,11 @@ func (this *InventoryCenter) ElementByKey(key string) interface{} {
 	return this.elements.Get(key)
 }
 
+func (this *InventoryCenter) ElementByElement(elem interface{}) interface{} {
+	key := primaryKeyValue(this.primaryKeyAttribute, elem, this.resources)
+	return this.elements.Get(key)
+}
+
 func Inventory(resource common.IResources, serviceName string, serviceArea uint16) *InventoryCenter {
 	//serviceName = serviceName
 	sp, ok := resource.ServicePoints().ServicePointHandler(serviceName, serviceArea)
