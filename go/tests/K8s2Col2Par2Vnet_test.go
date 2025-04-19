@@ -42,7 +42,7 @@ func TestK8s2Collector2Parsers2Vnet(t *testing.T) {
 		deActivateInventoryService(inv1, cluster1.InventoryService)
 		deActivateInventoryService(inv2, cluster2.InventoryService)
 	}()
-	sleep()
+	time.Sleep(time.Second * 2)
 
 	cli := topo.VnicByVnetNum(1, 2)
 	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster1)

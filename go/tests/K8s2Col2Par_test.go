@@ -10,6 +10,7 @@ import (
 )
 
 func TestK8s2Collector2Parsers(t *testing.T) {
+	time.Sleep(2 * time.Second)
 	cluster1 := CreateCluster(admin1, context1, 0)
 	cluster2 := CreateCluster(admin2, context2, 1)
 
@@ -42,7 +43,8 @@ func TestK8s2Collector2Parsers(t *testing.T) {
 		deActivateInventoryService(inv1, cluster1.InventoryService)
 		deActivateInventoryService(inv2, cluster2.InventoryService)
 	}()
-	sleep()
+
+	time.Sleep(2 * time.Second)
 
 	cli := topo.VnicByVnetNum(1, 2)
 	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster1)

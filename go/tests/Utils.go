@@ -58,9 +58,15 @@ func activateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface,
 	pService *types.DeviceServiceInfo, elem interface{}, primaryKey string, polls []*types.PollConfig) {
 	vnic.Resources().ServicePoints().AddServicePointType(&parsing.ParsingServicePoint{})
 	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
-	vnic.Resources().ServicePoints().Activate(parsing.ServicePointType, pService.ServiceName,
+	_, err := vnic.Resources().ServicePoints().Activate(parsing.ServicePointType, pService.ServiceName,
 		uint16(pService.ServiceArea), vnic.Resources(), vnic, elem, primaryKey)
-	vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	if err != nil {
+		panic(err)
+	}
+	_, err = vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	if err != nil {
+		panic(err)
+	}
 
 	vnic.Resources().Registry().RegisterEnums(types3.NodeStatus_value)
 	vnic.Resources().Registry().RegisterEnums(types3.PodStatus_value)

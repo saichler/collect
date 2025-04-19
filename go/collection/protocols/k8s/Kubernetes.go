@@ -27,6 +27,8 @@ func (this *Kubernetes) Protocol() types.Protocol {
 }
 
 func (this *Kubernetes) Exec(job *types.Job) {
+	this.resources.Logger().Info("K8s Job ", job.PollName, " started")
+	defer this.resources.Logger().Info("K8s Job ", job.PollName, " ended")
 	pollCenter := poll_config.PollConfig(this.resources)
 	pll := pollCenter.PollByName(job.PollName)
 	if pll == nil {
