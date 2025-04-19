@@ -4,6 +4,7 @@ import (
 	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/types"
+	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/types/go/common"
 )
 
@@ -48,7 +49,7 @@ func (this *DeviceConfigServicePoint) Post(pb common.IElements, resourcs common.
 		resourcs.Logger().Info("Start Polling Device ", device.DeviceId)
 		this.controller.StartPolling(device)
 	}
-	return nil
+	return object.New(nil, &types.DeviceConfig{})
 }
 func (this *DeviceConfigServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
