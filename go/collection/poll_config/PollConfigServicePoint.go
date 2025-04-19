@@ -2,6 +2,7 @@ package poll_config
 
 import (
 	"github.com/saichler/collect/go/types"
+	"github.com/saichler/serializer/go/serialize/object"
 	"github.com/saichler/types/go/common"
 )
 
@@ -29,8 +30,7 @@ func (this *PollConfigServicePoint) DeActivate() error {
 
 func (this *PollConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	hp := pb.Element().(*types.PollConfig)
-	this.pollCenter.Add(hp)
-	return nil
+	return object.New(this.pollCenter.Add(hp), &types.PollConfig{})
 }
 func (this *PollConfigServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
