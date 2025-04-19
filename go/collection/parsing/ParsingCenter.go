@@ -31,5 +31,7 @@ func (this *ParsingServicePoint) JobComplete(job *types.Job, resources common.IR
 		}
 		this.vnic.Single(job.IService.ServiceName, uint16(job.IService.ServiceArea),
 			common.PATCH, elem)
+		this.vnic.Resources().Logger().Info("Sent model to ", job.IService.ServiceName,
+			" area ", job.IService.ServiceArea)
 	}
 }

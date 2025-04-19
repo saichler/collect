@@ -32,6 +32,7 @@ func (this *InventoryServicePoint) DeActivate() error {
 }
 
 func (this *InventoryServicePoint) Post(elements common.IElements, resourcs common.IResources) common.IElements {
+	resourcs.Logger().Info("Received inventory item...")
 	this.inventoryCenter.Add(elements.Element())
 	if this.forwardService != nil {
 		elem := this.inventoryCenter.ElementByElement(elements.Element())
