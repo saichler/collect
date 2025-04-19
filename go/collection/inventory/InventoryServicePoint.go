@@ -19,9 +19,9 @@ func (this *InventoryServicePoint) Activate(serviceName string, serviceArea uint
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
 	primaryKey := args[0].(string)
 	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, args[1], r, l)
-	if len(args) == 4 {
+	if len(args) == 3 {
 		this.forwardService = args[2].(*types2.DeviceServiceInfo)
-		this.nic = args[3].(common.IVirtualNetworkInterface)
+		this.nic = l.(common.IVirtualNetworkInterface)
 	}
 	return nil
 }
