@@ -47,8 +47,11 @@ func (this *InventoryServicePoint) Put(pb common.IElements, resourcs common.IRes
 	return nil
 }
 func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs common.IResources) common.IElements {
+	resourcs.Logger().Info("Received inventory item...")
 	this.inventoryCenter.Update(elements.Element())
 	if this.forwardService != nil {
+		resourcs.Logger().Info("Forawrding to ", this.forwardService.ServiceName, " area ",
+			this.forwardService.ServiceArea)
 		elem := this.inventoryCenter.ElementByElement(elements.Element())
 		this.nic.Single(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
 			common.POST, elem)
