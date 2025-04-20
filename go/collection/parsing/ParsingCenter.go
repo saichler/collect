@@ -29,8 +29,11 @@ func (this *ParsingServicePoint) JobComplete(job *types.Job, resources common.IR
 			resources.Logger().Error("No Vnic to notify inventory")
 			return
 		}
-		this.vnic.Single(job.IService.ServiceName, uint16(job.IService.ServiceArea),
+		_, err = this.vnic.Single(job.IService.ServiceName, uint16(job.IService.ServiceArea),
 			common.PATCH, elem)
+		if err != nil {
+			this.vnic.Resources().Logger().Error(err.Error())
+		}
 		this.vnic.Resources().Logger().Info("Sent model to ", job.IService.ServiceName,
 			" area ", job.IService.ServiceArea)
 	}
