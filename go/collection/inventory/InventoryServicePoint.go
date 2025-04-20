@@ -17,11 +17,13 @@ type InventoryServicePoint struct {
 
 func (this *InventoryServicePoint) Activate(serviceName string, serviceArea uint16,
 	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
+	r.Logger().Info("Activated Inventory on ", serviceName, " area ", serviceArea)
 	primaryKey := args[0].(string)
 	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, args[1], r, l)
 	if len(args) == 3 {
 		this.forwardService = args[2].(*types2.DeviceServiceInfo)
 		this.nic = l.(common.IVirtualNetworkInterface)
+		r.Logger().Info("Added forwarding to ", this.forwardService.ServiceName, " area ", this.forwardService.ServiceArea)
 	}
 	return nil
 }
