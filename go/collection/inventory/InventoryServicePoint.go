@@ -40,10 +40,14 @@ func (this *InventoryServicePoint) Post(elements common.IElements, resourcs comm
 		resourcs.Logger().Info("Forawrding Post to ", this.forwardService.ServiceName, " area ",
 			this.forwardService.ServiceArea)
 		elem := this.inventoryCenter.ElementByElement(elements.Element())
-		this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
+		resp := this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
 			common.POST, elem)
-		resourcs.Logger().Info("Finished POST to ", this.forwardService.ServiceName, " area ",
-			this.forwardService.ServiceArea)
+		if resp != nil && resp.Error() != nil {
+			resourcs.Logger().Error(resp.Error().Error())
+		} else {
+			resourcs.Logger().Info("Post Finished to ", this.forwardService.ServiceName, " area ",
+				this.forwardService.ServiceArea)
+		}
 	}
 	return nil
 }
@@ -57,10 +61,14 @@ func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs com
 		resourcs.Logger().Info("Patch Forawrding to ", this.forwardService.ServiceName, " area ",
 			this.forwardService.ServiceArea)
 		elem := this.inventoryCenter.ElementByElement(elements.Element())
-		this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
-			common.POST, elem)
-		resourcs.Logger().Info("Patch Finished to ", this.forwardService.ServiceName, " area ",
-			this.forwardService.ServiceArea)
+		resp := this.nic.SingleRequest(this.forwardService.ServiceName,
+			uint16(this.forwardService.ServiceArea), common.POST, elem)
+		if resp != nil && resp.Error() != nil {
+			resourcs.Logger().Error(resp.Error().Error())
+		} else {
+			resourcs.Logger().Info("Patch Finished to ", this.forwardService.ServiceName, " area ",
+				this.forwardService.ServiceArea)
+		}
 	}
 	return nil
 }
