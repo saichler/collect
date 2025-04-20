@@ -40,7 +40,7 @@ func (this *InventoryServicePoint) Post(elements common.IElements, resourcs comm
 		resourcs.Logger().Info("Forawrding to ", this.forwardService.ServiceName, " area ",
 			this.forwardService.ServiceArea)
 		elem := this.inventoryCenter.ElementByElement(elements.Element())
-		this.nic.Single(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
+		this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
 			common.POST, elem)
 	}
 	return nil
@@ -55,7 +55,7 @@ func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs com
 		resourcs.Logger().Info("Forawrding to ", this.forwardService.ServiceName, " area ",
 			this.forwardService.ServiceArea)
 		elem := this.inventoryCenter.ElementByElement(elements.Element())
-		this.nic.Single(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
+		this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
 			common.POST, elem)
 	}
 	return nil
