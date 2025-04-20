@@ -121,6 +121,9 @@ func (this *JobsQueue) Pop() (*types.Job, int64) {
 	}
 	this.mtx.Lock()
 	defer this.mtx.Unlock()
+	if len(this.jobs) == 0 {
+		this.resources.Logger().Error("Jobs Queue is empty")
+	}
 	if this.shutdown {
 		return nil, -1
 	}
