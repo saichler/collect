@@ -12,7 +12,7 @@ type DeviceConfigCenter struct {
 
 func newConfigCenter(serviceName string, serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *DeviceConfigCenter {
 	this := &DeviceConfigCenter{}
-	this.devices = cache.NewModelCache(serviceName, serviceArea, "Device", resources.SysConfig().LocalUuid, listener, resources.Introspector())
+	this.devices = cache.NewModelCache(serviceName, serviceArea, "Device", resources.SysConfig().LocalUuid, nil, resources.Introspector())
 	return this
 }
 
