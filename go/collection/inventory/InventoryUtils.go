@@ -27,5 +27,5 @@ func (this *InventoryCenter) AddEmpty(key string) {
 	elem := reflect.New(this.elementType)
 	field := elem.Elem().FieldByName(this.primaryKeyAttribute)
 	field.Set(reflect.ValueOf(key))
-	this.Add(elem.Interface())
+	this.Add(elem.Interface(), false)
 }

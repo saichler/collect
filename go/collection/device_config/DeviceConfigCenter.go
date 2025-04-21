@@ -2,17 +2,17 @@ package device_config
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/servicepoints/go/points/cache"
+	"github.com/saichler/servicepoints/go/points/dcache"
 	"github.com/saichler/types/go/common"
 )
 
 type DeviceConfigCenter struct {
-	devices *cache.Cache
+	devices common.IDistributedCache
 }
 
 func newConfigCenter(serviceName string, serviceArea uint16, resources common.IResources, listener common.IServicePointCacheListener) *DeviceConfigCenter {
 	this := &DeviceConfigCenter{}
-	this.devices = cache.NewModelCache(serviceName, serviceArea, "Device", resources.SysConfig().LocalUuid, nil, resources.Introspector())
+	this.devices = dcache.NewDistributedCache(serviceName, serviceArea, "Device", resources.SysConfig().LocalUuid, nil, resources.Introspector())
 	return this
 }
 

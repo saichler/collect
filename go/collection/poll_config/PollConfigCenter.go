@@ -3,14 +3,14 @@ package poll_config
 import (
 	"errors"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/servicepoints/go/points/cache"
+	"github.com/saichler/servicepoints/go/points/dcache"
 	"github.com/saichler/shared/go/share/strings"
 	"github.com/saichler/types/go/common"
 	"sync"
 )
 
 type PollConfigCenter struct {
-	name2Poll *cache.Cache
+	name2Poll common.IDistributedCache
 	key2Name  map[string]string
 	groups    map[string]map[string]string
 	log       common.ILogger
@@ -19,7 +19,7 @@ type PollConfigCenter struct {
 
 func newPollConfigCenter(resources common.IResources, listener common.IServicePointCacheListener) *PollConfigCenter {
 	pc := &PollConfigCenter{}
-	pc.name2Poll = cache.NewModelCache(ServiceName, ServiceArea, "PollConfig",
+	pc.name2Poll = dcache.NewDistributedCache(ServiceName, ServiceArea, "PollConfig",
 		resources.SysConfig().LocalUuid, listener, resources.Introspector())
 	pc.key2Name = make(map[string]string)
 	pc.groups = make(map[string]map[string]string)
@@ -68,11 +68,11 @@ func (this *PollConfigCenter) deleteExisting(poll *types.PollConfig, key string)
 
 func (this *PollConfigCenter) AddAll(polls []*types.PollConfig) {
 	for _, poll := range polls {
-		this.Add(poll)
+		this.Add(poll, false)
 	}
 }
 
-func (this *PollConfigCenter) Add(poll *types.PollConfig) error {
+func (this *PollConfigCenter) Add(poll *types.PollConfig, isNotification bool) error {
 	if poll.What == "" {
 		return errors.New("poll does not contain a What value")
 	}
@@ -87,7 +87,7 @@ func (this *PollConfigCenter) Add(poll *types.PollConfig) error {
 		this.deleteExisting(poll, key)
 	}
 
-	this.name2Poll.Put(poll.Name, poll)
+	this.name2Poll.Put(poll.Name, poll, isNotification)
 
 	this.mtx.Lock()
 	defer this.mtx.Unlock()

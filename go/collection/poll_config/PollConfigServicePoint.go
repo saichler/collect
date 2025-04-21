@@ -29,9 +29,9 @@ func (this *PollConfigServicePoint) DeActivate() error {
 }
 
 func (this *PollConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
-	hp := pb.Element().(*types.PollConfig)
-	resourcs.Logger().Info("Added a poll config ", hp.Name)
-	return object.New(this.pollCenter.Add(hp), &types.PollConfig{})
+	pollConfig := pb.Element().(*types.PollConfig)
+	resourcs.Logger().Info("Added a poll config ", pollConfig.Name)
+	return object.New(this.pollCenter.Add(pollConfig, pb.IsNotification()), &types.PollConfig{})
 }
 func (this *PollConfigServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil

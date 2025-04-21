@@ -2,13 +2,13 @@ package inventory
 
 import (
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/servicepoints/go/points/cache"
+	"github.com/saichler/servicepoints/go/points/dcache"
 	"github.com/saichler/types/go/common"
 	"reflect"
 )
 
 type InventoryCenter struct {
-	elements            *cache.Cache
+	elements            common.IDistributedCache
 	elementType         reflect.Type
 	primaryKeyAttribute string
 	resources           common.IResources
@@ -26,28 +26,28 @@ func newInventoryCenter(serviceName string, serviceArea uint16, primaryKeyAttrib
 	this.elementType = reflect.ValueOf(element).Elem().Type()
 	this.resources = resources
 	this.primaryKeyAttribute = primaryKeyAttribute
-	this.elements = cache.NewModelCache(this.serviceName, this.serviceArea, this.elementType.Name(),
+	this.elements = dcache.NewDistributedCache(this.serviceName, this.serviceArea, this.elementType.Name(),
 		resources.SysConfig().LocalUuid, listener, resources.Introspector())
 	node, _ := resources.Introspector().Inspect(element)
 	introspecting.AddPrimaryKeyDecorator(node, primaryKeyAttribute)
 	return this
 }
 
-func (this *InventoryCenter) Add(elem interface{}) {
+func (this *InventoryCenter) Add(elem interface{}, isNotification bool) {
 	_, ok := elem.(common.IElements)
 	if ok {
 		panic("")
 	}
 	key := primaryKeyValue(this.primaryKeyAttribute, elem, this.resources)
 	if key != "" {
-		this.elements.Put(key, elem)
+		this.elements.Put(key, elem, isNotification)
 	}
 }
 
-func (this *InventoryCenter) Update(elem interface{}) {
+func (this *InventoryCenter) Update(elem interface{}, isNotification bool) {
 	key := primaryKeyValue(this.primaryKeyAttribute, elem, this.resources)
 	if key != "" {
-		this.elements.Update(key, elem)
+		this.elements.Update(key, elem, isNotification)
 	}
 }
 
