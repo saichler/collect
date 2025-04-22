@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"encoding/base64"
 	"github.com/google/uuid"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
@@ -12,14 +13,21 @@ import (
 )
 
 type Kubernetes struct {
-	resources common.IResources
-	config    *types.ConnectionConfig
+	resources  common.IResources
+	config     *types.ConnectionConfig
+	kubeConfig string
 }
 
 func (this *Kubernetes) Init(config *types.ConnectionConfig, resources common.IResources) error {
 	this.resources = resources
 	this.config = config
-	return nil
+	this.kubeConfig = ".kubeadm-" + config.KukeContext
+	data, err := base64.StdEncoding.DecodeString(this.config.KubeConfig)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(this.kubeConfig, data, 0644)
+	return err
 }
 
 func (this *Kubernetes) Protocol() types.Protocol {
@@ -37,7 +45,7 @@ func (this *Kubernetes) Exec(job *types.Job) {
 	}
 
 	script := strings.New("kubectl --kubeconfig=")
-	script.Add(this.config.KubeConfig)
+	script.Add(this.kubeConfig)
 	script.Add(" --context=")
 	script.Add(this.config.KukeContext)
 	script.Add(" ")
