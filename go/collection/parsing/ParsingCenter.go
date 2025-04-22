@@ -16,6 +16,10 @@ func (this *ParsingServicePoint) JobComplete(job *types.Job, resources common.IR
 		return
 	}
 
+	if job.Error != "" {
+		resources.Logger().Error("job error: ", job.Error)
+	}
+
 	if job.Error == "" && poll.Parsing != nil && poll.Parsing.Attributes != nil {
 		newElem := reflect.New(reflect.ValueOf(this.elem).Elem().Type())
 		field := newElem.Elem().FieldByName(this.primaryKey)
