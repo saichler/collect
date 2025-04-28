@@ -31,7 +31,7 @@ func (this *PollConfigServicePoint) DeActivate() error {
 func (this *PollConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	pollConfig := pb.Element().(*types.PollConfig)
 	resourcs.Logger().Info("Added a poll config ", pollConfig.Name)
-	return object.New(this.pollCenter.Add(pollConfig, pb.IsNotification()), &types.PollConfig{})
+	return object.New(this.pollCenter.Add(pollConfig, pb.Notification()), &types.PollConfig{})
 }
 func (this *PollConfigServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
 	return nil
@@ -51,11 +51,6 @@ func (this *PollConfigServicePoint) GetCopy(pb common.IElements, resourcs common
 func (this *PollConfigServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) Transactional() bool { return false }
-
-func (this *PollConfigServicePoint) ReplicationCount() int {
-	return 0
-}
-func (this *PollConfigServicePoint) ReplicationScore() int {
-	return 0
+func (this *PollConfigServicePoint) TransactionMethod() common.ITransactionMethod {
+	return nil
 }

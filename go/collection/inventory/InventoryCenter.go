@@ -27,7 +27,7 @@ func newInventoryCenter(serviceName string, serviceArea uint16, primaryKeyAttrib
 	this.resources = resources
 	this.primaryKeyAttribute = primaryKeyAttribute
 	this.elements = dcache.NewDistributedCache(this.serviceName, this.serviceArea, this.elementType.Name(),
-		resources.SysConfig().LocalUuid, listener, resources.Introspector())
+		resources.SysConfig().LocalUuid, listener, resources)
 	node, _ := resources.Introspector().Inspect(element)
 	introspecting.AddPrimaryKeyDecorator(node, primaryKeyAttribute)
 	return this

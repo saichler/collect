@@ -20,7 +20,7 @@ type PollConfigCenter struct {
 func newPollConfigCenter(resources common.IResources, listener common.IServicePointCacheListener) *PollConfigCenter {
 	pc := &PollConfigCenter{}
 	pc.name2Poll = dcache.NewDistributedCache(ServiceName, ServiceArea, "PollConfig",
-		resources.SysConfig().LocalUuid, listener, resources.Introspector())
+		resources.SysConfig().LocalUuid, listener, resources)
 	pc.key2Name = make(map[string]string)
 	pc.groups = make(map[string]map[string]string)
 	pc.log = resources.Logger()
@@ -73,6 +73,40 @@ func (this *PollConfigCenter) AddAll(polls []*types.PollConfig) {
 }
 
 func (this *PollConfigCenter) Add(poll *types.PollConfig, isNotification bool) error {
+	if poll.What == "" {
+		return errors.New("poll does not contain a What value")
+	}
+	if poll.Name == "" {
+		return errors.New("poll does not contain a Name")
+	}
+
+	key := this.PollKey(poll)
+	_, ok := this.getPollName(key)
+
+	if ok {
+		this.deleteExisting(poll, key)
+	}
+
+	this.name2Poll.Put(poll.Name, poll, isNotification)
+
+	this.mtx.Lock()
+	defer this.mtx.Unlock()
+
+	this.key2Name[key] = poll.Name
+	if poll.Groups != nil {
+		for _, gName := range poll.Groups {
+			gEntry, ok := this.groups[gName]
+			if !ok {
+				this.groups[gName] = make(map[string]string)
+				gEntry = this.groups[gName]
+			}
+			gEntry[key] = poll.Name
+		}
+	}
+	return nil
+}
+
+func (this *PollConfigCenter) Update(poll *types.PollConfig, isNotification bool) error {
 	if poll.What == "" {
 		return errors.New("poll does not contain a What value")
 	}

@@ -35,8 +35,8 @@ func (this *InventoryServicePoint) DeActivate() error {
 
 func (this *InventoryServicePoint) Post(elements common.IElements, resourcs common.IResources) common.IElements {
 	resourcs.Logger().Info("Post Received inventory item...")
-	this.inventoryCenter.Add(elements.Element(), elements.IsNotification())
-	if !elements.IsNotification() {
+	this.inventoryCenter.Add(elements.Element(), elements.Notification())
+	if !elements.Notification() {
 		go func() {
 			if this.forwardService != nil {
 				resourcs.Logger().Info("Forawrding Post to ", this.forwardService.ServiceName, " area ",
@@ -61,8 +61,8 @@ func (this *InventoryServicePoint) Put(pb common.IElements, resourcs common.IRes
 }
 func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs common.IResources) common.IElements {
 	resourcs.Logger().Info("Patch Received inventory item...")
-	this.inventoryCenter.Update(elements.Element(), elements.IsNotification())
-	if !elements.IsNotification() {
+	this.inventoryCenter.Update(elements.Element(), elements.Notification())
+	if !elements.Notification() {
 		go func() {
 			if this.forwardService != nil {
 				resourcs.Logger().Info("Patch Forawrding to ", this.forwardService.ServiceName, " area ",
@@ -93,11 +93,17 @@ func (this *InventoryServicePoint) GetCopy(pb common.IElements, resourcs common.
 func (this *InventoryServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Transactional() bool { return false }
+func (this *InventoryServicePoint) TransactionMethod() common.ITransactionMethod {
+	return nil
+}
 
+/*
+func (this *InventoryServicePoint) Replication() bool {
+	return false
+}
 func (this *InventoryServicePoint) ReplicationCount() int {
 	return 0
 }
-func (this *InventoryServicePoint) ReplicationScore() int {
-	return 0
-}
+func (this *InventoryServicePoint) KeyOf(elements common.IElements) string {
+	return ""
+}*/

@@ -1,17 +1,21 @@
 package tests
 
 import (
+	"fmt"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/inventory"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
+	"github.com/saichler/layer8/go/overlay/protocol"
 	"github.com/saichler/types/go/common"
 	"testing"
 	"time"
 )
 
 func TestOneCollectorTwoParsers(t *testing.T) {
+	protocol.CountMessages = true
+
 	ip2 := "192.168.86.179"
 	ip1 := "192.168.86.198"
 
@@ -40,8 +44,10 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 		deActivateParsingAndPollConfigServices(par2, device2.ParsingService)
 		deActivateInventoryService(inv1, device1.InventoryService)
 		deActivateInventoryService(inv2, device2.InventoryService)
+		fmt.Println("Created=", protocol.MessagesCreated())
 	}()
-	sleep()
+
+	time.Sleep(time.Second * 2)
 
 	cli := topo.VnicByVnetNum(1, 2)
 	cli.Multicast(device_config.ServiceName, 0, common.POST, device1)

@@ -64,11 +64,6 @@ func (this *ParsingServicePoint) GetCopy(pb common.IElements, resourcs common.IR
 func (this *ParsingServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Transactional() bool { return false }
-
-func (this *ParsingServicePoint) ReplicationCount() int {
-	return 0
-}
-func (this *ParsingServicePoint) ReplicationScore() int {
-	return 0
+func (this *ParsingServicePoint) TransactionMethod() common.ITransactionMethod {
+	return nil
 }

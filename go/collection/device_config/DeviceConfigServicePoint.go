@@ -69,10 +69,6 @@ func (this *DeviceConfigServicePoint) GetCopy(pb common.IElements, resourcs comm
 func (this *DeviceConfigServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) Transactional() bool { return false }
-func (this *DeviceConfigServicePoint) ReplicationCount() int {
-	return 0
-}
-func (this *DeviceConfigServicePoint) ReplicationScore() int {
-	return 0
+func (this *DeviceConfigServicePoint) TransactionMethod() common.ITransactionMethod {
+	return nil
 }
