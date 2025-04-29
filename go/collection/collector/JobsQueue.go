@@ -64,10 +64,10 @@ func (this *JobsQueue) newJob(name, vendor, series, family, software, hardware, 
 	job.PService = this.pService
 
 	if job.Cadence == 0 {
-		job.Cadence = poll.DefaultCadence
+		job.Cadence = poll.Cadence
 	}
 	if job.Timeout == 0 {
-		job.Timeout = poll.DefaultTimeout
+		job.Timeout = poll.Timeout
 	}
 	return job
 }
@@ -81,8 +81,8 @@ func (this *JobsQueue) newJobs(groupName, vendor, series, family, software, hard
 		job.DeviceId = this.deviceId
 		job.HostId = this.hostId
 		job.PollName = poll.Name
-		job.Cadence = poll.DefaultCadence
-		job.Timeout = poll.DefaultTimeout
+		job.Cadence = poll.Cadence
+		job.Timeout = poll.Timeout
 		job.IService = this.iService
 		job.PService = this.pService
 		jobs = append(jobs, job)

@@ -51,8 +51,8 @@ func createBaseK8sPoll(name string, groups ...string) *types.PollConfig {
 	poll := &types.PollConfig{}
 	poll.Name = name
 	poll.Groups = groups
-	poll.DefaultTimeout = DEFAULT_TIMEOUT
-	poll.DefaultCadence = DEFAULT_CADENCE
+	poll.Timeout = DEFAULT_TIMEOUT
+	poll.Cadence = DEFAULT_CADENCE
 	poll.Protocol = types.Protocol_K8s
 	return poll
 }

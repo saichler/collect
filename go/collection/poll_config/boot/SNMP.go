@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-var DEFAULT_CADENCE int64 = 900
+var DEFAULT_CADENCE int64 = 300
 var DEFAULT_TIMEOUT int64 = 30
 
 const (
@@ -101,8 +101,8 @@ func createBaseSNMPPoll(name string, groups ...string) *types.PollConfig {
 	poll := &types.PollConfig{}
 	poll.Name = name
 	poll.Groups = groups
-	poll.DefaultTimeout = DEFAULT_TIMEOUT
-	poll.DefaultCadence = DEFAULT_CADENCE
+	poll.Timeout = DEFAULT_TIMEOUT
+	poll.Cadence = DEFAULT_CADENCE
 	poll.Protocol = types.Protocol_SNMPV2
 	return poll
 }

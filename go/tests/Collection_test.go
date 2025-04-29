@@ -1,12 +1,12 @@
 package tests
 
 import (
-	"fmt"
 	"github.com/saichler/collect/go/collection/collector"
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestMain(m *testing.M) {
@@ -23,7 +23,12 @@ func TestCollectionController(t *testing.T) {
 	l.cond = sync.NewCond(&sync.Mutex{})
 	l.resources = cfg.Resources()
 	cont := collector.NewDeviceCollector(l, cfg.Resources())
-	activateDeviceAndPollConfigServices(cfg, 0, boot.CreateSNMPBootPolls(), cont)
+
+	snmpPolls := boot.CreateSNMPBootPolls()
+	for _, poll := range snmpPolls {
+		poll.Cadence = 3
+	}
+	activateDeviceAndPollConfigServices(cfg, 0, snmpPolls, cont)
 	defer func() {
 		deActivateDeviceAndPollConfigServices(cfg, 0)
 	}()
@@ -38,5 +43,6 @@ func TestCollectionController(t *testing.T) {
 	l.cond.L.Lock()
 	defer l.cond.L.Unlock()
 	l.cond.Wait()
-	fmt.Println("Test Ended")
+
+	time.Sleep(time.Second * 10)
 }

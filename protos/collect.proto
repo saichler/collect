@@ -30,8 +30,8 @@ message PollConfig {
   Operation operation = 10;
   Protocol  protocol = 11;
   ParsingConfig parsing = 12;
-  int64 default_cadence = 13;
-  int64 default_timeout = 14;
+  int64 cadence = 13;
+  int64 timeout = 14;
 }
 
 message Job {

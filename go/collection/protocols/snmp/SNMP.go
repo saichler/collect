@@ -53,7 +53,7 @@ func (this *SNMPCollector) Disconnect() error {
 }
 
 func (this *SNMPCollector) Exec(job *types.Job) {
-	this.resources.Logger().Debug("Exec Job Start ", job.DeviceId, " ", job.PollName)
+	this.resources.Logger().Info("Exec Job Start ", job.DeviceId, " ", job.PollName)
 	if !this.connected {
 		err := this.Connect()
 		if err != nil {
@@ -73,7 +73,7 @@ func (this *SNMPCollector) Exec(job *types.Job) {
 	} else if pll.Operation == types.Operation__Table {
 		this.table(job, pll)
 	}
-	this.resources.Logger().Debug("Exec Job End ", job.DeviceId, " ", job.PollName)
+	this.resources.Logger().Info("Exec Job End ", job.DeviceId, " ", job.PollName)
 }
 
 func (this *SNMPCollector) walk(job *types.Job, pll *types.PollConfig, encodeMap bool) *types.CMap {

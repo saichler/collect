@@ -102,6 +102,11 @@ func (this *HostCollector) collect() {
 	for this.running {
 		job, waitTime := this.jobsQueue.Pop()
 		if job != nil {
+			this.resources.Logger().Info("Poped job ", job.PollName)
+		} else {
+			this.resources.Logger().Info("No Job, waitTime ", waitTime)
+		}
+		if job != nil {
 			poll := pc.PollByName(job.PollName)
 			if poll == nil {
 				this.resources.Logger().Error("cannot find poll for uuid ", job.PollName)
@@ -119,6 +124,7 @@ func (this *HostCollector) collect() {
 				this.handler.JobCompleted(job)
 			}
 		} else {
+			this.resources.Logger().Info("No more jobs, next job in ", waitTime, " seconds.")
 			time.Sleep(time.Second * time.Duration(waitTime))
 		}
 	}
