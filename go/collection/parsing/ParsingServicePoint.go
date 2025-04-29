@@ -42,7 +42,7 @@ func (this *ParsingServicePoint) DeActivate() error {
 
 func (this *ParsingServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
 	job := pb.Element().(*types.Job)
-	resourcs.Logger().Debug("Job ", job.PollName, " completed!")
+	resourcs.Logger().Info("Received Job ", job.PollName, " completed!")
 	this.JobComplete(job, this.resources)
 	return nil
 }
