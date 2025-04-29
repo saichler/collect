@@ -130,7 +130,7 @@ func (this *JobsQueue) Pop() (*types.Job, int64) {
 	var job *types.Job
 	index := -1
 	now := time.Now().Unix()
-	waitTimeTillNext := int64(5)
+	waitTimeTillNext := int64(999999)
 	for i, j := range this.jobs {
 		timeSinceExecuted := now - j.Ended
 		if timeSinceExecuted >= j.Cadence {
