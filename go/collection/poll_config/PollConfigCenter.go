@@ -3,21 +3,21 @@ package poll_config
 import (
 	"errors"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/servicepoints/go/points/dcache"
-	"github.com/saichler/shared/go/share/strings"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8services/go/services/dcache"
+	"github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/l8types/go/ifs"
 	"sync"
 )
 
 type PollConfigCenter struct {
-	name2Poll common.IDistributedCache
+	name2Poll ifs.IDistributedCache
 	key2Name  map[string]string
 	groups    map[string]map[string]string
-	log       common.ILogger
+	log       ifs.ILogger
 	mtx       *sync.RWMutex
 }
 
-func newPollConfigCenter(resources common.IResources, listener common.IServicePointCacheListener) *PollConfigCenter {
+func newPollConfigCenter(resources ifs.IResources, listener ifs.IServiceCacheListener) *PollConfigCenter {
 	pc := &PollConfigCenter{}
 	pc.name2Poll = dcache.NewDistributedCache(ServiceName, ServiceArea, "PollConfig",
 		resources.SysConfig().LocalUuid, listener, resources)
@@ -197,8 +197,8 @@ func (this *PollConfigCenter) PollsByGroup(groupName, vendor, series, family, so
 	return result
 }
 
-func PollConfig(resource common.IResources) *PollConfigCenter {
-	sp, ok := resource.ServicePoints().ServicePointHandler(ServiceName, ServiceArea)
+func PollConfig(resource ifs.IResources) *PollConfigCenter {
+	sp, ok := resource.Services().ServicePointHandler(ServiceName, ServiceArea)
 	if !ok {
 		return nil
 	}

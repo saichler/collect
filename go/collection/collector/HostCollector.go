@@ -9,13 +9,13 @@ import (
 	"github.com/saichler/collect/go/collection/protocols/snmp"
 	"github.com/saichler/collect/go/collection/protocols/ssh"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/maps"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8utils/go/utils/maps"
+	"github.com/saichler/l8types/go/ifs"
 	"time"
 )
 
 type HostCollector struct {
-	resources    common.IResources
+	resources    ifs.IResources
 	deviceConfig *types.DeviceConfig
 	hostId       string
 	handler      base.IJobCompleteHandler
@@ -24,7 +24,7 @@ type HostCollector struct {
 	running      bool
 }
 
-func newHostCollector(deviceConfig *types.DeviceConfig, hostId string, resources common.IResources, handler base.IJobCompleteHandler) *HostCollector {
+func newHostCollector(deviceConfig *types.DeviceConfig, hostId string, resources ifs.IResources, handler base.IJobCompleteHandler) *HostCollector {
 	hc := &HostCollector{}
 	hc.deviceConfig = deviceConfig
 	hc.hostId = hostId
@@ -132,7 +132,7 @@ func (this *HostCollector) collect() {
 	this.resources = nil
 }
 
-func newProtocolCollector(config *types.ConnectionConfig, resource common.IResources) (base.ProtocolCollector, error) {
+func newProtocolCollector(config *types.ConnectionConfig, resource ifs.IResources) (base.ProtocolCollector, error) {
 	var protocolCollector base.ProtocolCollector
 	if config.Protocol == types.Protocol_SSH {
 		protocolCollector = &ssh.SshCollector{}

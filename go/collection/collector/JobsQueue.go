@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"sync"
 	"time"
 )
@@ -15,7 +15,7 @@ type JobsQueue struct {
 	jobs      []*types.Job
 	jobsMap   map[string]*types.Job
 	mtx       *sync.Mutex
-	resources common.IResources
+	resources ifs.IResources
 	iService  *types.DeviceServiceInfo
 	pService  *types.DeviceServiceInfo
 	shutdown  bool
@@ -34,7 +34,7 @@ func (this *JobsQueue) Shutdown() {
 	this.deviceId = ""
 }
 
-func NewJobsQueue(deviceId, hostId string, resources common.IResources,
+func NewJobsQueue(deviceId, hostId string, resources ifs.IResources,
 	iService *types.DeviceServiceInfo, pService *types.DeviceServiceInfo) *JobsQueue {
 	jq := &JobsQueue{}
 	jq.resources = resources

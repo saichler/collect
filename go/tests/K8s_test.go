@@ -9,7 +9,7 @@ import (
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/probler/go/serializers"
 	types3 "github.com/saichler/probler/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"sync"
 	"testing"
 	"time"
@@ -71,7 +71,7 @@ func TestParsingForK8s(t *testing.T) {
 	sleep()
 
 	cli := topo.VnicByVnetNum(1, 2)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, cluster)
 
 	time.Sleep(2 * time.Second)
 

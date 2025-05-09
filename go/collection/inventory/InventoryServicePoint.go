@@ -2,7 +2,7 @@ package inventory
 
 import (
 	types2 "github.com/saichler/collect/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 )
 
 const (
@@ -12,17 +12,17 @@ const (
 type InventoryServicePoint struct {
 	inventoryCenter *InventoryCenter
 	forwardService  *types2.DeviceServiceInfo
-	nic             common.IVirtualNetworkInterface
+	nic             ifs.IVNic
 }
 
 func (this *InventoryServicePoint) Activate(serviceName string, serviceArea uint16,
-	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
+	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Logger().Info("Activated Inventory on ", serviceName, " area ", serviceArea)
 	primaryKey := args[0].(string)
 	this.inventoryCenter = newInventoryCenter(serviceName, serviceArea, primaryKey, args[1], r, l)
 	if len(args) == 3 {
 		this.forwardService = args[2].(*types2.DeviceServiceInfo)
-		this.nic = l.(common.IVirtualNetworkInterface)
+		this.nic = l.(ifs.IVNic)
 		r.Logger().Info("Added forwarding to ", this.forwardService.ServiceName, " area ", this.forwardService.ServiceArea)
 	}
 	return nil
@@ -33,7 +33,7 @@ func (this *InventoryServicePoint) DeActivate() error {
 	return nil
 }
 
-func (this *InventoryServicePoint) Post(elements common.IElements, resourcs common.IResources) common.IElements {
+func (this *InventoryServicePoint) Post(elements ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	resourcs.Logger().Info("Post Received inventory item...")
 	this.inventoryCenter.Add(elements.Element(), elements.Notification())
 	if !elements.Notification() {
@@ -43,7 +43,7 @@ func (this *InventoryServicePoint) Post(elements common.IElements, resourcs comm
 					this.forwardService.ServiceArea)
 				elem := this.inventoryCenter.ElementByElement(elements.Element())
 				resp := this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
-					common.POST, elem)
+					ifs.POST, elem)
 				if resp != nil && resp.Error() != nil {
 					resourcs.Logger().Error(resp.Error().Error())
 				} else {
@@ -56,10 +56,10 @@ func (this *InventoryServicePoint) Post(elements common.IElements, resourcs comm
 	return nil
 }
 
-func (this *InventoryServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *InventoryServicePoint) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs common.IResources) common.IElements {
+func (this *InventoryServicePoint) Patch(elements ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	resourcs.Logger().Info("Patch Received inventory item...")
 	this.inventoryCenter.Update(elements.Element(), elements.Notification())
 	if !elements.Notification() {
@@ -69,7 +69,7 @@ func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs com
 					this.forwardService.ServiceArea)
 				elem := this.inventoryCenter.ElementByElement(elements.Element())
 				resp := this.nic.SingleRequest(this.forwardService.ServiceName,
-					uint16(this.forwardService.ServiceArea), common.POST, elem)
+					uint16(this.forwardService.ServiceArea), ifs.POST, elem)
 				if resp != nil && resp.Error() != nil {
 					resourcs.Logger().Error(resp.Error().Error())
 				} else {
@@ -81,19 +81,19 @@ func (this *InventoryServicePoint) Patch(elements common.IElements, resourcs com
 	}
 	return nil
 }
-func (this *InventoryServicePoint) Delete(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *InventoryServicePoint) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Get(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *InventoryServicePoint) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) GetCopy(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *InventoryServicePoint) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
+func (this *InventoryServicePoint) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) TransactionMethod() common.ITransactionMethod {
+func (this *InventoryServicePoint) TransactionMethod() ifs.ITransactionMethod {
 	return nil
 }
 
@@ -104,6 +104,6 @@ func (this *InventoryServicePoint) Replication() bool {
 func (this *InventoryServicePoint) ReplicationCount() int {
 	return 0
 }
-func (this *InventoryServicePoint) KeyOf(elements common.IElements) string {
+func (this *InventoryServicePoint) KeyOf(elements ifs.IElements) string {
 	return ""
 }*/

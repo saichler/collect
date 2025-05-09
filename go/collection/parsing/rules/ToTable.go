@@ -2,9 +2,9 @@ package rules
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/serializer/go/serialize/object"
-	strings2 "github.com/saichler/shared/go/share/strings"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8srlz/go/serialize/object"
+	strings2 "github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/l8types/go/ifs"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ func (this *ToTable) ParamNames() []string {
 	return []string{"columns", "keycolumn"}
 }
 
-func (this *ToTable) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
+func (this *ToTable) Parse(resources ifs.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
 	input, ok := workSpace[Input].(string)
 	if !ok {
 		return nil

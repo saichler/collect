@@ -2,7 +2,7 @@ package base
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 )
 
 const (
@@ -14,7 +14,7 @@ type IJobCompleteHandler interface {
 }
 
 type ProtocolCollector interface {
-	Init(*types.ConnectionConfig, common.IResources) error
+	Init(*types.ConnectionConfig, ifs.IResources) error
 	Protocol() types.Protocol
 	Exec(*types.Job)
 	Connect() error

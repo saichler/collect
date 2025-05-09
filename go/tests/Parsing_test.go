@@ -6,7 +6,7 @@ import (
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"testing"
 	"time"
 )
@@ -31,7 +31,7 @@ func TestParsingAndInventory(t *testing.T) {
 
 	Log.Info("Test Multicast")
 	cli := topo.VnicByVnetNum(1, 2)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, device)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, device)
 
 	ic := inventory.Inventory(inv.Resources(), device.InventoryService.ServiceName, uint16(device.InventoryService.ServiceArea))
 

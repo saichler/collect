@@ -6,7 +6,7 @@ import (
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	types3 "github.com/saichler/probler/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"testing"
 	"time"
 )
@@ -43,8 +43,8 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	sleep()
 
 	cli := topo.VnicByVnetNum(1, 2)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster1)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster2)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, cluster1)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 
@@ -57,7 +57,7 @@ func TestK8s1Collector2Parsers(t *testing.T) {
 	}
 }
 
-func checkCluster(resourcs common.IResources, context string, t *testing.T, serviceArea uint16) bool {
+func checkCluster(resourcs ifs.IResources, context string, t *testing.T, serviceArea uint16) bool {
 	ic := inventory.Inventory(resourcs, "Cluster", serviceArea)
 	k8sCluster := ic.ElementByKey(context).(*types3.Cluster)
 	if k8sCluster == nil {

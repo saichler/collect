@@ -3,7 +3,7 @@ package rules
 import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/reflect/go/reflect/properties"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"strings"
 )
 
@@ -17,7 +17,7 @@ func (this *Contains) ParamNames() []string {
 	return []string{"what"}
 }
 
-func (this *Contains) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
+func (this *Contains) Parse(resources ifs.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
 	input := workSpace[Input]
 	what := params[What]
 	output := params[Output]

@@ -1,11 +1,11 @@
 package inventory
 
 import (
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"reflect"
 )
 
-func primaryKeyValue(attr string, any interface{}, resources common.IResources) string {
+func primaryKeyValue(attr string, any interface{}, resources ifs.IResources) string {
 	if any == nil {
 		resources.Logger().Error("element is nil")
 		return ""

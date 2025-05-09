@@ -3,18 +3,18 @@ package collector
 import (
 	"github.com/saichler/collect/go/collection/base"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/shared/go/share/maps"
-	"github.com/saichler/shared/go/share/strings"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8utils/go/utils/maps"
+	"github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/l8types/go/ifs"
 )
 
 type DeviceCollector struct {
 	hostCollectors *maps.SyncMap
 	handler        base.IJobCompleteHandler
-	resources      common.IResources
+	resources      ifs.IResources
 }
 
-func NewDeviceCollector(handler base.IJobCompleteHandler, resources common.IResources) *DeviceCollector {
+func NewDeviceCollector(handler base.IJobCompleteHandler, resources ifs.IResources) *DeviceCollector {
 	resources.Logger().Debug("*** Creating new collector for vnet ", resources.SysConfig().VnetPort)
 	collector := &DeviceCollector{}
 	collector.resources = resources

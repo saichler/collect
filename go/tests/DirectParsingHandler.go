@@ -3,15 +3,15 @@ package tests
 import (
 	"github.com/saichler/collect/go/collection/parsing"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 )
 
 type DirectParsingHandler struct {
-	resources common.IResources
+	resources ifs.IResources
 	any       interface{}
 }
 
-func NewDirectParsingHandler(any interface{}, resources common.IResources) *DirectParsingHandler {
+func NewDirectParsingHandler(any interface{}, resources ifs.IResources) *DirectParsingHandler {
 	handler := &DirectParsingHandler{}
 	handler.resources = resources
 	handler.any = any

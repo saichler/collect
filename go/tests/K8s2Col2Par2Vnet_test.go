@@ -4,7 +4,7 @@ import (
 	"github.com/saichler/collect/go/collection/device_config"
 	"github.com/saichler/collect/go/collection/poll_config/boot"
 	types2 "github.com/saichler/probler/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"testing"
 	"time"
 )
@@ -45,8 +45,8 @@ func TestK8s2Collector2Parsers2Vnet(t *testing.T) {
 	time.Sleep(time.Second * 2)
 
 	cli := topo.VnicByVnetNum(1, 2)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, cluster1)
-	cli.Multicast(device_config.ServiceName, 1, common.POST, cluster2)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, cluster1)
+	cli.Multicast(device_config.ServiceName, 1, ifs.POST, cluster2)
 
 	time.Sleep(2 * time.Second)
 

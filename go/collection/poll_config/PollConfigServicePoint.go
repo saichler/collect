@@ -2,8 +2,8 @@ package poll_config
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8srlz/go/serialize/object"
+	"github.com/saichler/l8types/go/ifs"
 )
 
 const (
@@ -17,7 +17,7 @@ type PollConfigServicePoint struct {
 }
 
 func (this *PollConfigServicePoint) Activate(serviceName string, serviceArea uint16,
-	r common.IResources, l common.IServicePointCacheListener, args ...interface{}) error {
+	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.PollConfig{})
 	this.pollCenter = newPollConfigCenter(r, l)
 	return nil
@@ -28,29 +28,29 @@ func (this *PollConfigServicePoint) DeActivate() error {
 	return nil
 }
 
-func (this *PollConfigServicePoint) Post(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *PollConfigServicePoint) Post(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	pollConfig := pb.Element().(*types.PollConfig)
 	resourcs.Logger().Info("Added a poll config ", pollConfig.Name)
 	return object.New(this.pollCenter.Add(pollConfig, pb.Notification()), &types.PollConfig{})
 }
-func (this *PollConfigServicePoint) Put(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *PollConfigServicePoint) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) Patch(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *PollConfigServicePoint) Patch(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) Delete(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *PollConfigServicePoint) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) Get(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *PollConfigServicePoint) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) GetCopy(pb common.IElements, resourcs common.IResources) common.IElements {
+func (this *PollConfigServicePoint) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) Failed(pb common.IElements, resourcs common.IResources, msg common.IMessage) common.IElements {
+func (this *PollConfigServicePoint) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
 	return nil
 }
-func (this *PollConfigServicePoint) TransactionMethod() common.ITransactionMethod {
+func (this *PollConfigServicePoint) TransactionMethod() ifs.ITransactionMethod {
 	return nil
 }

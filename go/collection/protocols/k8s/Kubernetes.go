@@ -5,20 +5,20 @@ import (
 	"github.com/google/uuid"
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/shared/go/share/strings"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8srlz/go/serialize/object"
+	"github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/l8types/go/ifs"
 	"os"
 	"os/exec"
 )
 
 type Kubernetes struct {
-	resources  common.IResources
+	resources  ifs.IResources
 	config     *types.ConnectionConfig
 	kubeConfig string
 }
 
-func (this *Kubernetes) Init(config *types.ConnectionConfig, resources common.IResources) error {
+func (this *Kubernetes) Init(config *types.ConnectionConfig, resources ifs.IResources) error {
 	this.resources = resources
 	this.config = config
 	this.kubeConfig = ".kubeadm-" + config.KukeContext

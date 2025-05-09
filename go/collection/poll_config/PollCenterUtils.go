@@ -1,6 +1,6 @@
 package poll_config
 
-import "github.com/saichler/shared/go/share/strings"
+import "github.com/saichler/l8utils/go/utils/strings"
 
 func pollKey(name, vendor, series, family, software, hardware, version string) string {
 	buff := strings.New()

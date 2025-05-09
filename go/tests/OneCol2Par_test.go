@@ -8,7 +8,7 @@ import (
 	"github.com/saichler/collect/go/types"
 	. "github.com/saichler/l8test/go/infra/t_resources"
 	"github.com/saichler/layer8/go/overlay/protocol"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"testing"
 	"time"
 )
@@ -50,8 +50,8 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	time.Sleep(time.Second * 2)
 
 	cli := topo.VnicByVnetNum(1, 2)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, device1)
-	cli.Multicast(device_config.ServiceName, 0, common.POST, device2)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, device1)
+	cli.Multicast(device_config.ServiceName, 0, ifs.POST, device2)
 
 	ic := inventory.Inventory(inv2.Resources(), device2.InventoryService.ServiceName, uint16(device2.InventoryService.ServiceArea))
 
@@ -71,7 +71,7 @@ func TestOneCollectorTwoParsers(t *testing.T) {
 	}
 }
 
-func checkInventory(ip string, resours common.IResources, t *testing.T, serviceArea uint16) bool {
+func checkInventory(ip string, resours ifs.IResources, t *testing.T, serviceArea uint16) bool {
 	ic := inventory.Inventory(resours, "NetworkBox", serviceArea)
 	box, _ := ic.ElementByKey(ip).(*types.NetworkBox)
 	if box == nil {

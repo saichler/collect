@@ -5,15 +5,15 @@ import (
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/collection/protocols"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/serializer/go/serialize/object"
-	strings2 "github.com/saichler/shared/go/share/strings"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8srlz/go/serialize/object"
+	strings2 "github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/l8types/go/ifs"
 	"strconv"
 	"time"
 )
 
 type SNMPCollector struct {
-	resources common.IResources
+	resources ifs.IResources
 	config    *types.ConnectionConfig
 	agent     *gosnmp.GoSNMP
 	connected bool
@@ -23,7 +23,7 @@ func (this *SNMPCollector) Protocol() types.Protocol {
 	return types.Protocol_SNMPV2
 }
 
-func (this *SNMPCollector) Init(conf *types.ConnectionConfig, resources common.IResources) error {
+func (this *SNMPCollector) Init(conf *types.ConnectionConfig, resources ifs.IResources) error {
 	this.config = conf
 	this.resources = resources
 	this.agent = &gosnmp.GoSNMP{}

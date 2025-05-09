@@ -2,23 +2,23 @@ package inventory
 
 import (
 	"github.com/saichler/reflect/go/reflect/introspecting"
-	"github.com/saichler/servicepoints/go/points/dcache"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8services/go/services/dcache"
+	"github.com/saichler/l8types/go/ifs"
 	"reflect"
 )
 
 type InventoryCenter struct {
-	elements            common.IDistributedCache
+	elements            ifs.IDistributedCache
 	elementType         reflect.Type
 	primaryKeyAttribute string
-	resources           common.IResources
+	resources           ifs.IResources
 	serviceName         string
 	serviceArea         uint16
 	element             interface{}
 }
 
 func newInventoryCenter(serviceName string, serviceArea uint16, primaryKeyAttribute string,
-	element interface{}, resources common.IResources, listener common.IServicePointCacheListener) *InventoryCenter {
+	element interface{}, resources ifs.IResources, listener ifs.IServiceCacheListener) *InventoryCenter {
 	this := &InventoryCenter{}
 	this.serviceName = serviceName
 	this.serviceArea = serviceArea
@@ -34,7 +34,7 @@ func newInventoryCenter(serviceName string, serviceArea uint16, primaryKeyAttrib
 }
 
 func (this *InventoryCenter) Add(elem interface{}, isNotification bool) {
-	_, ok := elem.(common.IElements)
+	_, ok := elem.(ifs.IElements)
 	if ok {
 		panic("")
 	}
@@ -60,9 +60,9 @@ func (this *InventoryCenter) ElementByElement(elem interface{}) interface{} {
 	return this.elements.Get(key)
 }
 
-func Inventory(resource common.IResources, serviceName string, serviceArea uint16) *InventoryCenter {
+func Inventory(resource ifs.IResources, serviceName string, serviceArea uint16) *InventoryCenter {
 	//serviceName = serviceName
-	sp, ok := resource.ServicePoints().ServicePointHandler(serviceName, serviceArea)
+	sp, ok := resource.Services().ServicePointHandler(serviceName, serviceArea)
 	if !ok {
 		return nil
 	}

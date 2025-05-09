@@ -3,18 +3,18 @@ package rules
 import (
 	"errors"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/serializer/go/serialize/object"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8srlz/go/serialize/object"
+	"github.com/saichler/l8types/go/ifs"
 	"strconv"
 )
 
 type ParsingRule interface {
 	Name() string
 	ParamNames() []string
-	Parse(common.IResources, map[string]interface{}, map[string]*types.Parameter, interface{}) error
+	Parse(ifs.IResources, map[string]interface{}, map[string]*types.Parameter, interface{}) error
 }
 
-func getStringInput(resources common.IResources, input interface{}, params map[string]*types.Parameter) (string, error) {
+func getStringInput(resources ifs.IResources, input interface{}, params map[string]*types.Parameter) (string, error) {
 	m, ok := input.(*types.CMap)
 	if ok {
 		from := params[From]

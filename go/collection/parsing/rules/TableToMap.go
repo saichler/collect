@@ -4,9 +4,9 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/reflect/go/reflect/properties"
-	"github.com/saichler/serializer/go/serialize/object"
-	strings2 "github.com/saichler/shared/go/share/strings"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8srlz/go/serialize/object"
+	strings2 "github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/l8types/go/ifs"
 	"reflect"
 	"strings"
 )
@@ -21,7 +21,7 @@ func (this *TableToMap) ParamNames() []string {
 	return []string{""}
 }
 
-func (this *TableToMap) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
+func (this *TableToMap) Parse(resources ifs.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
 	table, ok := workSpace[Output].(*types.CTable)
 	if !ok {
 		return errors.New("Workspace had an invalid output object")
@@ -86,7 +86,7 @@ func removeChar(colName, c string) string {
 	return strings2.New(colName[0:index], colName[index+1:]).String()
 }
 
-func getValue(data []byte, resources common.IResources) interface{} {
+func getValue(data []byte, resources ifs.IResources) interface{} {
 	if len(data) == 0 {
 		return nil
 	}

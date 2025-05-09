@@ -10,7 +10,7 @@ import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/probler/go/serializers"
 	types3 "github.com/saichler/probler/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"os"
 	"sync"
 	"time"
@@ -32,7 +32,7 @@ func sleep() {
 }
 
 type CollectorListener struct {
-	resources common.IResources
+	resources ifs.IResources
 	expected  int
 	received  int
 	cond      *sync.Cond
@@ -40,31 +40,31 @@ type CollectorListener struct {
 	area      int32
 }
 
-func activateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16, polls []*types.PollConfig, args ...interface{}) {
-	vnic.Resources().ServicePoints().AddServicePointType(&device_config.DeviceConfigServicePoint{})
-	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
-	vnic.Resources().ServicePoints().Activate(device_config.ServicePointType, device_config.ServiceName,
+func activateDeviceAndPollConfigServices(vnic ifs.IVNic, serviceArea uint16, polls []*types.PollConfig, args ...interface{}) {
+	vnic.Resources().Services().RegisterServiceHandlerType(&device_config.DeviceConfigServicePoint{})
+	vnic.Resources().Services().RegisterServiceHandlerType(&poll_config.PollConfigServicePoint{})
+	vnic.Resources().Services().Activate(device_config.ServicePointType, device_config.ServiceName,
 		serviceArea, vnic.Resources(), vnic, args...)
-	vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	vnic.Resources().Services().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 	pc := poll_config.PollConfig(vnic.Resources())
 	pc.AddAll(polls)
 }
 
-func deActivateDeviceAndPollConfigServices(vnic common.IVirtualNetworkInterface, serviceArea uint16) {
-	vnic.Resources().ServicePoints().DeActivate(device_config.ServiceName, serviceArea, vnic.Resources(), vnic)
-	vnic.Resources().ServicePoints().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+func deActivateDeviceAndPollConfigServices(vnic ifs.IVNic, serviceArea uint16) {
+	vnic.Resources().Services().DeActivate(device_config.ServiceName, serviceArea, vnic.Resources(), vnic)
+	vnic.Resources().Services().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 }
 
-func activateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface,
+func activateParsingAndPollConfigServices(vnic ifs.IVNic,
 	pService *types.DeviceServiceInfo, elem interface{}, primaryKey string, polls []*types.PollConfig) {
-	vnic.Resources().ServicePoints().AddServicePointType(&parsing.ParsingServicePoint{})
-	vnic.Resources().ServicePoints().AddServicePointType(&poll_config.PollConfigServicePoint{})
-	_, err := vnic.Resources().ServicePoints().Activate(parsing.ServicePointType, pService.ServiceName,
+	vnic.Resources().Services().RegisterServiceHandlerType(&parsing.ParsingServicePoint{})
+	vnic.Resources().Services().RegisterServiceHandlerType(&poll_config.PollConfigServicePoint{})
+	_, err := vnic.Resources().Services().Activate(parsing.ServicePointType, pService.ServiceName,
 		uint16(pService.ServiceArea), vnic.Resources(), vnic, elem, primaryKey)
 	if err != nil {
 		panic(err)
 	}
-	_, err = vnic.Resources().ServicePoints().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	_, err = vnic.Resources().Services().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 	if err != nil {
 		panic(err)
 	}
@@ -79,20 +79,20 @@ func activateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface,
 	pc.AddAll(polls)
 }
 
-func deActivateParsingAndPollConfigServices(vnic common.IVirtualNetworkInterface, pService *types.DeviceServiceInfo) {
-	vnic.Resources().ServicePoints().DeActivate(pService.ServiceName, uint16(pService.ServiceArea), vnic.Resources(), vnic)
-	vnic.Resources().ServicePoints().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+func deActivateParsingAndPollConfigServices(vnic ifs.IVNic, pService *types.DeviceServiceInfo) {
+	vnic.Resources().Services().DeActivate(pService.ServiceName, uint16(pService.ServiceArea), vnic.Resources(), vnic)
+	vnic.Resources().Services().DeActivate(poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 }
 
-func activateInventoryService(vnic common.IVirtualNetworkInterface, iService *types.DeviceServiceInfo,
+func activateInventoryService(vnic ifs.IVNic, iService *types.DeviceServiceInfo,
 	elem interface{}, primaryKey string) {
-	vnic.Resources().ServicePoints().AddServicePointType(&inventory.InventoryServicePoint{})
-	vnic.Resources().ServicePoints().Activate(inventory.ServicePointType, iService.ServiceName,
+	vnic.Resources().Services().RegisterServiceHandlerType(&inventory.InventoryServicePoint{})
+	vnic.Resources().Services().Activate(inventory.ServicePointType, iService.ServiceName,
 		uint16(iService.ServiceArea), vnic.Resources(), vnic, primaryKey, elem)
 }
 
-func deActivateInventoryService(vnic common.IVirtualNetworkInterface, iService *types.DeviceServiceInfo) {
-	vnic.Resources().ServicePoints().DeActivate(iService.ServiceName, uint16(iService.ServiceArea), vnic.Resources(), vnic)
+func deActivateInventoryService(vnic ifs.IVNic, iService *types.DeviceServiceInfo) {
+	vnic.Resources().Services().DeActivate(iService.ServiceName, uint16(iService.ServiceArea), vnic.Resources(), vnic)
 }
 
 func (l *CollectorListener) JobCompleted(job *types.Job) {

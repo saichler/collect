@@ -3,7 +3,7 @@ package rules
 import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/reflect/go/reflect/properties"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 )
 
 type Set struct{}
@@ -16,7 +16,7 @@ func (this *Set) ParamNames() []string {
 	return []string{}
 }
 
-func (this *Set) Parse(resources common.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
+func (this *Set) Parse(resources ifs.IResources, workSpace map[string]interface{}, params map[string]*types.Parameter, any interface{}) error {
 	input := workSpace[Input]
 	path := workSpace[PropertyId]
 

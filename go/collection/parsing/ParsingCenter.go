@@ -3,11 +3,11 @@ package parsing
 import (
 	"github.com/saichler/collect/go/collection/poll_config"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/types/go/common"
+	"github.com/saichler/l8types/go/ifs"
 	"reflect"
 )
 
-func (this *ParsingServicePoint) JobComplete(job *types.Job, resources common.IResources) {
+func (this *ParsingServicePoint) JobComplete(job *types.Job, resources ifs.IResources) {
 	pc := poll_config.PollConfig(resources)
 	poll := pc.PollByName(job.PollName)
 
@@ -34,7 +34,7 @@ func (this *ParsingServicePoint) JobComplete(job *types.Job, resources common.IR
 			return
 		}
 		_, err = this.vnic.Single(job.IService.ServiceName, uint16(job.IService.ServiceArea),
-			common.PATCH, elem)
+			ifs.PATCH, elem)
 		if err != nil {
 			this.vnic.Resources().Logger().Error(err.Error())
 		}
