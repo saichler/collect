@@ -9,16 +9,16 @@ import (
 )
 
 const (
-	ServiceName      = "DeviceConfig"
-	ServicePointType = "DeviceConfigServicePoint"
+	ServiceName = "DeviceConfig"
+	ServiceType = "DeviceConfigService"
 )
 
-type DeviceConfigServicePoint struct {
+type DeviceConfigService struct {
 	configCenter *DeviceConfigCenter
 	controller   base.IController
 }
 
-func (this *DeviceConfigServicePoint) Activate(serviceName string, serviceArea uint16,
+func (this *DeviceConfigService) Activate(serviceName string, serviceArea uint16,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.DeviceConfig{})
 	this.configCenter = newConfigCenter(ServiceName, serviceArea, r, l)
@@ -34,7 +34,7 @@ func (this *DeviceConfigServicePoint) Activate(serviceName string, serviceArea u
 	return nil
 }
 
-func (this *DeviceConfigServicePoint) DeActivate() error {
+func (this *DeviceConfigService) DeActivate() error {
 	this.controller.Shutdown()
 	this.configCenter.Shutdown()
 	this.controller = nil
@@ -42,7 +42,7 @@ func (this *DeviceConfigServicePoint) DeActivate() error {
 	return nil
 }
 
-func (this *DeviceConfigServicePoint) Post(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Post(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	device := pb.Element().(*types.DeviceConfig)
 	this.configCenter.Add(device)
 	if this.controller != nil {
@@ -51,24 +51,27 @@ func (this *DeviceConfigServicePoint) Post(pb ifs.IElements, resourcs ifs.IResou
 	}
 	return object.New(nil, &types.DeviceConfig{})
 }
-func (this *DeviceConfigServicePoint) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) Patch(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Patch(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
+func (this *DeviceConfigService) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigServicePoint) TransactionMethod() ifs.ITransactionMethod {
+func (this *DeviceConfigService) TransactionMethod() ifs.ITransactionMethod {
+	return nil
+}
+func (this *DeviceConfigService) WebService() ifs.IWebService {
 	return nil
 }

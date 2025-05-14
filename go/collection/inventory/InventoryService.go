@@ -6,16 +6,16 @@ import (
 )
 
 const (
-	ServicePointType = "InventoryServicePoint"
+	ServiceType = "InventoryService"
 )
 
-type InventoryServicePoint struct {
+type InventoryService struct {
 	inventoryCenter *InventoryCenter
 	forwardService  *types2.DeviceServiceInfo
 	nic             ifs.IVNic
 }
 
-func (this *InventoryServicePoint) Activate(serviceName string, serviceArea uint16,
+func (this *InventoryService) Activate(serviceName string, serviceArea uint16,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Logger().Info("Activated Inventory on ", serviceName, " area ", serviceArea)
 	primaryKey := args[0].(string)
@@ -28,26 +28,26 @@ func (this *InventoryServicePoint) Activate(serviceName string, serviceArea uint
 	return nil
 }
 
-func (this *InventoryServicePoint) DeActivate() error {
+func (this *InventoryService) DeActivate() error {
 	this.inventoryCenter = nil
 	return nil
 }
 
-func (this *InventoryServicePoint) Post(elements ifs.IElements, resourcs ifs.IResources) ifs.IElements {
-	resourcs.Logger().Info("Post Received inventory item...")
+func (this *InventoryService) Post(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+	vnic.Resources().Logger().Info("Post Received inventory item...")
 	this.inventoryCenter.Add(elements.Element(), elements.Notification())
 	if !elements.Notification() {
 		go func() {
 			if this.forwardService != nil {
-				resourcs.Logger().Info("Forawrding Post to ", this.forwardService.ServiceName, " area ",
+				vnic.Resources().Logger().Info("Forawrding Post to ", this.forwardService.ServiceName, " area ",
 					this.forwardService.ServiceArea)
 				elem := this.inventoryCenter.ElementByElement(elements.Element())
 				resp := this.nic.SingleRequest(this.forwardService.ServiceName, uint16(this.forwardService.ServiceArea),
 					ifs.POST, elem)
 				if resp != nil && resp.Error() != nil {
-					resourcs.Logger().Error(resp.Error().Error())
+					vnic.Resources().Logger().Error(resp.Error().Error())
 				} else {
-					resourcs.Logger().Info("Post Finished to ", this.forwardService.ServiceName, " area ",
+					vnic.Resources().Logger().Info("Post Finished to ", this.forwardService.ServiceName, " area ",
 						this.forwardService.ServiceArea)
 				}
 			}
@@ -56,24 +56,24 @@ func (this *InventoryServicePoint) Post(elements ifs.IElements, resourcs ifs.IRe
 	return nil
 }
 
-func (this *InventoryServicePoint) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *InventoryService) Put(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Patch(elements ifs.IElements, resourcs ifs.IResources) ifs.IElements {
-	resourcs.Logger().Info("Patch Received inventory item...")
+func (this *InventoryService) Patch(elements ifs.IElements, vnic ifs.IVNic) ifs.IElements {
+	vnic.Resources().Logger().Info("Patch Received inventory item...")
 	this.inventoryCenter.Update(elements.Element(), elements.Notification())
 	if !elements.Notification() {
 		go func() {
 			if this.forwardService != nil {
-				resourcs.Logger().Info("Patch Forawrding to ", this.forwardService.ServiceName, " area ",
+				vnic.Resources().Logger().Info("Patch Forawrding to ", this.forwardService.ServiceName, " area ",
 					this.forwardService.ServiceArea)
 				elem := this.inventoryCenter.ElementByElement(elements.Element())
 				resp := this.nic.SingleRequest(this.forwardService.ServiceName,
 					uint16(this.forwardService.ServiceArea), ifs.POST, elem)
 				if resp != nil && resp.Error() != nil {
-					resourcs.Logger().Error(resp.Error().Error())
+					vnic.Resources().Logger().Error(resp.Error().Error())
 				} else {
-					resourcs.Logger().Info("Patch Finished to ", this.forwardService.ServiceName, " area ",
+					vnic.Resources().Logger().Info("Patch Finished to ", this.forwardService.ServiceName, " area ",
 						this.forwardService.ServiceArea)
 				}
 			}
@@ -81,29 +81,32 @@ func (this *InventoryServicePoint) Patch(elements ifs.IElements, resourcs ifs.IR
 	}
 	return nil
 }
-func (this *InventoryServicePoint) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *InventoryService) Delete(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *InventoryService) Get(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *InventoryService) GetCopy(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
+func (this *InventoryService) Failed(pb ifs.IElements, vnic ifs.IVNic, msg ifs.IMessage) ifs.IElements {
 	return nil
 }
-func (this *InventoryServicePoint) TransactionMethod() ifs.ITransactionMethod {
+func (this *InventoryService) TransactionMethod() ifs.ITransactionMethod {
+	return nil
+}
+func (this *InventoryService) WebService() ifs.IWebService {
 	return nil
 }
 
 /*
-func (this *InventoryServicePoint) Replication() bool {
+func (this *InventoryService) Replication() bool {
 	return false
 }
-func (this *InventoryServicePoint) ReplicationCount() int {
+func (this *InventoryService) ReplicationCount() int {
 	return 0
 }
-func (this *InventoryServicePoint) KeyOf(elements ifs.IElements) string {
+func (this *InventoryService) KeyOf(elements ifs.IElements) string {
 	return ""
 }*/
