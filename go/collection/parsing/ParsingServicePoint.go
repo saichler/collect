@@ -6,17 +6,17 @@ import (
 )
 
 const (
-	ServicePointType = "ParsingServicePoint"
+	ServiceType = "ParsingService"
 )
 
-type ParsingServicePoint struct {
+type ParsingService struct {
 	resources  ifs.IResources
 	elem       interface{}
 	primaryKey string
 	vnic       ifs.IVNic
 }
 
-func (this *ParsingServicePoint) Activate(serviceName string, serviceArea uint16,
+func (this *ParsingService) Activate(serviceName string, serviceArea uint16,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 
 	this.resources = r
@@ -33,37 +33,40 @@ func (this *ParsingServicePoint) Activate(serviceName string, serviceArea uint16
 	return nil
 }
 
-func (this *ParsingServicePoint) DeActivate() error {
+func (this *ParsingService) DeActivate() error {
 	this.vnic = nil
 	this.resources = nil
 	this.elem = nil
 	return nil
 }
 
-func (this *ParsingServicePoint) Post(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *ParsingService) Post(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	job := pb.Element().(*types.Job)
-	resourcs.Logger().Info("Received Job ", job.PollName, " completed!")
+	vnic.Resources().Logger().Info("Received Job ", job.PollName, " completed!")
 	this.JobComplete(job, this.resources)
 	return nil
 }
-func (this *ParsingServicePoint) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *ParsingService) Put(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Patch(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *ParsingService) Patch(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *ParsingService) Delete(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *ParsingService) Get(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *ParsingService) GetCopy(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
+func (this *ParsingService) Failed(pb ifs.IElements, vnic ifs.IVNic, msg ifs.IMessage) ifs.IElements {
 	return nil
 }
-func (this *ParsingServicePoint) TransactionMethod() ifs.ITransactionMethod {
+func (this *ParsingService) TransactionMethod() ifs.ITransactionMethod {
+	return nil
+}
+func (this *ParsingService) WebService() ifs.IWebService {
 	return nil
 }

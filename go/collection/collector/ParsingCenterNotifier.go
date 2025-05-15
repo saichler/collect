@@ -23,6 +23,6 @@ func (this *ParsingCenterNotifier) JobCompleted(job *types.Job) {
 		this.nic.Resources().Logger().Error("Failed to notify on job: ", err)
 	}
 	hc := health.Health(this.nic.Resources())
-	hp := hc.HealthPoint(dest)
+	hp := hc.Health(dest)
 	this.nic.Resources().Logger().Info("Sent job complete to : ", hp.Alias)
 }

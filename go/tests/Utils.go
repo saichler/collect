@@ -41,11 +41,11 @@ type CollectorListener struct {
 }
 
 func activateDeviceAndPollConfigServices(vnic ifs.IVNic, serviceArea uint16, polls []*types.PollConfig, args ...interface{}) {
-	vnic.Resources().Services().RegisterServiceHandlerType(&device_config.DeviceConfigServicePoint{})
-	vnic.Resources().Services().RegisterServiceHandlerType(&poll_config.PollConfigServicePoint{})
-	vnic.Resources().Services().Activate(device_config.ServicePointType, device_config.ServiceName,
+	vnic.Resources().Services().RegisterServiceHandlerType(&device_config.DeviceConfigService{})
+	vnic.Resources().Services().RegisterServiceHandlerType(&poll_config.PollConfigService{})
+	vnic.Resources().Services().Activate(device_config.ServiceType, device_config.ServiceName,
 		serviceArea, vnic.Resources(), vnic, args...)
-	vnic.Resources().Services().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	vnic.Resources().Services().Activate(poll_config.ServiceType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 	pc := poll_config.PollConfig(vnic.Resources())
 	pc.AddAll(polls)
 }
@@ -57,14 +57,14 @@ func deActivateDeviceAndPollConfigServices(vnic ifs.IVNic, serviceArea uint16) {
 
 func activateParsingAndPollConfigServices(vnic ifs.IVNic,
 	pService *types.DeviceServiceInfo, elem interface{}, primaryKey string, polls []*types.PollConfig) {
-	vnic.Resources().Services().RegisterServiceHandlerType(&parsing.ParsingServicePoint{})
-	vnic.Resources().Services().RegisterServiceHandlerType(&poll_config.PollConfigServicePoint{})
-	_, err := vnic.Resources().Services().Activate(parsing.ServicePointType, pService.ServiceName,
+	vnic.Resources().Services().RegisterServiceHandlerType(&parsing.ParsingService{})
+	vnic.Resources().Services().RegisterServiceHandlerType(&poll_config.PollConfigService{})
+	_, err := vnic.Resources().Services().Activate(parsing.ServiceType, pService.ServiceName,
 		uint16(pService.ServiceArea), vnic.Resources(), vnic, elem, primaryKey)
 	if err != nil {
 		panic(err)
 	}
-	_, err = vnic.Resources().Services().Activate(poll_config.ServicePointType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
+	_, err = vnic.Resources().Services().Activate(poll_config.ServiceType, poll_config.ServiceName, poll_config.ServiceArea, vnic.Resources(), vnic)
 	if err != nil {
 		panic(err)
 	}
@@ -86,8 +86,8 @@ func deActivateParsingAndPollConfigServices(vnic ifs.IVNic, pService *types.Devi
 
 func activateInventoryService(vnic ifs.IVNic, iService *types.DeviceServiceInfo,
 	elem interface{}, primaryKey string) {
-	vnic.Resources().Services().RegisterServiceHandlerType(&inventory.InventoryServicePoint{})
-	vnic.Resources().Services().Activate(inventory.ServicePointType, iService.ServiceName,
+	vnic.Resources().Services().RegisterServiceHandlerType(&inventory.InventoryService{})
+	vnic.Resources().Services().Activate(inventory.ServiceType, iService.ServiceName,
 		uint16(iService.ServiceArea), vnic.Resources(), vnic, primaryKey, elem)
 }
 

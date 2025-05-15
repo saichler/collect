@@ -62,9 +62,9 @@ func (this *InventoryCenter) ElementByElement(elem interface{}) interface{} {
 
 func Inventory(resource ifs.IResources, serviceName string, serviceArea uint16) *InventoryCenter {
 	//serviceName = serviceName
-	sp, ok := resource.Services().ServicePointHandler(serviceName, serviceArea)
+	sp, ok := resource.Services().ServiceHandler(serviceName, serviceArea)
 	if !ok {
 		return nil
 	}
-	return (sp.(*InventoryServicePoint)).inventoryCenter
+	return (sp.(*InventoryService)).inventoryCenter
 }

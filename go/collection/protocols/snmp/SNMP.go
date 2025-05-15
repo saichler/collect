@@ -6,8 +6,8 @@ import (
 	"github.com/saichler/collect/go/collection/protocols"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/l8srlz/go/serialize/object"
-	strings2 "github.com/saichler/l8utils/go/utils/strings"
 	"github.com/saichler/l8types/go/ifs"
+	strings2 "github.com/saichler/l8utils/go/utils/strings"
 	"strconv"
 	"time"
 )
@@ -37,6 +37,9 @@ func (this *SNMPCollector) Init(conf *types.ConnectionConfig, resources ifs.IRes
 }
 
 func (this *SNMPCollector) Connect() error {
+	if this == nil || this.agent == nil {
+		return nil
+	}
 	err := this.agent.Connect()
 	if err != nil {
 		return err

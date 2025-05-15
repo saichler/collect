@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-func (this *ParsingServicePoint) JobComplete(job *types.Job, resources ifs.IResources) {
+func (this *ParsingService) JobComplete(job *types.Job, resources ifs.IResources) {
 	pc := poll_config.PollConfig(resources)
 	poll := pc.PollByName(job.PollName)
 

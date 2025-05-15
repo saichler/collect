@@ -41,9 +41,9 @@ func (this *DeviceConfigCenter) HostConnectionConfigs(deviceId, hostId string) m
 }
 
 func Configs(resource ifs.IResources, serviceArea uint16) *DeviceConfigCenter {
-	sp, ok := resource.Services().ServicePointHandler(ServiceName, serviceArea)
+	sp, ok := resource.Services().ServiceHandler(ServiceName, serviceArea)
 	if !ok {
 		return nil
 	}
-	return (sp.(*DeviceConfigServicePoint)).configCenter
+	return (sp.(*DeviceConfigService)).configCenter
 }

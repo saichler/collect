@@ -6,6 +6,7 @@ import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8utils/go/utils/web"
 )
 
 const (
@@ -16,6 +17,7 @@ const (
 type DeviceConfigService struct {
 	configCenter *DeviceConfigCenter
 	controller   base.IController
+	serviceArea  uint16
 }
 
 func (this *DeviceConfigService) Activate(serviceName string, serviceArea uint16,
@@ -31,6 +33,7 @@ func (this *DeviceConfigService) Activate(serviceName string, serviceArea uint16
 	} else {
 		this.controller, _ = args[0].(base.IController)
 	}
+	this.serviceArea = serviceArea
 	return nil
 }
 
@@ -42,36 +45,38 @@ func (this *DeviceConfigService) DeActivate() error {
 	return nil
 }
 
-func (this *DeviceConfigService) Post(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Post(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	device := pb.Element().(*types.DeviceConfig)
 	this.configCenter.Add(device)
 	if this.controller != nil {
-		resourcs.Logger().Info("Start Polling Device ", device.DeviceId)
+		vnic.Resources().Logger().Info("Start Polling Device ", device.DeviceId)
 		this.controller.StartPolling(device)
 	}
 	return object.New(nil, &types.DeviceConfig{})
 }
-func (this *DeviceConfigService) Put(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Put(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigService) Patch(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Patch(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigService) Delete(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Delete(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigService) Get(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) Get(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigService) GetCopy(pb ifs.IElements, resourcs ifs.IResources) ifs.IElements {
+func (this *DeviceConfigService) GetCopy(pb ifs.IElements, vnic ifs.IVNic) ifs.IElements {
 	return nil
 }
-func (this *DeviceConfigService) Failed(pb ifs.IElements, resourcs ifs.IResources, msg ifs.IMessage) ifs.IElements {
+func (this *DeviceConfigService) Failed(pb ifs.IElements, vnic ifs.IVNic, msg ifs.IMessage) ifs.IElements {
 	return nil
 }
 func (this *DeviceConfigService) TransactionMethod() ifs.ITransactionMethod {
 	return nil
 }
 func (this *DeviceConfigService) WebService() ifs.IWebService {
-	return nil
+	ws := web.New(ServiceName, this.serviceArea, &types.DeviceConfig{},
+		&types.DeviceConfig{}, nil, nil, nil, nil, nil, nil, nil, nil)
+	return ws
 }

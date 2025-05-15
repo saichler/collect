@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/l8services/go/services/dcache"
-	"github.com/saichler/l8utils/go/utils/strings"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8utils/go/utils/strings"
 	"sync"
 )
 
@@ -145,6 +145,9 @@ func (this *PollConfigCenter) PollKey(poll *types.PollConfig) string {
 }
 
 func (this *PollConfigCenter) PollByName(name string) *types.PollConfig {
+	if this == nil || this.name2Poll == nil {
+		return nil
+	}
 	poll, _ := this.name2Poll.Get(name).(*types.PollConfig)
 	return poll
 }
@@ -198,9 +201,9 @@ func (this *PollConfigCenter) PollsByGroup(groupName, vendor, series, family, so
 }
 
 func PollConfig(resource ifs.IResources) *PollConfigCenter {
-	sp, ok := resource.Services().ServicePointHandler(ServiceName, ServiceArea)
+	sp, ok := resource.Services().ServiceHandler(ServiceName, ServiceArea)
 	if !ok {
 		return nil
 	}
-	return (sp.(*PollConfigServicePoint)).pollCenter
+	return (sp.(*PollConfigService)).pollCenter
 }

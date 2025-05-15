@@ -4,6 +4,7 @@ import (
 	"github.com/saichler/collect/go/types"
 	"github.com/saichler/l8srlz/go/serialize/object"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/l8utils/go/utils/web"
 )
 
 const (
@@ -13,13 +14,15 @@ const (
 )
 
 type PollConfigService struct {
-	pollCenter *PollConfigCenter
+	pollCenter  *PollConfigCenter
+	serviceArea uint16
 }
 
 func (this *PollConfigService) Activate(serviceName string, serviceArea uint16,
 	r ifs.IResources, l ifs.IServiceCacheListener, args ...interface{}) error {
 	r.Registry().Register(&types.PollConfig{})
 	this.pollCenter = newPollConfigCenter(r, l)
+	this.serviceArea = serviceArea
 	return nil
 }
 
@@ -55,5 +58,7 @@ func (this *PollConfigService) TransactionMethod() ifs.ITransactionMethod {
 	return nil
 }
 func (this *PollConfigService) WebService() ifs.IWebService {
-	return nil
+	ws := web.New(ServiceName, this.serviceArea, &types.PollConfig{},
+		&types.PollConfig{}, nil, nil, nil, nil, nil, nil, nil, nil)
+	return ws
 }

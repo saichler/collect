@@ -13,6 +13,9 @@ type InventoryService struct {
 	inventoryCenter *InventoryCenter
 	forwardService  *types2.DeviceServiceInfo
 	nic             ifs.IVNic
+	serviceName     string
+	serviceArea     uint16
+	itemSample      interface{}
 }
 
 func (this *InventoryService) Activate(serviceName string, serviceArea uint16,
@@ -25,6 +28,9 @@ func (this *InventoryService) Activate(serviceName string, serviceArea uint16,
 		this.nic = l.(ifs.IVNic)
 		r.Logger().Info("Added forwarding to ", this.forwardService.ServiceName, " area ", this.forwardService.ServiceArea)
 	}
+	this.serviceName = serviceName
+	this.serviceArea = serviceArea
+	this.itemSample = args[1]
 	return nil
 }
 
