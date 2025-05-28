@@ -3,10 +3,10 @@ package rules
 import (
 	"errors"
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/reflect/go/reflect/properties"
 	"github.com/saichler/l8srlz/go/serialize/object"
-	strings2 "github.com/saichler/l8utils/go/utils/strings"
 	"github.com/saichler/l8types/go/ifs"
+	strings2 "github.com/saichler/l8utils/go/utils/strings"
+	"github.com/saichler/reflect/go/reflect/properties"
 	"reflect"
 	"strings"
 )
@@ -53,7 +53,7 @@ func (this *TableToMap) Parse(resources ifs.IResources, workSpace map[string]int
 			attrName := getAttributeNameFromColumn(table.Columns[int32(i)])
 			key.Add(attrName)
 
-			prop, err := properties.PropertyOf(key.String(), resources.Introspector())
+			prop, err := properties.PropertyOf(key.String(), resources)
 			if err != nil {
 				resources.Logger().Error(err.Error())
 				continue

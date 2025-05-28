@@ -2,8 +2,8 @@ package rules
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/reflect/go/reflect/properties"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/reflect/go/reflect/properties"
 	"strings"
 )
 
@@ -39,7 +39,7 @@ func (this *Contains) Parse(resources ifs.IResources, workSpace map[string]inter
 	ok := strings.Contains(strings.ToLower(str), what.Value)
 	if ok {
 		if path != nil {
-			instance, _ := properties.PropertyOf(path.(string), resources.Introspector())
+			instance, _ := properties.PropertyOf(path.(string), resources)
 			if instance != nil {
 				_, _, err := instance.Set(any, output.Value)
 				if err != nil {

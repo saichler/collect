@@ -2,8 +2,8 @@ package rules
 
 import (
 	"github.com/saichler/collect/go/types"
-	"github.com/saichler/reflect/go/reflect/properties"
 	"github.com/saichler/l8types/go/ifs"
+	"github.com/saichler/reflect/go/reflect/properties"
 )
 
 type Set struct{}
@@ -30,7 +30,7 @@ func (this *Set) Parse(resources ifs.IResources, workSpace map[string]interface{
 	}
 
 	if path != nil {
-		instance, err := properties.PropertyOf(path.(string), resources.Introspector())
+		instance, err := properties.PropertyOf(path.(string), resources)
 		if err != nil {
 			return resources.Logger().Error("error parsing instance path", err.Error())
 		}
